@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Menu, X, Briefcase } from "lucide-react";
+import { AuthButton } from "@/components/auth/AuthButton";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -28,12 +29,7 @@ export const Header = () => {
             <Link to="/resume-editor" className="text-gray-600 hover:text-purple-600 transition-colors">
               Resume Builder
             </Link>
-            <Button variant="outline" className="ml-4 border-purple-600 text-purple-600 hover:bg-purple-50">
-              Sign In
-            </Button>
-            <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-              Get Started
-            </Button>
+            <AuthButton />
           </nav>
 
           <button
@@ -59,13 +55,8 @@ export const Header = () => {
               <Link to="/applications" className="text-gray-600 hover:text-purple-600 transition-colors">
                 Applications
               </Link>
-              <div className="pt-4 flex flex-col space-y-3">
-                <Button variant="outline" className="w-full border-purple-600 text-purple-600 hover:bg-purple-50">
-                  Sign In
-                </Button>
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-                  Get Started
-                </Button>
+              <div className="pt-4">
+                <AuthButton />
               </div>
             </nav>
           </div>
