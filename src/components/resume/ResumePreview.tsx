@@ -1,16 +1,16 @@
 
-import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Mail, Phone, MapPin, Calendar, Building } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-interface ResumeData {
-  name: string;
-  email: string;
-  phone: string;
-  location: string;
+export interface ResumeData {
+  personalInfo: {
+    name: string;
+    email: string;
+    phone: string;
+    location: string;
+  };
   summary: string;
   experience: Array<{
-    title: string;
+    jobTitle: string;
     company: string;
     duration: string;
     description: string;
@@ -26,144 +26,314 @@ interface ResumeData {
 interface ResumePreviewProps {
   data: ResumeData;
   template: string;
+  scale?: number;
+  showAtsView?: boolean;
 }
 
-export const ResumePreview = ({ data, template }: ResumePreviewProps) => {
+export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }: ResumePreviewProps) => {
+  // Get template-specific styles
   const getTemplateStyles = () => {
     switch (template) {
       case "modern":
         return {
-          container: "bg-white text-gray-900 font-sans",
-          header: "bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6",
-          section: "mb-6",
-          sectionTitle: "text-lg font-bold text-blue-700 mb-3 pb-1 border-b-2 border-blue-200"
+          container: "font-sans bg-white text-gray-800",
+          header: "bg-blue-600 text-white p-6",
+          headerName: "text-2xl font-bold",
+          headerDetails: "mt-2 flex flex-wrap gap-3 text-sm",
+          section: "p-6",
+          sectionTitle: "text-lg font-bold text-blue-600 border-b border-blue-200 pb-1 mb-3",
+          experienceItem: "mb-4",
+          experienceTitle: "font-bold",
+          experienceCompany: "text-blue-600",
+          experienceDuration: "text-sm text-gray-600 italic",
+          experienceDescription: "mt-1 text-sm",
+          educationItem: "mb-3",
+          educationDegree: "font-bold",
+          educationSchool: "text-blue-600",
+          educationYear: "text-sm text-gray-600 italic",
+          skillsContainer: "flex flex-wrap gap-2",
+          skill: "bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm"
         };
       case "classic":
         return {
-          container: "bg-white text-gray-900 font-serif",
-          header: "border-b-2 border-gray-300 pb-4 mb-6",
-          section: "mb-6",
-          sectionTitle: "text-lg font-bold text-gray-800 mb-3 uppercase tracking-wide"
+          container: "font-serif bg-white text-gray-800",
+          header: "text-center p-6 border-b-2 border-gray-300",
+          headerName: "text-3xl font-bold",
+          headerDetails: "mt-2 flex justify-center flex-wrap gap-4 text-sm",
+          section: "p-6",
+          sectionTitle: "text-xl font-bold border-b border-gray-300 pb-1 mb-4",
+          experienceItem: "mb-4",
+          experienceTitle: "font-bold",
+          experienceCompany: "font-semibold",
+          experienceDuration: "text-sm text-gray-600",
+          experienceDescription: "mt-1 text-sm",
+          educationItem: "mb-3",
+          educationDegree: "font-bold",
+          educationSchool: "font-semibold",
+          educationYear: "text-sm text-gray-600",
+          skillsContainer: "flex flex-wrap gap-2",
+          skill: "border border-gray-300 px-2 py-1 rounded text-sm"
         };
       case "creative":
         return {
-          container: "bg-gradient-to-br from-purple-50 to-pink-50 text-gray-900 font-sans",
-          header: "bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-t-lg",
-          section: "mb-6",
-          sectionTitle: "text-lg font-bold text-purple-700 mb-3 pb-1 border-b-2 border-purple-200"
+          container: "font-sans bg-white text-gray-800",
+          header: "bg-gradient-to-r from-purple-500 to-indigo-600 text-white p-6 rounded-t-lg",
+          headerName: "text-2xl font-bold",
+          headerDetails: "mt-2 flex flex-wrap gap-3 text-sm",
+          section: "p-6",
+          sectionTitle: "text-lg font-bold text-indigo-600 border-b border-indigo-200 pb-1 mb-3",
+          experienceItem: "mb-4",
+          experienceTitle: "font-bold",
+          experienceCompany: "text-indigo-600",
+          experienceDuration: "text-sm text-gray-600 italic",
+          experienceDescription: "mt-1 text-sm",
+          educationItem: "mb-3",
+          educationDegree: "font-bold",
+          educationSchool: "text-indigo-600",
+          educationYear: "text-sm text-gray-600 italic",
+          skillsContainer: "flex flex-wrap gap-2",
+          skill: "bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-sm"
+        };
+      case "minimal":
+        return {
+          container: "font-sans bg-white text-gray-800",
+          header: "p-6 border-b border-gray-200",
+          headerName: "text-2xl font-bold",
+          headerDetails: "mt-2 flex flex-wrap gap-3 text-sm text-gray-600",
+          section: "p-6",
+          sectionTitle: "text-lg font-medium text-gray-700 mb-3",
+          experienceItem: "mb-4",
+          experienceTitle: "font-medium",
+          experienceCompany: "text-gray-700",
+          experienceDuration: "text-sm text-gray-500",
+          experienceDescription: "mt-1 text-sm",
+          educationItem: "mb-3",
+          educationDegree: "font-medium",
+          educationSchool: "text-gray-700",
+          educationYear: "text-sm text-gray-500",
+          skillsContainer: "flex flex-wrap gap-2",
+          skill: "bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm"
+        };
+      case "professional":
+        return {
+          container: "font-sans bg-white text-gray-800",
+          header: "bg-gray-800 text-white p-6",
+          headerName: "text-2xl font-bold",
+          headerDetails: "mt-2 flex flex-wrap gap-3 text-sm",
+          section: "p-6",
+          sectionTitle: "text-lg font-bold text-gray-800 border-b-2 border-gray-300 pb-1 mb-3",
+          experienceItem: "mb-4",
+          experienceTitle: "font-bold",
+          experienceCompany: "text-gray-700 font-medium",
+          experienceDuration: "text-sm text-gray-600",
+          experienceDescription: "mt-1 text-sm",
+          educationItem: "mb-3",
+          educationDegree: "font-bold",
+          educationSchool: "text-gray-700 font-medium",
+          educationYear: "text-sm text-gray-600",
+          skillsContainer: "flex flex-wrap gap-2",
+          skill: "bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm"
+        };
+      case "technical":
+        return {
+          container: "font-mono bg-white text-gray-800",
+          header: "bg-gray-900 text-white p-6",
+          headerName: "text-2xl font-bold",
+          headerDetails: "mt-2 flex flex-wrap gap-3 text-sm",
+          section: "p-6",
+          sectionTitle: "text-lg font-bold text-gray-900 border-b border-gray-300 pb-1 mb-3",
+          experienceItem: "mb-4",
+          experienceTitle: "font-bold",
+          experienceCompany: "text-gray-700",
+          experienceDuration: "text-sm text-gray-600",
+          experienceDescription: "mt-1 text-sm",
+          educationItem: "mb-3",
+          educationDegree: "font-bold",
+          educationSchool: "text-gray-700",
+          educationYear: "text-sm text-gray-600",
+          skillsContainer: "flex flex-wrap gap-2",
+          skill: "bg-gray-200 text-gray-800 px-2 py-1 rounded-sm text-sm font-medium border-l-2 border-gray-900"
+        };
+      case "academic":
+        return {
+          container: "font-serif bg-white text-gray-800",
+          header: "text-center p-6 border-b border-gray-300",
+          headerName: "text-3xl font-bold",
+          headerDetails: "mt-2 flex justify-center flex-wrap gap-4 text-sm",
+          section: "p-6",
+          sectionTitle: "text-xl font-bold text-gray-800 pb-1 mb-4 uppercase tracking-wide",
+          experienceItem: "mb-4",
+          experienceTitle: "font-bold",
+          experienceCompany: "font-semibold",
+          experienceDuration: "text-sm text-gray-600",
+          experienceDescription: "mt-1 text-sm",
+          educationItem: "mb-3",
+          educationDegree: "font-bold",
+          educationSchool: "font-semibold",
+          educationYear: "text-sm text-gray-600",
+          skillsContainer: "flex flex-wrap gap-2",
+          skill: "border border-gray-300 px-2 py-1 text-sm"
+        };
+      case "federal":
+        return {
+          container: "font-sans bg-white text-gray-800",
+          header: "p-6 border-b-2 border-gray-700",
+          headerName: "text-2xl font-bold uppercase",
+          headerDetails: "mt-2 flex flex-wrap gap-3 text-sm",
+          section: "p-6",
+          sectionTitle: "text-lg font-bold text-gray-800 border-b border-gray-300 pb-1 mb-3 uppercase",
+          experienceItem: "mb-6",
+          experienceTitle: "font-bold uppercase",
+          experienceCompany: "font-medium",
+          experienceDuration: "text-sm text-gray-600",
+          experienceDescription: "mt-1 text-sm",
+          educationItem: "mb-3",
+          educationDegree: "font-bold uppercase",
+          educationSchool: "font-medium",
+          educationYear: "text-sm text-gray-600",
+          skillsContainer: "flex flex-wrap gap-2",
+          skill: "bg-gray-100 text-gray-800 px-2 py-1 text-sm"
         };
       default:
         return {
-          container: "bg-white text-gray-900 font-sans",
-          header: "border-b border-gray-200 pb-4 mb-6",
-          section: "mb-6",
-          sectionTitle: "text-lg font-semibold text-gray-800 mb-3"
+          container: "font-sans bg-white text-gray-800",
+          header: "p-6",
+          headerName: "text-2xl font-bold",
+          headerDetails: "mt-2 flex flex-wrap gap-3 text-sm",
+          section: "p-6",
+          sectionTitle: "text-lg font-bold mb-3",
+          experienceItem: "mb-4",
+          experienceTitle: "font-bold",
+          experienceCompany: "",
+          experienceDuration: "text-sm text-gray-600",
+          experienceDescription: "mt-1 text-sm",
+          educationItem: "mb-3",
+          educationDegree: "font-bold",
+          educationSchool: "",
+          educationYear: "text-sm text-gray-600",
+          skillsContainer: "flex flex-wrap gap-2",
+          skill: "bg-gray-100 px-2 py-1 rounded text-sm"
         };
     }
   };
 
   const styles = getTemplateStyles();
 
-  return (
-    <Card className="h-full overflow-hidden">
-      <div className="h-full overflow-y-auto">
-        <div className={`min-h-full ${styles.container}`} style={{ aspectRatio: '8.5/11' }}>
-          {/* Header */}
-          <div className={styles.header}>
-            <h1 className="text-2xl font-bold mb-2">{data.name || "Your Name"}</h1>
-            <div className="flex flex-wrap gap-4 text-sm">
-              {data.email && (
-                <div className="flex items-center gap-1">
-                  <Mail className="w-4 h-4" />
-                  <span>{data.email}</span>
-                </div>
-              )}
-              {data.phone && (
-                <div className="flex items-center gap-1">
-                  <Phone className="w-4 h-4" />
-                  <span>{data.phone}</span>
-                </div>
-              )}
-              {data.location && (
-                <div className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4" />
-                  <span>{data.location}</span>
-                </div>
-              )}
+  // ATS-friendly view (plain text formatting)
+  if (showAtsView) {
+    return (
+      <div className="bg-white p-6 text-gray-800 font-mono text-sm whitespace-pre-wrap" style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+        <div className="mb-6">
+          <div className="font-bold text-lg">{data.personalInfo.name}</div>
+          <div>{data.personalInfo.email} | {data.personalInfo.phone} | {data.personalInfo.location}</div>
+        </div>
+        
+        <div className="mb-6">
+          <div className="font-bold uppercase mb-1">PROFESSIONAL SUMMARY</div>
+          <div>{data.summary}</div>
+        </div>
+        
+        <div className="mb-6">
+          <div className="font-bold uppercase mb-1">EXPERIENCE</div>
+          {data.experience.map((exp, index) => (
+            <div key={index} className="mb-4">
+              <div>{exp.jobTitle} - {exp.company} ({exp.duration})</div>
+              <div>{exp.description}</div>
             </div>
-          </div>
-
-          <div className="p-6 space-y-6">
-            {/* Professional Summary */}
-            {data.summary && (
-              <div className={styles.section}>
-                <h2 className={styles.sectionTitle}>Professional Summary</h2>
-                <p className="text-sm leading-relaxed">{data.summary}</p>
-              </div>
-            )}
-
-            {/* Experience */}
-            {data.experience.length > 0 && (
-              <div className={styles.section}>
-                <h2 className={styles.sectionTitle}>Work Experience</h2>
-                <div className="space-y-4">
-                  {data.experience.map((exp, index) => (
-                    <div key={index}>
-                      <div className="flex justify-between items-start mb-1">
-                        <h3 className="font-semibold text-sm">{exp.title}</h3>
-                        <span className="text-xs text-gray-600 flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {exp.duration}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1 mb-2">
-                        <Building className="w-3 h-3 text-gray-500" />
-                        <span className="text-sm text-gray-700 font-medium">{exp.company}</span>
-                      </div>
-                      <p className="text-xs leading-relaxed text-gray-600">{exp.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Education */}
-            {data.education.length > 0 && (
-              <div className={styles.section}>
-                <h2 className={styles.sectionTitle}>Education</h2>
-                <div className="space-y-3">
-                  {data.education.map((edu, index) => (
-                    <div key={index} className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-semibold text-sm">{edu.degree}</h3>
-                        <p className="text-sm text-gray-700">{edu.school}</p>
-                      </div>
-                      <span className="text-xs text-gray-600">{edu.year}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Skills */}
-            {data.skills.length > 0 && (
-              <div className={styles.section}>
-                <h2 className={styles.sectionTitle}>Skills</h2>
-                <div className="flex flex-wrap gap-2">
-                  {data.skills.map((skill, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          ))}
+        </div>
+        
+        <div className="mb-6">
+          <div className="font-bold uppercase mb-1">EDUCATION</div>
+          {data.education.map((edu, index) => (
+            <div key={index} className="mb-2">
+              <div>{edu.degree} - {edu.school} ({edu.year})</div>
+            </div>
+          ))}
+        </div>
+        
+        <div>
+          <div className="font-bold uppercase mb-1">SKILLS</div>
+          <div>{data.skills.join(", ")}</div>
         </div>
       </div>
-    </Card>
+    );
+  }
+
+  // Styled resume based on template
+  return (
+    <div className={cn(styles.container, "shadow-lg")} style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+      <header className={styles.header}>
+        <h1 className={styles.headerName}>{data.personalInfo.name || "Your Name"}</h1>
+        <div className={styles.headerDetails}>
+          {data.personalInfo.email && (
+            <span>{data.personalInfo.email}</span>
+          )}
+          {data.personalInfo.phone && (
+            <span>{data.personalInfo.phone}</span>
+          )}
+          {data.personalInfo.location && (
+            <span>{data.personalInfo.location}</span>
+          )}
+        </div>
+      </header>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Professional Summary</h2>
+        <p className="text-sm">{data.summary || "Add a professional summary to highlight your key skills and experience."}</p>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Experience</h2>
+        {data.experience && data.experience.length > 0 ? (
+          data.experience.map((exp, index) => (
+            <div key={index} className={styles.experienceItem}>
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className={styles.experienceTitle}>{exp.jobTitle || "Job Title"}</div>
+                  <div className={styles.experienceCompany}>{exp.company || "Company Name"}</div>
+                </div>
+                <div className={styles.experienceDuration}>{exp.duration || "Duration"}</div>
+              </div>
+              <p className={styles.experienceDescription}>{exp.description || "Describe your responsibilities and achievements."}</p>
+            </div>
+          ))
+        ) : (
+          <p className="text-sm text-gray-500 italic">Add your work experience to showcase your professional background.</p>
+        )}
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Education</h2>
+        {data.education && data.education.length > 0 ? (
+          data.education.map((edu, index) => (
+            <div key={index} className={styles.educationItem}>
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className={styles.educationDegree}>{edu.degree || "Degree"}</div>
+                  <div className={styles.educationSchool}>{edu.school || "School Name"}</div>
+                </div>
+                <div className={styles.educationYear}>{edu.year || "Year"}</div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-sm text-gray-500 italic">Add your educational background to highlight your qualifications.</p>
+        )}
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Skills</h2>
+        {data.skills && data.skills.length > 0 ? (
+          <div className={styles.skillsContainer}>
+            {data.skills.map((skill, index) => (
+              <span key={index} className={styles.skill}>{skill}</span>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500 italic">Add your key skills to demonstrate your expertise.</p>
+        )}
+      </section>
+    </div>
   );
 };

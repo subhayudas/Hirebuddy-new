@@ -22,6 +22,12 @@ const queryClient = new QueryClient();
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  // In development, bypass authentication
+  if (import.meta.env.MODE === 'development') {
+    return <>{children}</>;
+  }
+
+  // In production, enforce authentication
   const { user, loading } = useAuth();
   
   if (loading) {
