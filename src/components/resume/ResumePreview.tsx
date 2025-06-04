@@ -194,6 +194,26 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
           skillsContainer: "flex flex-wrap gap-2",
           skill: "bg-gray-100 text-gray-800 px-2 py-1 text-sm"
         };
+      case "academic-clean":
+        return {
+          container: "font-serif bg-white text-gray-800",
+          header: "px-6 pt-6 pb-2",
+          headerName: "text-3xl font-bold text-center",
+          headerDetails: "mt-1 flex justify-center flex-wrap gap-4 text-sm",
+          section: "px-6 py-2",
+          sectionTitle: "text-lg font-bold text-gray-800 border-b border-gray-400 pb-1 mb-2 uppercase",
+          experienceItem: "mb-3",
+          experienceTitle: "font-bold italic",
+          experienceCompany: "font-normal",
+          experienceDuration: "text-sm text-gray-600 italic",
+          experienceDescription: "mt-1 text-sm",
+          educationItem: "mb-2",
+          educationDegree: "font-bold",
+          educationSchool: "font-normal italic",
+          educationYear: "text-sm text-gray-600",
+          skillsContainer: "flex flex-col",
+          skill: "text-sm mb-1 flex items-center before:content-['•'] before:mr-2 before:text-gray-500"
+        };
       default:
         return {
           container: "font-sans bg-white text-gray-800",

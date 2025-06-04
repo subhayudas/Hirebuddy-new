@@ -42,6 +42,15 @@ const templates = [
     tags: ["Minimal", "Clean", "ATS-Friendly"]
   },
   {
+    id: "academic-clean",
+    name: "Academic Clean",
+    description: "Traditional academic format with clean typography and structure",
+    preview: "https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?w=300&h=400&fit=crop",
+    atsScore: 94,
+    popular: true,
+    tags: ["Academic", "Research", "ATS-Optimized"]
+  },
+  {
     id: "professional",
     name: "Professional Elite",
     description: "Premium layout for senior executives and leadership roles",
