@@ -14,6 +14,7 @@ import InterviewPrep from "./pages/InterviewPrep";
 import Skills from "./pages/Skills";
 import Analytics from "./pages/Analytics";
 import Calendar from "./pages/Calendar";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
             <Route path="/resume-editor" element={<ProtectedRoute><ResumeEditor /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
