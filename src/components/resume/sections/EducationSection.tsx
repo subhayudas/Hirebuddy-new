@@ -19,15 +19,15 @@ export interface Education {
 
 export interface EducationSectionProps {
   education: Education[];
-  onChange: (education: Education[]) => void;
+  onUpdate: (education: Education[]) => void;
 }
 
-export const EducationSection = ({ education, onChange }: EducationSectionProps) => {
+export const EducationSection = ({ education, onUpdate }: EducationSectionProps) => {
   const [activeTab, setActiveTab] = useState<string>("education");
   const [showAdvanced, setShowAdvanced] = useState<{[key: number]: boolean}>({});
 
   const addEducation = () => {
-    onChange([
+    onUpdate([
       ...education,
       { degree: "", school: "", year: "", fieldOfStudy: "", gpa: "", achievements: "" },
     ]);
@@ -39,11 +39,11 @@ export const EducationSection = ({ education, onChange }: EducationSectionProps)
       ...updatedEducation[index],
       [field]: value,
     };
-    onChange(updatedEducation);
+    onUpdate(updatedEducation);
   };
 
   const removeEducation = (index: number) => {
-    onChange(education.filter((_, i) => i !== index));
+    onUpdate(education.filter((_, i) => i !== index));
   };
   
   const toggleAdvanced = (index: number) => {
@@ -65,14 +65,7 @@ export const EducationSection = ({ education, onChange }: EducationSectionProps)
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <GraduationCap className="h-5 w-5 text-blue-500" />
-          Education
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-6">
           <TabsList className="mb-4">
             <TabsTrigger value="education">Education</TabsTrigger>
@@ -281,7 +274,6 @@ export const EducationSection = ({ education, onChange }: EducationSectionProps)
             </TooltipProvider>
           </TabsContent>
         </Tabs>
-      </CardContent>
-    </Card>
+    </div>
   );
 };

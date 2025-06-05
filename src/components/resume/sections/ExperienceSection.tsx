@@ -17,12 +17,12 @@ export interface Experience {
 }
 
 export interface ExperienceSectionProps {
-  experiences: Experience[];
-  onChange: (experiences: Experience[]) => void;
+  experience: Experience[];
+  onUpdate: (experience: Experience[]) => void;
   jobDescription?: string;
 }
 
-export const ExperienceSection = ({ experiences, onChange, jobDescription }: ExperienceSectionProps) => {
+export const ExperienceSection = ({ experience, onUpdate, jobDescription }: ExperienceSectionProps) => {
   const [activeTab, setActiveTab] = useState<string>("write");
   const [activeExperienceIndex, setActiveExperienceIndex] = useState<number | null>(null);
   const [isEnhancing, setIsEnhancing] = useState(false);
@@ -61,19 +61,19 @@ export const ExperienceSection = ({ experiences, onChange, jobDescription }: Exp
   };
 
   const addExperience = () => {
-    onChange([
-      ...experiences,
+    onUpdate([
+      ...experience,
       { jobTitle: "", company: "", duration: "", description: "" },
     ]);
   };
 
   const updateExperience = (index: number, field: keyof Experience, value: string) => {
-    const updatedExperiences = [...experiences];
+    const updatedExperiences = [...experience];
     updatedExperiences[index] = {
       ...updatedExperiences[index],
       [field]: value,
     };
-    onChange(updatedExperiences);
+    onUpdate(updatedExperiences);
     
     // If job description is available, analyze for keywords
     if (jobDescription && field === 'description') {
@@ -82,7 +82,7 @@ export const ExperienceSection = ({ experiences, onChange, jobDescription }: Exp
   };
 
   const removeExperience = (index: number) => {
-    onChange(experiences.filter((_, i) => i !== index));
+    onUpdate(experience.filter((_, i) => i !== index));
   };
 
   const enhanceDescription = async (index: number) => {
@@ -91,7 +91,7 @@ export const ExperienceSection = ({ experiences, onChange, jobDescription }: Exp
     
     try {
       // Determine job type based on job title
-      const jobTitle = experiences[index].jobTitle.toLowerCase();
+      const jobTitle = experience[index].jobTitle.toLowerCase();
       let templateType = 'default';
       
       if (jobTitle.includes('engineer') || jobTitle.includes('developer') || jobTitle.includes('programmer')) {
@@ -139,12 +139,12 @@ export const ExperienceSection = ({ experiences, onChange, jobDescription }: Exp
       }
       
       // Update the experience with enhanced description
-      const updatedExperiences = [...experiences];
+      const updatedExperiences = [...experience];
       updatedExperiences[index] = {
         ...updatedExperiences[index],
         description: enhancedDescription.trim(),
       };
-      onChange(updatedExperiences);
+      onUpdate(updatedExperiences);
       
       // Analyze keywords after enhancement
       if (jobDescription) {

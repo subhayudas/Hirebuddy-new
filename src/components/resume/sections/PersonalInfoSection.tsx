@@ -11,29 +11,23 @@ interface PersonalInfo {
 }
 
 interface PersonalInfoSectionProps {
-  data: PersonalInfo;
-  onChange: (data: PersonalInfo) => void;
+  personalInfo: PersonalInfo;
+  onUpdate: (data: PersonalInfo) => void;
 }
 
-export const PersonalInfoSection = ({ data, onChange }: PersonalInfoSectionProps) => {
+export const PersonalInfoSection = ({ personalInfo, onUpdate }: PersonalInfoSectionProps) => {
   const handleChange = (field: keyof PersonalInfo, value: string) => {
-    onChange({ ...data, [field]: value });
+    onUpdate({ ...personalInfo, [field]: value });
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          👤 Personal Information
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="name">Full Name *</Label>
             <Input
               id="name"
-              value={data.name}
+              value={personalInfo.name}
               onChange={(e) => handleChange('name', e.target.value)}
               placeholder="John Doe"
             />
@@ -43,7 +37,7 @@ export const PersonalInfoSection = ({ data, onChange }: PersonalInfoSectionProps
             <Input
               id="email"
               type="email"
-              value={data.email}
+              value={personalInfo.email}
               onChange={(e) => handleChange('email', e.target.value)}
               placeholder="john@example.com"
             />
@@ -52,7 +46,7 @@ export const PersonalInfoSection = ({ data, onChange }: PersonalInfoSectionProps
             <Label htmlFor="phone">Phone Number</Label>
             <Input
               id="phone"
-              value={data.phone}
+              value={personalInfo.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
               placeholder="(555) 123-4567"
             />
@@ -61,13 +55,12 @@ export const PersonalInfoSection = ({ data, onChange }: PersonalInfoSectionProps
             <Label htmlFor="location">Location</Label>
             <Input
               id="location"
-              value={data.location}
+              value={personalInfo.location}
               onChange={(e) => handleChange('location', e.target.value)}
               placeholder="San Francisco, CA"
             />
           </div>
         </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 };

@@ -1,10 +1,25 @@
-
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 import { useState, useEffect, useRef } from "react";
-import { Download, Eye, Save, RotateCcw, FileCheck, Share2, FileText } from "lucide-react";
+import { 
+  Download, 
+  Eye, 
+  Save, 
+  RotateCcw, 
+  FileCheck, 
+  Share2, 
+  FileText, 
+  ArrowLeft,
+  CheckCircle,
+  Circle,
+  HelpCircle,
+  Lightbulb,
+  Zap,
+  Target
+} from "lucide-react";
 import { ResumePreview } from "./ResumePreview";
 import { PersonalInfoSection } from "./sections/PersonalInfoSection";
 import { SummarySection } from "./sections/SummarySection";
@@ -13,6 +28,8 @@ import { EducationSection } from "./sections/EducationSection";
 import { SkillsSection } from "./sections/SkillsSection";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -39,6 +56,7 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
   const [jobDescription, setJobDescription] = useState("");
   const [showAtsView, setShowAtsView] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const resumeRef = useRef<HTMLDivElement>(null);
   const modalResumeRef = useRef<HTMLDivElement>(null);
   
@@ -56,7 +74,67 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
     skills: resumeData.skills
   };
 
-  // Function to generate and download PDF
+  // Calculate completion percentage and section status
+  const calculateProgress = () => {
+    const sections = [
+      { id: 'personal', completed: !!(resumeData.name && resumeData.email) },
+      { id: 'contact', completed: !!(resumeData.phone && resumeData.location) },
+      { id: 'summary', completed: !!resumeData.summary },
+      { id: 'experience', completed: resumeData.experience.length > 0 },
+      { id: 'education', completed: resumeData.education.length > 0 },
+      { id: 'skills', completed: resumeData.skills.length > 0 }
+    ];
+    
+    const completedCount = sections.filter(section => section.completed).length;
+    return {
+      percentage: Math.round((completedCount / sections.length) * 100),
+      sections
+    };
+  };
+
+  const progress = calculateProgress();
+
+  // ATS Score calculation
+  const updateAtsScore = () => {
+    let score = 0;
+    
+    // Basic information (20 points)
+    if (resumeData.name && resumeData.email && resumeData.phone) score += 20;
+    
+    // Professional summary (20 points)
+    if (resumeData.summary && resumeData.summary.length > 50) score += 20;
+    
+    // Experience section (30 points)
+    if (resumeData.experience.length > 0) {
+      score += 15;
+      const hasDescriptions = resumeData.experience.some(exp => exp.description && exp.description.length > 50);
+      if (hasDescriptions) score += 15;
+    }
+    
+    // Education (15 points)
+    if (resumeData.education.length > 0) score += 15;
+    
+    // Skills (15 points)
+    if (resumeData.skills.length >= 5) score += 15;
+    
+    setAtsScore(Math.min(score, 100));
+  };
+
+  useEffect(() => {
+    updateAtsScore();
+  }, [resumeData]);
+
+  // Auto-save functionality
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      localStorage.setItem('resume_draft', JSON.stringify(resumeData));
+      setLastSaved(new Date());
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [resumeData]);
+
+  // Generate PDF
   const generatePDF = async (fromModal = false) => {
     const targetRef = fromModal ? modalResumeRef.current : resumeRef.current;
     if (!targetRef) return;
@@ -65,7 +143,7 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
       setIsGeneratingPdf(true);
       
       const canvas = await html2canvas(targetRef, {
-        scale: 2, // Higher scale for better quality
+        scale: 2,
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff'
@@ -78,13 +156,11 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
         format: 'a4'
       });
       
-      // Calculate dimensions to fit A4
-      const imgWidth = 210; // A4 width in mm
+      const imgWidth = 210;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       
-      // Generate filename based on user's name or default
       const fileName = resumeData.name ? 
         `${resumeData.name.replace(/\s+/g, '_')}_Resume.pdf` : 
         'Resume.pdf';
@@ -97,46 +173,24 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
     }
   };
 
-  // Calculate completion percentage
-  const calculateProgress = () => {
-    let completed = 0;
-    const total = 6;
-    
-    if (resumeData.name && resumeData.email) completed++;
-    if (resumeData.summary) completed++;
-    if (resumeData.experience.length > 0) completed++;
-    if (resumeData.education.length > 0) completed++;
-    if (resumeData.skills.length > 0) completed++;
-    if (resumeData.phone && resumeData.location) completed++;
-    
-    return Math.round((completed / total) * 100);
-  };
-
-  const progress = calculateProgress();
-
   const updatePersonalInfo = (personalInfo: any) => {
     setResumeData(prev => ({ ...prev, ...personalInfo }));
-    updateAtsScore();
   };
 
   const updateSummary = (summary: string) => {
     setResumeData(prev => ({ ...prev, summary }));
-    updateAtsScore();
   };
 
   const updateExperience = (experience: any[]) => {
     setResumeData(prev => ({ ...prev, experience }));
-    updateAtsScore();
   };
 
   const updateEducation = (education: any[]) => {
     setResumeData(prev => ({ ...prev, education }));
-    updateAtsScore();
   };
 
   const updateSkills = (skills: string[]) => {
     setResumeData(prev => ({ ...prev, skills }));
-    updateAtsScore();
   };
 
   const resetForm = () => {
@@ -150,328 +204,420 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
       education: [],
       skills: []
     });
-    setAtsScore(0);
+    setActiveTab("personal");
   };
 
-  // New function to analyze resume against ATS
-  const updateAtsScore = () => {
-    // This would be replaced with actual ATS analysis logic
-    // For now, we'll simulate a score based on resume completeness
-    const completeness = progress;
-    const keywordMatch = jobDescription ? calculateKeywordMatch() : 50;
-    const formatScore = 85; // Simulated format score
-    
-    const newScore = Math.round((completeness * 0.4) + (keywordMatch * 0.4) + (formatScore * 0.2));
-    setAtsScore(newScore > 100 ? 100 : newScore);
+  const getTemplateDisplayName = (templateId: string) => {
+    const templateNames = {
+      'academic-modern': 'Academic Modern',
+      'professional-clean': 'Professional Clean',
+      'technical-modern': 'Technical Modern',
+      'executive-elite': 'Executive Elite',
+      'creative-minimal': 'Creative Minimal',
+      'consulting-pro': 'Consulting Pro'
+    };
+    return templateNames[templateId] || templateId;
   };
 
-  // Calculate keyword match between resume and job description
-  const calculateKeywordMatch = () => {
-    if (!jobDescription) return 50;
-    
-    const jdWords = jobDescription.toLowerCase().split(/\W+/);
-    const resumeText = JSON.stringify(resumeData).toLowerCase();
-    
-    let matches = 0;
-    const uniqueWords = new Set(jdWords.filter(word => word.length > 3));
-    
-    uniqueWords.forEach(word => {
-      if (resumeText.includes(word)) matches++;
-    });
-    
-    return Math.min(100, Math.round((matches / Math.max(1, uniqueWords.size)) * 100));
-  };
-
-  // Get ATS score color
-  const getScoreColor = () => {
-    if (atsScore >= 80) return "text-green-600";
-    if (atsScore >= 60) return "text-yellow-600";
+  const getAtsScoreColor = (score: number) => {
+    if (score >= 80) return "text-green-600";
+    if (score >= 60) return "text-yellow-600";
     return "text-red-600";
   };
 
-  // Get ATS score message
-  const getScoreMessage = () => {
-    if (atsScore >= 80) return "Excellent! Your resume is well-optimized for ATS.";
-    if (atsScore >= 60) return "Good, but there's room for improvement.";
-    return "Needs improvement to pass ATS screening.";
+  const getSectionIcon = (sectionId: string, completed: boolean) => {
+    return completed ? (
+      <CheckCircle className="w-4 h-4 text-green-600" />
+    ) : (
+      <Circle className="w-4 h-4 text-gray-400" />
+    );
   };
-
-  // Get keyword suggestions based on job description
-  const getKeywordSuggestions = () => {
-    if (!jobDescription) return [];
-    
-    const jdWords = jobDescription.toLowerCase().split(/\W+/);
-    const resumeText = JSON.stringify(resumeData).toLowerCase();
-    const uniqueWords = Array.from(new Set(jdWords.filter(word => 
-      word.length > 4 && 
-      !resumeText.includes(word) &&
-      !['about', 'above', 'across', 'after', 'against', 'along', 'among', 'around', 'because', 'before', 'behind', 'below', 'beneath', 'beside', 'between', 'beyond', 'during', 'except', 'inside', 'outside', 'through', 'toward', 'under', 'underneath', 'until', 'within', 'without'].includes(word)
-    )));
-    
-    return uniqueWords.slice(0, 5);
-  };
-
-  // Update ATS score when resumeData changes
-  useEffect(() => {
-    updateAtsScore();
-  }, [resumeData]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="outline" onClick={onBack}>
-                ← Back to Templates
-              </Button>
-              <div>
-                <h1 className="text-xl font-semibold">Resume Builder</h1>
-                <p className="text-sm text-gray-600">Template: {template}</p>
+    <TooltipProvider>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center gap-4">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={onBack}
+                  className="flex items-center gap-2"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Back to Templates
+                </Button>
+                <Separator orientation="vertical" className="h-6" />
+                <div>
+                  <h1 className="text-lg font-semibold text-gray-900">
+                    Resume Builder
+                  </h1>
+                  <p className="text-sm text-gray-600">
+                    {getTemplateDisplayName(template)} Template
+                  </p>
+                </div>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <div className="text-sm text-gray-600 mr-4">
-                Progress: {progress}%
+
+              <div className="flex items-center gap-4">
+                {/* Auto-save indicator */}
+                {lastSaved && (
+                  <div className="text-xs text-gray-500">
+                    Saved {lastSaved.toLocaleTimeString()}
+                  </div>
+                )}
+
+                {/* ATS Score */}
+                <div className="flex items-center gap-2">
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div className="flex items-center gap-1">
+                        <Target className="w-4 h-4 text-gray-500" />
+                        <span className={`text-sm font-medium ${getAtsScoreColor(atsScore)}`}>
+                          ATS: {atsScore}%
+                        </span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Applicant Tracking System compatibility score</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex items-center gap-2">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Eye className="w-4 h-4 mr-2" />
+                        Preview
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Resume Preview</DialogTitle>
+                      </DialogHeader>
+                      <div className="mt-4">
+                        <div ref={modalResumeRef}>
+                          <ResumePreview 
+                            data={formattedData} 
+                            template={template}
+                            scale={0.8}
+                            showAtsView={showAtsView}
+                          />
+                        </div>
+                        <div className="flex justify-between items-center mt-6 pt-4 border-t">
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setShowAtsView(!showAtsView)}
+                            >
+                              {showAtsView ? "Styled View" : "ATS View"}
+                            </Button>
+                          </div>
+                          <Button 
+                            onClick={() => generatePDF(true)}
+                            disabled={isGeneratingPdf}
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            {isGeneratingPdf ? (
+                              "Generating..."
+                            ) : (
+                              <>
+                                <Download className="w-4 h-4 mr-2" />
+                                Download PDF
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Button 
+                    onClick={() => generatePDF(false)}
+                    disabled={isGeneratingPdf}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    {isGeneratingPdf ? (
+                      "Generating..."
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4 mr-2" />
+                        Download
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
-              <Progress value={progress} className="w-32" />
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className={`text-sm font-medium ${getScoreColor()} mr-4 flex items-center gap-1`}>
-                      <FileCheck className="w-4 h-4" />
-                      ATS Score: {atsScore}%
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{getScoreMessage()}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <Button variant="outline" size="sm" onClick={resetForm}>
-                <RotateCcw className="w-4 h-4" />
-              </Button>
-              <Button variant="outline" size="sm">
-                <Save className="w-4 h-4" />
-                Save Draft
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setShowPreview(!showPreview)}
-              >
-                <Eye className="w-4 h-4" />
-                {showPreview ? "Hide Preview" : "Preview"}
-              </Button>
-              <Button 
-                variant={showAtsView ? "default" : "outline"}
-                size="sm"
-                onClick={() => setShowAtsView(!showAtsView)}
-                className="gap-1"
-              >
-                <FileCheck className="w-4 h-4" />
-                ATS View
-              </Button>
-              <Button 
-                size="sm"
-                onClick={() => generatePDF(false)}
-                disabled={isGeneratingPdf}
-              >
-                <Download className="w-4 h-4" />
-                {isGeneratingPdf ? "Generating..." : "Download PDF"}
-              </Button>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 h-[calc(100vh-140px)]">
-          {/* Editor Panel */}
-          <div className="space-y-6 overflow-y-auto pr-4">
-            {/* Job Description for ATS Optimization */}
-            <Card className="bg-gradient-to-r from-indigo-50 to-blue-50">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-blue-600" />
-                  Job Description Analyzer
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-700">Paste a job description to optimize your resume for ATS screening</p>
-                  <textarea
-                    className="w-full h-24 p-2 border rounded-md text-sm resize-none"
-                    placeholder="Paste job description here to get keyword suggestions and ATS optimization tips..."
-                    value={jobDescription}
-                    onChange={(e) => {
-                      setJobDescription(e.target.value);
-                      updateAtsScore();
-                    }}
-                  ></textarea>
-                  
-                  {jobDescription && (
-                    <div className="pt-2">
-                      <p className="text-sm font-medium mb-2">Suggested Keywords:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {getKeywordSuggestions().map((keyword, index) => (
-                          <Badge key={index} variant="secondary" className="bg-blue-100">
-                            {keyword}
-                          </Badge>
-                        ))}
-                        {getKeywordSuggestions().length === 0 && (
-                          <p className="text-sm text-gray-500">No additional keywords found</p>
-                        )}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Form */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Progress Card */}
+              <Card>
+                <CardHeader className="pb-4">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">Resume Completion</CardTitle>
+                    <Badge variant="outline" className="text-sm">
+                      {progress.percentage}% Complete
+                    </Badge>
+                  </div>
+                  <Progress value={progress.percentage} className="h-2" />
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {[
+                      { id: 'personal', label: 'Personal Info', tab: 'personal' },
+                      { id: 'summary', label: 'Summary', tab: 'summary' },
+                      { id: 'experience', label: 'Experience', tab: 'experience' },
+                      { id: 'education', label: 'Education', tab: 'education' },
+                      { id: 'skills', label: 'Skills', tab: 'skills' }
+                    ].map((section) => {
+                      const sectionStatus = progress.sections.find(s => s.id === section.id);
+                      const isCompleted = sectionStatus?.completed || false;
+                      
+                      return (
+                        <Button
+                          key={section.id}
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setActiveTab(section.tab)}
+                          className={`justify-start h-auto p-3 ${
+                            activeTab === section.tab ? 'bg-blue-50 border border-blue-200' : ''
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            {getSectionIcon(section.id, isCompleted)}
+                            <span className="text-sm">{section.label}</span>
+                          </div>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* ATS Tips */}
+              {atsScore < 80 && (
+                <Alert>
+                  <Lightbulb className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>ATS Optimization Tips:</strong>
+                    {atsScore < 60 && " Add more detailed work experience descriptions."}
+                    {resumeData.skills.length < 5 && " Include at least 5 relevant skills."}
+                    {!resumeData.summary && " Write a compelling professional summary."}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Form Tabs */}
+              <Card>
+                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                  <CardHeader>
+                    <TabsList className="grid w-full grid-cols-5">
+                      <TabsTrigger value="personal" className="text-xs sm:text-sm">
+                        Personal
+                      </TabsTrigger>
+                      <TabsTrigger value="summary" className="text-xs sm:text-sm">
+                        Summary
+                      </TabsTrigger>
+                      <TabsTrigger value="experience" className="text-xs sm:text-sm">
+                        Experience
+                      </TabsTrigger>
+                      <TabsTrigger value="education" className="text-xs sm:text-sm">
+                        Education
+                      </TabsTrigger>
+                      <TabsTrigger value="skills" className="text-xs sm:text-sm">
+                        Skills
+                      </TabsTrigger>
+                    </TabsList>
+                  </CardHeader>
+
+                  <CardContent>
+                    <TabsContent value="personal" className="mt-0">
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
+                          <HelpCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <h4 className="text-sm font-medium text-blue-900 mb-1">
+                              Personal Information Guide
+                            </h4>
+                            <p className="text-sm text-blue-800">
+                              Ensure your contact information is professional and up-to-date. 
+                              Use a professional email address and include a phone number where employers can reach you.
+                            </p>
+                          </div>
+                        </div>
+                        <PersonalInfoSection 
+                          personalInfo={{
+                            name: resumeData.name,
+                            email: resumeData.email,
+                            phone: resumeData.phone,
+                            location: resumeData.location
+                          }}
+                          onUpdate={updatePersonalInfo}
+                        />
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="summary" className="mt-0">
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
+                          <Zap className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <h4 className="text-sm font-medium text-green-900 mb-1">
+                              Professional Summary Tips
+                            </h4>
+                            <p className="text-sm text-green-800">
+                              Write 2-3 sentences highlighting your key qualifications, years of experience, 
+                              and what value you bring to employers. Focus on achievements and relevant skills.
+                            </p>
+                          </div>
+                        </div>
+                        <SummarySection 
+                          summary={resumeData.summary}
+                          onUpdate={updateSummary}
+                          jobDescription={jobDescription}
+                          onJobDescriptionChange={setJobDescription}
+                        />
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="experience" className="mt-0">
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
+                          <Target className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <h4 className="text-sm font-medium text-purple-900 mb-1">
+                              Experience Best Practices
+                            </h4>
+                            <p className="text-sm text-purple-800">
+                              List experiences in reverse chronological order. Use action verbs and quantify 
+                              achievements where possible (e.g., "Increased sales by 20%").
+                            </p>
+                          </div>
+                        </div>
+                        <ExperienceSection 
+                          experience={resumeData.experience}
+                          onUpdate={updateExperience}
+                        />
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="education" className="mt-0">
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-lg">
+                          <FileCheck className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <h4 className="text-sm font-medium text-amber-900 mb-1">
+                              Education Section Guide
+                            </h4>
+                            <p className="text-sm text-amber-800">
+                              Include your highest degree first. Add relevant certifications, honors, 
+                              or coursework if they're relevant to your target role.
+                            </p>
+                          </div>
+                        </div>
+                        <EducationSection 
+                          education={resumeData.education}
+                          onUpdate={updateEducation}
+                        />
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="skills" className="mt-0">
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3 p-4 bg-cyan-50 rounded-lg">
+                          <CheckCircle className="w-5 h-5 text-cyan-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <h4 className="text-sm font-medium text-cyan-900 mb-1">
+                              Skills Selection Tips
+                            </h4>
+                            <p className="text-sm text-cyan-800">
+                              Include both hard skills (technical abilities) and soft skills (communication, leadership). 
+                              Match skills to job requirements for better ATS compatibility.
+                            </p>
+                          </div>
+                        </div>
+                        <SkillsSection 
+                          skills={resumeData.skills}
+                          onUpdate={updateSkills}
+                        />
+                      </div>
+                    </TabsContent>
+                  </CardContent>
+                </Tabs>
+              </Card>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button 
+                  variant="outline" 
+                  onClick={resetForm}
+                  className="flex-1"
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Reset Form
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    localStorage.setItem('resume_draft', JSON.stringify(resumeData));
+                    setLastSaved(new Date());
+                  }}
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Draft
+                </Button>
+              </div>
+            </div>
+
+            {/* Right Column - Live Preview */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Eye className="w-5 h-5" />
+                      Live Preview
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowAtsView(!showAtsView)}
+                      >
+                        {showAtsView ? "Styled" : "ATS"} View
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="border rounded-lg overflow-hidden bg-white">
+                      <div ref={resumeRef}>
+                        <ResumePreview 
+                          data={formattedData} 
+                          template={template}
+                          scale={0.4}
+                          showAtsView={showAtsView}
+                        />
                       </div>
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Resume Sections</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid w-full grid-cols-5">
-                    <TabsTrigger value="personal">Personal</TabsTrigger>
-                    <TabsTrigger value="summary">Summary</TabsTrigger>
-                    <TabsTrigger value="experience">Experience</TabsTrigger>
-                    <TabsTrigger value="education">Education</TabsTrigger>
-                    <TabsTrigger value="skills">Skills</TabsTrigger>
-                  </TabsList>
-                  
-                  <div className="mt-6">
-                    <TabsContent value="personal" className="space-y-4">
-                      <PersonalInfoSection
-                        data={{
-                          name: resumeData.name,
-                          email: resumeData.email,
-                          phone: resumeData.phone,
-                          location: resumeData.location
-                        }}
-                        onChange={updatePersonalInfo}
-                      />
-                    </TabsContent>
-                    
-                    <TabsContent value="summary" className="space-y-4">
-                      <SummarySection
-                        summary={resumeData.summary}
-                        onChange={updateSummary}
-                      />
-                    </TabsContent>
-                    
-                    <TabsContent value="experience" className="space-y-4">
-                      <ExperienceSection
-                        experiences={resumeData.experience}
-                        onChange={updateExperience}
-                      />
-                    </TabsContent>
-                    
-                    <TabsContent value="education" className="space-y-4">
-                      <EducationSection
-                        education={resumeData.education}
-                        onChange={updateEducation}
-                      />
-                    </TabsContent>
-                    
-                    <TabsContent value="skills" className="space-y-4">
-                      <SkillsSection
-                        skills={resumeData.skills}
-                        onChange={updateSkills}
-                      />
-                    </TabsContent>
-                  </div>
-                </Tabs>
-              </CardContent>
-            </Card>
-
-            {/* AI Suggestions Card */}
-            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  🤖 AI Suggestions
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="p-3 bg-white rounded-lg border">
-                    <p className="text-sm text-blue-800">💡 Add quantifiable achievements to your experience section</p>
-                  </div>
-                  <div className="p-3 bg-white rounded-lg border">
-                    <p className="text-sm text-blue-800">🎯 Include relevant keywords for ATS optimization</p>
-                  </div>
-                  <div className="p-3 bg-white rounded-lg border">
-                    <p className="text-sm text-blue-800">📈 Your resume score: {atsScore}% - {getScoreMessage()}</p>
-                  </div>
-                  <div className="flex justify-between mt-2">
-                    <Button variant="outline" size="sm" className="gap-1">
-                      <Share2 className="w-4 h-4" />
-                      Share for Feedback
-                    </Button>
-                    <Button variant="outline" size="sm" className="gap-1">
-                      <FileCheck className="w-4 h-4" />
-                      Full ATS Analysis
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Live Preview Panel */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-gray-800 text-white px-4 py-2 flex items-center justify-between">
-              <h3 className="font-medium">Live Preview</h3>
-              <div className="flex items-center gap-2 text-sm">
-                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span>Live</span>
-              </div>
-            </div>
-            <div className="h-[calc(100%-48px)] bg-gray-100 p-4">
-              <div className="h-full bg-white rounded shadow-lg overflow-hidden" ref={resumeRef}>
-                <ResumePreview data={formattedData} template={template} showAtsView={showAtsView} />
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Full Screen Preview Modal */}
-      {showPreview && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-gray-800 text-white px-4 py-3 flex items-center justify-between">
-              <h3 className="font-medium">Resume Preview</h3>
-              <Button variant="ghost" size="sm" className="text-white" onClick={() => setShowPreview(false)}>
-                Close
-              </Button>
-            </div>
-            <div className="flex-1 overflow-auto p-6 bg-gray-100">
-              <div className="bg-white rounded shadow-lg mx-auto" style={{ maxWidth: '800px' }} ref={modalResumeRef}>
-                <ResumePreview data={formattedData} template={template} showAtsView={showAtsView} />
-              </div>
-            </div>
-            <div className="bg-gray-100 px-4 py-3 flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setShowPreview(false)}>
-                Back to Editor
-              </Button>
-              <Button
-                onClick={() => generatePDF(true)}
-                disabled={isGeneratingPdf}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                {isGeneratingPdf ? "Generating..." : "Download PDF"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </TooltipProvider>
   );
 };

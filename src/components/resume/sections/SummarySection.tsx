@@ -9,11 +9,12 @@ import { useState } from "react";
 
 interface SummarySectionProps {
   summary: string;
-  onChange: (summary: string) => void;
+  onUpdate: (summary: string) => void;
   jobDescription?: string;
+  onJobDescriptionChange?: (jobDescription: string) => void;
 }
 
-export const SummarySection = ({ summary, onChange, jobDescription }: SummarySectionProps) => {
+export const SummarySection = ({ summary, onUpdate, jobDescription, onJobDescriptionChange }: SummarySectionProps) => {
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [activeTab, setActiveTab] = useState("write");
   const [keywordMatches, setKeywordMatches] = useState<string[]>([]);
@@ -31,7 +32,7 @@ export const SummarySection = ({ summary, onChange, jobDescription }: SummarySec
         "Led cross-functional teams to deliver projects on time and under budget while maintaining code quality standards. " +
         "Passionate about creating intuitive user experiences and implementing best practices in software development.";
       
-      onChange(enhancedSummary);
+      onUpdate(enhancedSummary);
       setIsEnhancing(false);
       
       // Analyze keywords if job description is available
@@ -101,17 +102,32 @@ export const SummarySection = ({ summary, onChange, jobDescription }: SummarySec
           </TabsList>
           
           <TabsContent value="write" className="space-y-4">
-            <Textarea
-              placeholder="Write a compelling professional summary that highlights your key achievements, skills, and career goals..."
-              className="min-h-[150px] resize-none"
-              value={summary}
-              onChange={(e) => {
-                onChange(e.target.value);
-                if (jobDescription) {
-                  analyzeKeywords(e.target.value, jobDescription);
-                }
-              }}
-            />
+            {onJobDescriptionChange && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Job Description (Optional)</label>
+                <Textarea
+                  placeholder="Paste a job description here to get personalized keyword suggestions..."
+                  className="min-h-[80px] resize-none"
+                  value={jobDescription || ""}
+                  onChange={(e) => onJobDescriptionChange(e.target.value)}
+                />
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Professional Summary</label>
+              <Textarea
+                placeholder="Write a compelling professional summary that highlights your key achievements, skills, and career goals..."
+                className="min-h-[150px] resize-none"
+                value={summary}
+                onChange={(e) => {
+                  onUpdate(e.target.value);
+                  if (jobDescription) {
+                    analyzeKeywords(e.target.value, jobDescription);
+                  }
+                }}
+              />
+            </div>
             
             <div className="flex flex-wrap gap-2">
               <Button 
@@ -209,7 +225,7 @@ export const SummarySection = ({ summary, onChange, jobDescription }: SummarySec
                   size="sm" 
                   className="mt-2"
                   onClick={() => {
-                    onChange("Results-driven software engineer with 5+ years of experience developing scalable web applications. Proficient in React, Node.js, and cloud technologies with a track record of improving application performance by 40%. Led cross-functional teams to deliver projects on time and under budget while maintaining code quality standards.");
+                    onUpdate("Results-driven software engineer with 5+ years of experience developing scalable web applications. Proficient in React, Node.js, and cloud technologies with a track record of improving application performance by 40%. Led cross-functional teams to deliver projects on time and under budget while maintaining code quality standards.");
                     setActiveTab("write");
                   }}
                 >
@@ -227,7 +243,7 @@ export const SummarySection = ({ summary, onChange, jobDescription }: SummarySec
                   size="sm" 
                   className="mt-2"
                   onClick={() => {
-                    onChange("Strategic marketing manager with 7+ years of experience driving brand growth and digital engagement. Developed and executed comprehensive marketing campaigns that increased conversion rates by 35% and expanded social media following by 50K+. Skilled in data analytics, content strategy, and team leadership with a proven ability to deliver results within budget constraints.");
+                    onUpdate("Strategic marketing manager with 7+ years of experience driving brand growth and digital engagement. Developed and executed comprehensive marketing campaigns that increased conversion rates by 35% and expanded social media following by 50K+. Skilled in data analytics, content strategy, and team leadership with a proven ability to deliver results within budget constraints.");
                     setActiveTab("write");
                   }}
                 >
@@ -245,7 +261,7 @@ export const SummarySection = ({ summary, onChange, jobDescription }: SummarySec
                   size="sm" 
                   className="mt-2"
                   onClick={() => {
-                    onChange("Certified project manager (PMP) with 8+ years of experience leading complex projects from conception to completion. Successfully delivered over $5M in projects on time and under budget by implementing agile methodologies and effective resource allocation. Strong communicator with expertise in stakeholder management, risk mitigation, and process optimization.");
+                    onUpdate("Certified project manager (PMP) with 8+ years of experience leading complex projects from conception to completion. Successfully delivered over $5M in projects on time and under budget by implementing agile methodologies and effective resource allocation. Strong communicator with expertise in stakeholder management, risk mitigation, and process optimization.");
                     setActiveTab("write");
                   }}
                 >

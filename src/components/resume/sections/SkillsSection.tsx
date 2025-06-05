@@ -9,7 +9,7 @@ import { useState } from "react";
 
 interface SkillsSectionProps {
   skills: string[];
-  onChange: (skills: string[]) => void;
+  onUpdate: (skills: string[]) => void;
   jobDescription?: string;
 }
 
@@ -18,7 +18,7 @@ type SkillCategory = {
   skills: string[];
 };
 
-export const SkillsSection = ({ skills, onChange, jobDescription }: SkillsSectionProps) => {
+export const SkillsSection = ({ skills, onUpdate, jobDescription }: SkillsSectionProps) => {
   const [newSkill, setNewSkill] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [skillCategories, setSkillCategories] = useState<SkillCategory[]>([
@@ -41,7 +41,7 @@ export const SkillsSection = ({ skills, onChange, jobDescription }: SkillsSectio
   const addSkill = () => {
     if (newSkill.trim() && !skills.includes(newSkill.trim())) {
       const updatedSkills = [...skills, newSkill.trim()];
-      onChange(updatedSkills);
+      onUpdate(updatedSkills);
       setNewSkill("");
       categorizeSkills(updatedSkills);
     }
@@ -50,7 +50,7 @@ export const SkillsSection = ({ skills, onChange, jobDescription }: SkillsSectio
   // Remove a skill
   const removeSkill = (skillToRemove: string) => {
     const updatedSkills = skills.filter(skill => skill !== skillToRemove);
-    onChange(updatedSkills);
+    onUpdate(updatedSkills);
     categorizeSkills(updatedSkills);
   };
 
@@ -65,7 +65,7 @@ export const SkillsSection = ({ skills, onChange, jobDescription }: SkillsSectio
       }
     });
     
-    onChange(newSkills);
+    onUpdate(newSkills);
     categorizeSkills(newSkills);
   };
 
@@ -111,14 +111,7 @@ export const SkillsSection = ({ skills, onChange, jobDescription }: SkillsSectio
   };
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold">Skills</CardTitle>
-        <p className="text-sm text-gray-500">
-          Add relevant skills that showcase your expertise. ATS systems scan for specific keywords.
-        </p>
-      </CardHeader>
-      <CardContent>
+    <div>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-4">
             <TabsTrigger value="all">All Skills</TabsTrigger>
@@ -251,7 +244,7 @@ export const SkillsSection = ({ skills, onChange, jobDescription }: SkillsSectio
                           <Badge key={i} variant="outline" className="bg-white cursor-pointer hover:bg-gray-100"
                             onClick={() => {
                               if (!skills.includes(skill)) {
-                                onChange([...skills, skill]);
+                                onUpdate([...skills, skill]);
                                 categorizeSkills([...skills, skill]);
                               }
                             }}
@@ -283,7 +276,7 @@ export const SkillsSection = ({ skills, onChange, jobDescription }: SkillsSectio
                           <Badge key={i} variant="outline" className="bg-white cursor-pointer hover:bg-gray-100"
                             onClick={() => {
                               if (!skills.includes(skill)) {
-                                onChange([...skills, skill]);
+                                onUpdate([...skills, skill]);
                                 categorizeSkills([...skills, skill]);
                               }
                             }}
@@ -315,7 +308,7 @@ export const SkillsSection = ({ skills, onChange, jobDescription }: SkillsSectio
                           <Badge key={i} variant="outline" className="bg-white cursor-pointer hover:bg-gray-100"
                             onClick={() => {
                               if (!skills.includes(skill)) {
-                                onChange([...skills, skill]);
+                                onUpdate([...skills, skill]);
                                 categorizeSkills([...skills, skill]);
                               }
                             }}
@@ -340,7 +333,6 @@ export const SkillsSection = ({ skills, onChange, jobDescription }: SkillsSectio
             </div>
           </TabsContent>
         </Tabs>
-      </CardContent>
-    </Card>
+    </div>
   );
 };
