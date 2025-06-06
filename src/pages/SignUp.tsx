@@ -10,7 +10,7 @@ const SignUp = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [animateCard, setAnimateCard] = useState(false);
-  const { signInWithGoogle, signInWithMicrosoft } = useAuth();
+  const { signInWithGoogle, signInWithGithub } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -36,25 +36,25 @@ const SignUp = () => {
     }
   };
 
-  const handleMicrosoftSignUp = async () => {
+  const handleGithubSignUp = async () => {
     setIsLoading(true);
     setError(null);
     
     try {
-      await signInWithMicrosoft();
+      await signInWithGithub();
       toast({
         title: 'Welcome to Hirebuddy!',
         description: 'Your account has been created successfully.',
       });
     } catch (err) {
-      setError('Failed to sign up with Microsoft. Please try again.');
+      setError('Failed to sign up with GitHub. Please try again.');
       console.error(err);
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-gray-100 to-orange-50 p-4 sm:p-6 md:p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-gray-100 to-[#fcdfe6] p-4 sm:p-6 md:p-8">
       <motion.div 
         className="w-full max-w-7xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row"
         initial={{ opacity: 0, scale: 0.95 }}
@@ -63,31 +63,27 @@ const SignUp = () => {
       >
         {/* Left Side - Hero Section */}
         <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-orange-400 animate-pulse">
-            <div className="absolute inset-0 bg-gradient-to-r from-white via-orange-100 to-orange-300 animate-pulse"></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-orange-200/30 via-white to-white animate-pulse delay-700"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-[#f78f97] animate-pulse">
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-[#fcdfe6] to-[#feb7b7] animate-pulse"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#feb7b7]/30 via-white to-white animate-pulse delay-700"></div>
             <div className="absolute top-0 left-0 w-full h-full">
-              <div className="absolute top-20 left-20 w-72 h-72 bg-orange-200/40 rounded-full blur-3xl animate-pulse"></div>
-              <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-300/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
-              <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-orange-100/50 rounded-full blur-3xl animate-pulse delay-500"></div>
+              <div className="absolute top-20 left-20 w-72 h-72 bg-[#feb7b7]/40 rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#feb7b7]/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+              <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-[#fcdfe6]/50 rounded-full blur-3xl animate-pulse delay-500"></div>
             </div>
           </div>
           
           <div className="relative z-10 flex flex-col justify-center px-16 text-black">
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 bg-orange-500/80 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg">
-                  <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                  </svg>
-                </div>
-                <h1 className="text-3xl font-black text-black">Hirebuddy</h1>
+                
+                <h1 className="text-2xl font-black text-black">Hirebuddy</h1>
               </div>
               
               <h2 className="text-5xl font-black leading-tight mb-6 text-black">
                 Land Your
                 <br />
-                <span className="text-orange-600 font-black">Dream Job</span>
+                <span className="text-[#dc425d] font-black">Dream Job</span>
                 <br />
                 Effortlessly
               </h2>
@@ -98,15 +94,15 @@ const SignUp = () => {
               
               <div className="space-y-4 text-black">
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-[#f78f97] rounded-full"></div>
                   <span className="text-lg font-semibold">Find Jobs That Fit You</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-[#f78f97] rounded-full"></div>
                   <span className="text-lg font-semibold">One Click Applications</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-[#f78f97] rounded-full"></div>
                   <span className="text-lg font-semibold">More Interviews, Less Stress</span>
                 </div>
               </div>
@@ -120,7 +116,7 @@ const SignUp = () => {
             {/* Mobile Logo */}
             <div className="lg:hidden text-center mb-8">
               <div className="inline-flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-r from-[#f78f97] to-[#dc425d] rounded-2xl flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                   </svg>
@@ -130,9 +126,9 @@ const SignUp = () => {
             </div>
 
             {/* Sign Up Card */}
-            <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 animate-slideIn hover:shadow-orange-200/30 transition-all duration-500">
+            <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 animate-slideIn hover:shadow-[#feb7b7]/30 transition-all duration-500">
               <div className="text-center mb-8 animate-fadeIn">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2 hover:text-orange-600 transition-colors duration-300">Create Your Account</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-2 hover:text-[#dc425d] transition-colors duration-300">Create Your Account</h2>
                 <p className="text-gray-600 animate-fadeIn animation-delay-100">Join Hirebuddy and accelerate your career</p>
               </div>
 
@@ -173,44 +169,41 @@ const SignUp = () => {
                   </div>
                 </Button>
 
-                {/* Microsoft Sign Up */}
+                {/* GitHub Sign Up */}
                 <Button
-                  onClick={handleMicrosoftSignUp}
+                  onClick={handleGithubSignUp}
                   disabled={isLoading}
                   className="w-full h-14 bg-white/80 hover:bg-white text-gray-700 border border-gray-200 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:scale-[1.03] rounded-2xl group animate-fadeIn animation-delay-200"
                   variant="outline"
                 >
                   <div className="flex items-center justify-center gap-3">
-                    <svg className="w-5 h-5 group-hover:scale-125 transition-transform duration-300 group-hover:rotate-3" viewBox="0 0 24 24">
-                      <path fill="#f25022" d="M0 0h11.5v11.5H0z"/>
-                      <path fill="#00a4ef" d="M12.5 0H24v11.5H12.5z"/>
-                      <path fill="#7fba00" d="M0 12.5h11.5V24H0z"/>
-                      <path fill="#ffb900" d="M12.5 12.5H24V24H12.5z"/>
+                    <svg className="w-5 h-5 group-hover:scale-125 transition-transform duration-300 group-hover:rotate-3" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                     </svg>
-                    <span className="font-medium group-hover:text-blue-600 transition-colors duration-300">Sign up with Microsoft</span>
+                    <span className="font-medium group-hover:text-blue-600 transition-colors duration-300">Sign up with GitHub</span>
                   </div>
                 </Button>
               </div>
 
               {/* Features Preview */}
-              <div className="mt-8 p-4 bg-gradient-to-r from-orange-50 to-orange-100/50 rounded-2xl border border-orange-200/30 hover:shadow-md hover:border-orange-300/50 transition-all duration-300 animate-fadeIn animation-delay-300">
+              <div className="mt-8 p-4 bg-gradient-to-r from-[#fcdfe6] to-[#fcdfe6]/50 rounded-2xl border border-[#feb7b7]/30 hover:shadow-md hover:border-[#feb7b7]/50 transition-all duration-300 animate-fadeIn animation-delay-300">
                 <h3 className="font-semibold text-gray-900 mb-3 text-center">What you'll get:</h3>
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div className="flex items-center gap-2 hover:translate-x-1 transition-transform duration-300">
-                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
-                    <span className="text-gray-700 hover:text-orange-600 transition-colors duration-300">Smart job alerts</span>
+                    <div className="w-1.5 h-1.5 bg-[#f78f97] rounded-full"></div>
+                    <span className="text-gray-700 hover:text-[#dc425d] transition-colors duration-300">Smart job alerts</span>
                   </div>
                   <div className="flex items-center gap-2 hover:translate-x-1 transition-transform duration-300">
-                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
-                    <span className="text-gray-700 hover:text-orange-600 transition-colors duration-300">Resume builder</span>
+                    <div className="w-1.5 h-1.5 bg-[#f78f97] rounded-full"></div>
+                    <span className="text-gray-700 hover:text-[#dc425d] transition-colors duration-300">Resume builder</span>
                   </div>
                   <div className="flex items-center gap-2 hover:translate-x-1 transition-transform duration-300">
-                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
-                    <span className="text-gray-700 hover:text-orange-600 transition-colors duration-300">Interview prep</span>
+                    <div className="w-1.5 h-1.5 bg-[#f78f97] rounded-full"></div>
+                    <span className="text-gray-700 hover:text-[#dc425d] transition-colors duration-300">Interview prep</span>
                   </div>
                   <div className="flex items-center gap-2 hover:translate-x-1 transition-transform duration-300">
-                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
-                    <span className="text-gray-700 hover:text-orange-600 transition-colors duration-300">Career insights</span>
+                    <div className="w-1.5 h-1.5 bg-[#f78f97] rounded-full"></div>
+                    <span className="text-gray-700 hover:text-[#dc425d] transition-colors duration-300">Career insights</span>
                   </div>
                 </div>
               </div>
@@ -221,7 +214,7 @@ const SignUp = () => {
                   Already have an account?{' '}
                   <Link 
                     to="/signin" 
-                    className="font-semibold text-orange-600 hover:text-orange-700 transition-all duration-300 hover:underline hover:underline-offset-4 hover:scale-105 inline-block"
+                    className="font-semibold text-[#dc425d] hover:text-[#b24e56] transition-all duration-300 hover:underline hover:underline-offset-4 hover:scale-105 inline-block"
                   >
                     Sign in now
                   </Link>
@@ -230,11 +223,11 @@ const SignUp = () => {
                 <div className="mt-6 pt-6 border-t border-gray-200/50">
                   <p className="text-xs text-gray-500">
                     By signing up, you agree to Hirebuddy's{' '}
-                    <a href="/terms" className="text-orange-600 hover:text-orange-700 transition-colors">
+                    <a href="/terms" className="text-[#dc425d] hover:text-[#b24e56] transition-colors">
                       Terms of Service
                     </a>{' '}
                     and{' '}
-                    <a href="/privacy" className="text-orange-600 hover:text-orange-700 transition-colors">
+                    <a href="/privacy" className="text-[#dc425d] hover:text-[#b24e56] transition-colors">
                       Privacy Policy
                     </a>
                   </p>
@@ -246,7 +239,7 @@ const SignUp = () => {
             {isLoading && (
               <div className="absolute inset-0 bg-white/50 backdrop-blur-sm rounded-3xl flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
-                  <div className="w-8 h-8 border-3 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-8 h-8 border-3 border-[#f78f97] border-t-transparent rounded-full animate-spin"></div>
                   <p className="text-sm text-gray-600 font-medium">Creating your account...</p>
                 </div>
               </div>

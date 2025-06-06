@@ -15,7 +15,7 @@ type AuthContextType = {
     data: Session | null;
   }>;
   signInWithGoogle: () => Promise<void>;
-  signInWithMicrosoft: () => Promise<void>;
+  signInWithGithub: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -75,9 +75,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const signInWithMicrosoft = async () => {
+  const signInWithGithub = async () => {
     await supabase.auth.signInWithOAuth({
-      provider: 'azure',
+      provider: 'github',
       options: {
         redirectTo: `${window.location.origin}`,
       },
@@ -95,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signUp,
     signInWithGoogle,
-    signInWithMicrosoft,
+    signInWithGithub,
     signOut,
   };
 
