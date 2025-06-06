@@ -11,7 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [userName, setUserName] = useState(user?.email?.split('@')[0] || "User");
+  const [userName, setUserName] = useState(user?.user_metadata?.full_name || user?.email?.split('@')[0] || "User");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -24,9 +24,9 @@ const Dashboard = () => {
 
   // Update username when user auth state changes
   useEffect(() => {
-    if (user?.email) {
-      // Extract name from email or use email as fallback
-      setUserName(user.email.split('@')[0] || user.email);
+    if (user) {
+      // Use display name from user metadata, or fallback to email username
+      setUserName(user.user_metadata?.full_name || user.email?.split('@')[0] || user.email || "User");
     }
   }, [user]);
 

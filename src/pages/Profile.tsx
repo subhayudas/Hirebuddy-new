@@ -19,7 +19,7 @@ const Profile = () => {
   
   // Profile data state
   const [profileData, setProfileData] = useState({
-    fullName: user?.email?.split('@')[0] || "User",
+    fullName: user?.user_metadata?.full_name || user?.email?.split('@')[0] || "User",
     email: user?.email || "",
     phone: "+1 (555) 123-4567",
     location: "San Francisco, CA",
