@@ -70,7 +70,7 @@ export function AppSidebar() {
           </div>
           {state === "expanded" && (
             <div>
-              <h2 className="font-semibold text-lg">HireBuddy</h2>
+              <h2 className="font-semibold text-lg">Hirebuddy</h2>
               <p className="text-xs text-muted-foreground">Your Career Assistant</p>
             </div>
           )}

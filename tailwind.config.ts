@@ -153,6 +153,28 @@ export default {
 						backgroundPosition: '0% 50%'
 					}
 				},
+				'gradient-x': {
+					'0%': {
+						backgroundPosition: '0% 50%',
+						backgroundSize: '200% 200%'
+					},
+					'50%': {
+						backgroundPosition: '100% 50%',
+						backgroundSize: '200% 200%'
+					},
+					'100%': {
+						backgroundPosition: '0% 50%',
+						backgroundSize: '200% 200%'
+					}
+				},
+				'float': {
+					'0%, 100%': {
+						transform: 'translateY(0)'
+					},
+					'50%': {
+						transform: 'translateY(-20px)'
+					}
+				},
 				'shimmer': {
 					'0%': {
 						backgroundPosition: '-200% 0'
@@ -189,6 +211,8 @@ export default {
 				'gradient': 'gradient 12s ease infinite',
 				'gradient-fast': 'gradient 6s ease infinite',
 				'gradient-slow': 'gradient 20s ease infinite',
+				'gradient-x': 'gradient-x 15s ease infinite',
+				'float': 'float 6s ease-in-out infinite',
 				'shimmer': 'shimmer 2s infinite',
 				'reveal-up': 'reveal-up 0.8s ease-out forwards',
 				'reveal-fade': 'reveal-fade 1s ease-out forwards'
