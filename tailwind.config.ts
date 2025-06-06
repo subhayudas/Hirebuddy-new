@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
 	darkMode: ["class"],
@@ -61,6 +62,30 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				orange: {
+					50: 'hsl(var(--orange-50))',
+					100: 'hsl(var(--orange-100))',
+					200: 'hsl(var(--orange-200))',
+					300: 'hsl(var(--orange-300))',
+					400: 'hsl(var(--orange-400))',
+					500: 'hsl(var(--orange-500))',
+					600: 'hsl(var(--orange-600))',
+					700: 'hsl(var(--orange-700))',
+					800: 'hsl(var(--orange-800))',
+					900: 'hsl(var(--orange-900))'
+				},
+				coral: {
+					50: 'hsl(var(--coral-50))',
+					100: 'hsl(var(--coral-100))',
+					200: 'hsl(var(--coral-200))',
+					300: 'hsl(var(--coral-300))',
+					400: 'hsl(var(--coral-400))',
+					500: 'hsl(var(--coral-500))',
+					600: 'hsl(var(--coral-600))',
+					700: 'hsl(var(--coral-700))',
+					800: 'hsl(var(--coral-800))',
+					900: 'hsl(var(--coral-900))'
 				}
 			},
 			borderRadius: {
@@ -84,13 +109,91 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'auth-float': {
+					'0%, 100%': {
+						transform: 'translateY(0px) rotate(0deg)'
+					},
+					'33%': {
+						transform: 'translateY(-10px) rotate(1deg)'
+					},
+					'66%': {
+						transform: 'translateY(-5px) rotate(-1deg)'
+					}
+				},
+				'auth-pulse': {
+					'0%, 100%': {
+						opacity: '0.3',
+						transform: 'scale(1)'
+					},
+					'50%': {
+						opacity: '0.8',
+						transform: 'scale(1.05)'
+					}
+				},
+				'auth-glow': {
+					'0%': {
+						boxShadow: '0 0 20px rgba(251, 146, 60, 0.3)'
+					},
+					'50%': {
+						boxShadow: '0 0 40px rgba(251, 146, 60, 0.6), 0 0 60px rgba(251, 146, 60, 0.3)'
+					},
+					'100%': {
+						boxShadow: '0 0 20px rgba(251, 146, 60, 0.3)'
+					}
+				},
+				'gradient': {
+					'0%': {
+						backgroundPosition: '0% 50%'
+					},
+					'50%': {
+						backgroundPosition: '100% 50%'
+					},
+					'100%': {
+						backgroundPosition: '0% 50%'
+					}
+				},
+				'shimmer': {
+					'0%': {
+						backgroundPosition: '-200% 0'
+					},
+					'100%': {
+						backgroundPosition: '200% 0'
+					}
+				},
+				'reveal-up': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(30px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
+				'reveal-fade': {
+					'0%': {
+						opacity: '0'
+					},
+					'100%': {
+						opacity: '1'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'auth-float': 'auth-float 6s ease-in-out infinite',
+				'auth-pulse': 'auth-pulse 4s ease-in-out infinite',
+				'auth-glow': 'auth-glow 3s ease-in-out infinite',
+				'gradient': 'gradient 12s ease infinite',
+				'gradient-fast': 'gradient 6s ease infinite',
+				'gradient-slow': 'gradient 20s ease infinite',
+				'shimmer': 'shimmer 2s infinite',
+				'reveal-up': 'reveal-up 0.8s ease-out forwards',
+				'reveal-fade': 'reveal-fade 1s ease-out forwards'
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [tailwindcssAnimate],
 } satisfies Config;
