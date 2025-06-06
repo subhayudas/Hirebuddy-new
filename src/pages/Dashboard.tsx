@@ -7,9 +7,11 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Dashboard = () => {
-  const [userName, setUserName] = useState("Sarah");
+  const { user } = useAuth();
+  const [userName, setUserName] = useState(user?.email?.split('@')[0] || "User");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -19,6 +21,14 @@ const Dashboard = () => {
     }, 600);
     return () => clearTimeout(timer);
   }, []);
+
+  // Update username when user auth state changes
+  useEffect(() => {
+    if (user?.email) {
+      // Extract name from email or use email as fallback
+      setUserName(user.email.split('@')[0] || user.email);
+    }
+  }, [user]);
 
   return (
     <SidebarProvider>

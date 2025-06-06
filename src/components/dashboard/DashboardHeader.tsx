@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import { ChevronRight, Lightbulb, Settings } from "lucide-react";
 
 interface DashboardHeaderProps {
-  userName: string;
+  userName?: string;
 }
 
-export const DashboardHeader = ({ userName }: DashboardHeaderProps) => {
+export const DashboardHeader = ({ userName = 'User' }: DashboardHeaderProps) => {
   // Get time of day for personalized greeting
   const getTimeOfDay = () => {
     const hour = new Date().getHours();
@@ -20,7 +20,7 @@ export const DashboardHeader = ({ userName }: DashboardHeaderProps) => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Good {getTimeOfDay()}, {userName}!
+            Good {getTimeOfDay()}, {userName || 'User'}!
           </h1>
           <p className="text-gray-600 mt-1">
             Your personalized job search dashboard with AI-powered insights

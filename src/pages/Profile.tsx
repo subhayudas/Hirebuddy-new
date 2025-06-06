@@ -19,15 +19,15 @@ const Profile = () => {
   
   // Profile data state
   const [profileData, setProfileData] = useState({
-    fullName: "Sarah Johnson",
-    email: user?.email || "sarah@example.com",
+    fullName: user?.email?.split('@')[0] || "User",
+    email: user?.email || "",
     phone: "+1 (555) 123-4567",
     location: "San Francisco, CA",
-    title: "Senior Frontend Developer",
-    bio: "Passionate frontend developer with 5+ years of experience building responsive and accessible web applications. Specialized in React, TypeScript, and modern CSS frameworks.",
-    website: "https://sarahjohnson.dev",
-    github: "github.com/sarahjohnson",
-    linkedin: "linkedin.com/in/sarahjohnson"
+    title: "Frontend Developer",
+    bio: "Passionate frontend developer with experience building responsive and accessible web applications. Specialized in React, TypeScript, and modern CSS frameworks.",
+    website: "https://example.dev",
+    github: "github.com/example",
+    linkedin: "linkedin.com/in/example"
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -80,7 +80,7 @@ const Profile = () => {
                     <div className="flex flex-col items-center">
                       <Avatar className="h-24 w-24 mb-4">
                         <AvatarImage src="https://images.unsplash.com/photo-1494790108755-2616b612b932?w=120&h=120&fit=crop&crop=center" />
-                        <AvatarFallback>SJ</AvatarFallback>
+                        <AvatarFallback>{profileData.fullName?.substring(0, 2)?.toUpperCase() || "U"}</AvatarFallback>
                       </Avatar>
                       {isEditing ? (
                         <Input 

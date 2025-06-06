@@ -14,6 +14,7 @@ import {
   Briefcase,
   Target
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Sidebar,
   SidebarContent,
@@ -54,6 +55,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
+  const { user } = useAuth();
 
   const isActive = (path: string) => currentPath === path;
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
@@ -136,11 +138,11 @@ export function AppSidebar() {
           <div className="flex items-center space-x-3 p-2 rounded-lg bg-sidebar-accent">
             <Avatar className="h-8 w-8">
               <AvatarImage src="https://images.unsplash.com/photo-1494790108755-2616b612b932?w=60&h=60&fit=crop&crop=center" />
-              <AvatarFallback>SJ</AvatarFallback>
+              <AvatarFallback>{user?.email?.split('@')[0]?.substring(0, 2)?.toUpperCase() || "U"}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">Sarah Johnson</p>
-              <p className="text-xs text-muted-foreground truncate">sarah@example.com</p>
+              <p className="text-sm font-medium truncate">{user?.email?.split('@')[0] || "User"}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email || "Not signed in"}</p>
             </div>
           </div>
         )}
