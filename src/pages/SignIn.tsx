@@ -1,16 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
+import { motion } from 'framer-motion';
 
 const SignIn = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [animateCard, setAnimateCard] = useState(false);
   const { signInWithGoogle, signInWithMicrosoft } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  useEffect(() => {
+    // Trigger animation after component mounts
+    setAnimateCard(true);
+  }, []);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -111,10 +118,10 @@ const SignIn = () => {
           </div>
 
           {/* Sign In Card */}
-          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome to HireBuddy</h2>
-              <p className="text-gray-600">Sign in to continue your career journey</p>
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 animate-slideIn hover:shadow-orange-200/30 transition-all duration-500">
+            <div className="text-center mb-8 animate-fadeIn">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2 hover:text-orange-600 transition-colors duration-300">Welcome to HireBuddy</h2>
+              <p className="text-gray-600 animate-fadeIn animation-delay-100">Sign in to continue your career journey</p>
             </div>
 
             {error && (
@@ -128,11 +135,11 @@ const SignIn = () => {
               <Button
                 onClick={handleGoogleSignIn}
                 disabled={isLoading}
-                className="w-full h-14 bg-white/80 hover:bg-white text-gray-700 border border-gray-200 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02] rounded-2xl group"
+                className="w-full h-14 bg-white/80 hover:bg-white text-gray-700 border border-gray-200 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:scale-[1.03] rounded-2xl group animate-fadeIn"
                 variant="outline"
               >
                 <div className="flex items-center justify-center gap-3">
-                  <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 group-hover:scale-125 transition-transform duration-300 group-hover:rotate-3" viewBox="0 0 24 24">
                     <path
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                       fill="#4285F4"
@@ -150,7 +157,7 @@ const SignIn = () => {
                       fill="#EA4335"
                     />
                   </svg>
-                  <span className="font-medium">Sign in with Google</span>
+                  <span className="font-medium group-hover:text-blue-600 transition-colors duration-300">Sign in with Google</span>
                 </div>
               </Button>
 
@@ -158,38 +165,21 @@ const SignIn = () => {
               <Button
                 onClick={handleMicrosoftSignIn}
                 disabled={isLoading}
-                className="w-full h-14 bg-white/80 hover:bg-white text-gray-700 border border-gray-200 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02] rounded-2xl group"
+                className="w-full h-14 bg-white/80 hover:bg-white text-gray-700 border border-gray-200 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:scale-[1.03] rounded-2xl group animate-fadeIn animation-delay-200"
                 variant="outline"
               >
                 <div className="flex items-center justify-center gap-3">
-                  <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 group-hover:scale-125 transition-transform duration-300 group-hover:rotate-3" viewBox="0 0 24 24">
                     <path fill="#f25022" d="M0 0h11.5v11.5H0z"/>
                     <path fill="#00a4ef" d="M12.5 0H24v11.5H12.5z"/>
                     <path fill="#7fba00" d="M0 12.5h11.5V24H0z"/>
                     <path fill="#ffb900" d="M12.5 12.5H24V24H12.5z"/>
                   </svg>
-                  <span className="font-medium">Sign in with Microsoft</span>
+                  <span className="font-medium group-hover:text-blue-600 transition-colors duration-300">Sign in with Microsoft</span>
                 </div>
               </Button>
 
-              <div className="relative my-8">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white/70 text-gray-500 rounded-full">OR</span>
-                </div>
-              </div>
-
-              {/* Continue as Guest */}
-              <Button
-                onClick={() => navigate('/dashboard')}
-                className="w-full h-14 bg-gradient-to-r from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group"
-              >
-                <span className="group-hover:scale-105 transition-transform duration-300">
-                  Continue as Guest
-                </span>
-              </Button>
+              {/* Divider removed along with Guest option */}
             </div>
 
             {/* Footer */}
@@ -198,7 +188,7 @@ const SignIn = () => {
                 Don't have an account?{' '}
                 <Link 
                   to="/signup" 
-                  className="font-semibold text-orange-600 hover:text-orange-700 transition-colors duration-300"
+                  className="font-semibold text-orange-600 hover:text-orange-700 transition-all duration-300 hover:underline hover:underline-offset-4 hover:scale-105 inline-block"
                 >
                   Sign up now
                 </Link>
