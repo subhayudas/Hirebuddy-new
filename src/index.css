@@ -13,58 +13,58 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 351 83% 65%;
+    --primary: 347 83% 56%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 351 20% 95%;
-    --secondary-foreground: 351 10% 30%;
+    --secondary: 347 20% 95%;
+    --secondary-foreground: 347 10% 30%;
 
-    --muted: 351 15% 95%;
-    --muted-foreground: 351 10% 50%;
+    --muted: 347 15% 95%;
+    --muted-foreground: 347 10% 50%;
 
-    --accent: 351 20% 92%;
-    --accent-foreground: 351 15% 25%;
+    --accent: 347 20% 92%;
+    --accent-foreground: 347 15% 25%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 351 10% 88%;
-    --input: 351 10% 88%;
-    --ring: 351 83% 65%;
+    --border: 347 10% 88%;
+    --input: 347 10% 88%;
+    --ring: 347 83% 56%;
 
     --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary: 347 83% 56%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 347 70% 95%;
+    --sidebar-accent-foreground: 347 83% 56%;
+    --sidebar-border: 347 20% 91%;
+    --sidebar-ring: 347 83% 56%;
 
-    /* Enhanced Color Palette - Orange Theme */
-      --orange-50: 33 100% 96%;
-      --orange-100: 34 100% 92%;
-      --orange-200: 32 98% 83%;
-      --orange-300: 31 97% 72%;
-      --orange-400: 27 96% 61%;
-      --orange-500: 25 95% 53%;
-      --orange-600: 21 90% 48%;
-      --orange-700: 17 88% 40%;
-      --orange-800: 15 79% 34%;
-      --orange-900: 15 75% 28%;
+    /* Enhanced Color Palette - Pink Theme */
+      --pink-50: 347 100% 98%;
+      --pink-100: 347 100% 95%;
+      --pink-200: 347 95% 90%;
+      --pink-300: 347 90% 85%;
+      --pink-400: 347 85% 75%;
+      --pink-500: 347 83% 56%;
+      --pink-600: 347 75% 50%;
+      --pink-700: 347 70% 43%;
+      --pink-800: 347 65% 36%;
+      --pink-900: 347 60% 30%;
 
-      --coral-50: 16 100% 97%;
-      --coral-100: 16 100% 94%;
-      --coral-200: 16 95% 87%;
-      --coral-300: 16 90% 78%;
-      --coral-400: 16 85% 68%;
-      --coral-500: 16 80% 58%;
-      --coral-600: 16 75% 50%;
-      --coral-700: 16 70% 43%;
-      --coral-800: 16 65% 36%;
-      --coral-900: 16 60% 30%;
+      --coral-50: 347 100% 97%;
+      --coral-100: 347 100% 94%;
+      --coral-200: 347 95% 87%;
+      --coral-300: 347 90% 78%;
+      --coral-400: 347 85% 68%;
+      --coral-500: 347 80% 58%;
+      --coral-600: 347 75% 50%;
+      --coral-700: 347 70% 43%;
+      --coral-800: 347 65% 36%;
+      --coral-900: 347 60% 30%;
 
     --warm-gray-50: 20 20% 98%;
     --warm-gray-100: 20 14% 95%;
@@ -77,11 +77,10 @@
     --warm-gray-800: 20 3% 18%;
     --warm-gray-900: 20 3% 12%;
 
-    --accent-orange: 25 95% 53%;
-    --accent-coral: 16 82% 68%;
-    --accent-peach: 25 95% 85%;
-    --accent-cream: 45 100% 95%;
-    --accent-amber: 43 96% 56%;
+    --accent-pink: 347 83% 56%;
+    --accent-light-pink: 347 100% 94%;
+    --accent-medium-pink: 347 90% 78%;
+    --accent-dark-pink: 347 65% 36%;
   }
 
   .dark {
@@ -94,7 +93,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 351 70% 55%;
+    --primary: 347 70% 55%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 217.2 32.6% 17.5%;

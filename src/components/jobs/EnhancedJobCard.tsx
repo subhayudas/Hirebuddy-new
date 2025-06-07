@@ -102,16 +102,16 @@ export const EnhancedJobCard = ({
   }, [job, index]);
 
   const getFitColor = (score: number) => {
-    if (score >= 90) return "text-green-600";
-    if (score >= 80) return "text-blue-600";
-    if (score >= 70) return "text-yellow-600";
+    if (score >= 90) return "text-primary";
+    if (score >= 80) return "text-primary/90";
+    if (score >= 70) return "text-primary/80";
     return "text-gray-600";
   };
 
   const getFitGradient = (score: number) => {
-    if (score >= 90) return "from-green-400 to-green-600";
-    if (score >= 80) return "from-blue-400 to-blue-600";
-    if (score >= 70) return "from-yellow-400 to-yellow-600";
+    if (score >= 90) return "from-pink-400 to-primary";
+    if (score >= 80) return "from-pink-300 to-primary/90";
+    if (score >= 70) return "from-pink-200 to-primary/80";
     return "from-gray-400 to-gray-600";
   };
 
@@ -176,19 +176,19 @@ export const EnhancedJobCard = ({
           {/* Front of card */}
           <Card className={`
             group cursor-pointer transition-all duration-500 border-0 overflow-hidden relative
-            ${isHovered ? 'shadow-2xl shadow-blue-500/20' : 'shadow-lg'} 
-            ${job.featured ? 'ring-2 ring-purple-200 ring-opacity-60' : ''}
+            ${isHovered ? 'shadow-2xl shadow-pink-500/20' : 'shadow-lg'} 
+            ${job.featured ? 'ring-2 ring-pink-200 ring-opacity-60' : ''}
             backdrop-blur-sm bg-white/90
           `}>
             {/* Animated background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-white to-purple-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-br from-pink-50/50 via-white to-pink-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             
             {/* Floating particles effect */}
             <div className="absolute inset-0 overflow-hidden">
               {[...Array(3)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="absolute w-2 h-2 bg-blue-400/20 rounded-full"
+                  className="absolute w-2 h-2 bg-pink-400/20 rounded-full"
                   animate={{
                     x: [0, 30, 0],
                     y: [0, -20, 0],
@@ -210,7 +210,7 @@ export const EnhancedJobCard = ({
             <CardContent className="p-6 relative z-10">
               {job.featured && (
                 <motion.div 
-                  className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600"
+                  className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-pink-400 via-primary to-pink-600"
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
                   transition={{ duration: 1, delay: 0.3 + index * 0.1 }}
@@ -225,7 +225,7 @@ export const EnhancedJobCard = ({
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     transition={{ type: "spring", stiffness: 400 }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-600 rounded-xl blur-md opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-primary rounded-xl blur-md opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
                     <img 
                       src={job.logo} 
                       alt={job.company}
@@ -233,7 +233,7 @@ export const EnhancedJobCard = ({
                     />
                     {job.featured && (
                       <motion.div 
-                        className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center"
+                        className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-pink-400 to-primary rounded-full flex items-center justify-center"
                         initial={{ scale: 0, rotate: -180 }}
                         animate={{ scale: 1, rotate: 0 }}
                         transition={{ type: "spring", stiffness: 500, delay: 0.5 + index * 0.1 }}
@@ -247,7 +247,7 @@ export const EnhancedJobCard = ({
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
                         <motion.h3 
-                          className="text-xl font-bold text-gray-900 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 transition-all duration-300"
+                          className="text-xl font-bold text-gray-900 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-pink-600 group-hover:to-primary transition-all duration-300"
                           whileHover={{ x: 5 }}
                         >
                           {job.title}
@@ -261,7 +261,7 @@ export const EnhancedJobCard = ({
                               animate={{ scale: 1, opacity: 1 }}
                               transition={{ duration: 0.3, delay: 0.2 }}
                             >
-                              <Badge variant="destructive" className="text-xs flex items-center gap-1 animate-pulse">
+                              <Badge variant="destructive" className="text-xs flex items-center gap-1 animate-pulse bg-primary">
                                 <Zap className="w-3 h-3" />
                                 Urgent
                               </Badge>
@@ -272,7 +272,7 @@ export const EnhancedJobCard = ({
                       
                       <motion.button
                         onClick={() => setIsFlipped(!isFlipped)}
-                        className="p-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                        className="p-2 rounded-full bg-gradient-to-r from-pink-500 to-primary text-white shadow-lg hover:shadow-xl transition-all duration-300"
                         whileHover={{ scale: 1.1, rotate: 180 }}
                         whileTap={{ scale: 0.9 }}
                       >
@@ -284,12 +284,12 @@ export const EnhancedJobCard = ({
                     <div className="grid grid-cols-2 gap-3 text-sm text-gray-600 mb-4">
                       <motion.div 
                         className="flex items-center gap-2"
-                        whileHover={{ x: 3, color: "#3B82F6" }}
+                        whileHover={{ x: 3, color: "#dc425d" }}
                       >
                         <MapPin className="w-4 h-4" />
                         <span>{job.location}</span>
                         {job.remote && (
-                          <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
+                          <Badge variant="secondary" className="text-xs bg-pink-100 text-primary">
                             Remote
                           </Badge>
                         )}
@@ -297,7 +297,7 @@ export const EnhancedJobCard = ({
                       
                       <motion.div 
                         className="flex items-center gap-2"
-                        whileHover={{ x: 3, color: "#3B82F6" }}
+                        whileHover={{ x: 3, color: "#dc425d" }}
                       >
                         <Clock className="w-4 h-4" />
                         <span>{job.type}</span>
@@ -305,7 +305,7 @@ export const EnhancedJobCard = ({
                       
                       <motion.div 
                         className="flex items-center gap-2"
-                        whileHover={{ x: 3, color: "#10B981" }}
+                        whileHover={{ x: 3, color: "#dc425d" }}
                       >
                         <DollarSign className="w-4 h-4" />
                         <span className="font-semibold">{job.salary}</span>
@@ -313,7 +313,7 @@ export const EnhancedJobCard = ({
                       
                       <motion.div 
                         className="flex items-center gap-2"
-                        whileHover={{ x: 3, color: "#8B5CF6" }}
+                        whileHover={{ x: 3, color: "#dc425d" }}
                       >
                         <Calendar className="w-4 h-4" />
                         <span>{job.posted}</span>
@@ -344,11 +344,11 @@ export const EnhancedJobCard = ({
                           <Badge 
                             variant="outline" 
                             className={`
-                              bg-gradient-to-r from-blue-50 to-purple-50 
-                              text-blue-700 border-blue-200 
-                              hover:from-blue-100 hover:to-purple-100 
-                              hover:border-blue-300 transition-all duration-200
-                              ${skillMatches.includes(tag) ? 'ring-2 ring-green-300 bg-green-50 text-green-700' : ''}
+                              bg-gradient-to-r from-pink-50 to-pink-100 
+                              text-primary border-pink-200 
+                              hover:from-pink-100 hover:to-pink-200 
+                              hover:border-pink-300 transition-all duration-200
+                              ${skillMatches.includes(tag) ? 'ring-2 ring-pink-300 bg-pink-50 text-primary' : ''}
                             `}
                           >
                             {tag}
@@ -382,8 +382,8 @@ export const EnhancedJobCard = ({
                             }}
                             className={`${
                               savedJobs.has(job.id) 
-                                ? 'text-blue-600 bg-blue-50 shadow-md' 
-                                : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+                                ? 'text-primary bg-pink-50 shadow-md' 
+                                : 'text-gray-400 hover:text-primary hover:bg-pink-50'
                             } transition-all duration-200`}
                           >
                             <Bookmark className={`w-5 h-5 ${savedJobs.has(job.id) ? 'fill-current' : ''}`} />

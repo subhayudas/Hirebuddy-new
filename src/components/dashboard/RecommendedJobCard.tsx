@@ -30,13 +30,13 @@ export const RecommendedJobCard = ({
 }: RecommendedJobCardProps) => {
   // Function to determine match score badge color
   const getMatchScoreColor = (score: number) => {
-    if (score >= 90) return "bg-green-100 text-green-800 border-green-200";
-    if (score >= 80) return "bg-blue-100 text-blue-800 border-blue-200";
-    return "bg-amber-100 text-amber-800 border-amber-200";
+    if (score >= 90) return "bg-pink-100 text-primary border-pink-200";
+    if (score >= 80) return "bg-pink-50 text-primary border-pink-100";
+    return "bg-pink-50/50 text-primary/80 border-pink-100";
   };
 
   return (
-    <div className="p-4 hover:bg-gray-50 transition-colors">
+    <div className="p-4 hover:bg-pink-50/30 transition-colors border border-pink-100 rounded-lg mb-2">
       <div className="flex items-start gap-3">
         <Avatar className={cn("h-10 w-10", logoColor)}>
           <AvatarFallback>{logo}</AvatarFallback>
@@ -66,7 +66,7 @@ export const RecommendedJobCard = ({
           
           <div className="flex flex-wrap gap-1.5 mt-2">
             {skills.map((skill, index) => (
-              <Badge key={index} variant="outline" className="text-xs bg-gray-50">
+              <Badge key={index} variant="outline" className="text-xs bg-pink-50 border-pink-200 text-primary/80">
                 {skill}
               </Badge>
             ))}
@@ -75,7 +75,7 @@ export const RecommendedJobCard = ({
           <div className="flex items-center gap-2 mt-3">
             <Button 
               size="sm" 
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+              className="flex-1 bg-primary hover:bg-primary/90 text-white"
               asChild
             >
               <Link to={`/jobs/apply/${encodeURIComponent(title)}`}>
@@ -85,7 +85,7 @@ export const RecommendedJobCard = ({
             <Button 
               size="sm" 
               variant="outline" 
-              className="px-2"
+              className="px-2 border-pink-200 hover:bg-pink-50"
             >
               <BookmarkIcon className="h-4 w-4" />
             </Button>

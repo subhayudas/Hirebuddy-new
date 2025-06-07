@@ -8,14 +8,14 @@ const applications = [
     position: "Frontend Developer",
     status: "Interview Scheduled",
     date: "Dec 15, 2024",
-    statusColor: "bg-blue-100 text-blue-800"
+    statusColor: "bg-pink-100 text-primary"
   },
   {
     company: "DataCorp",
     position: "Full Stack Engineer",
     status: "Under Review",
     date: "Dec 12, 2024",
-    statusColor: "bg-yellow-100 text-yellow-800"
+    statusColor: "bg-pink-50 text-primary/80"
   },
   {
     company: "StartupXYZ",
@@ -29,19 +29,19 @@ const applications = [
     position: "JavaScript Developer",
     status: "Rejected",
     date: "Dec 8, 2024",
-    statusColor: "bg-red-100 text-red-800"
+    statusColor: "bg-red-50 text-red-600"
   }
 ];
 
 export const ApplicationTracker = () => {
   return (
-    <Card>
-      <CardHeader>
+    <Card className="border-pink-100">
+      <CardHeader className="bg-gradient-to-r from-pink-50 to-pink-100 border-b">
         <CardTitle>Application Tracker</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-4">
         {applications.map((app, index) => (
-          <div key={index} className="border-l-4 border-blue-500 pl-4">
+          <div key={index} className="border-l-4 border-primary pl-4 hover:bg-pink-50/50 p-2 rounded-r transition-colors">
             <div className="flex justify-between items-start mb-2">
               <div>
                 <h4 className="font-medium text-gray-900">{app.position}</h4>

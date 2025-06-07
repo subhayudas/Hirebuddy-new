@@ -38,11 +38,11 @@ const jobRecommendations = [
 
 export const JobRecommendations = () => {
   return (
-    <Card>
-      <CardHeader>
+    <Card className="border-pink-100">
+      <CardHeader className="bg-gradient-to-r from-pink-50 to-pink-100 border-b">
         <CardTitle className="flex items-center justify-between">
           AI Job Recommendations
-          <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+          <Badge variant="secondary" className="bg-pink-100 text-primary">
             3 New Matches
           </Badge>
         </CardTitle>
@@ -52,13 +52,13 @@ export const JobRecommendations = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         {jobRecommendations.map((job, index) => (
-          <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+          <div key={index} className="border border-pink-100 rounded-lg p-4 hover:shadow-md hover:bg-pink-50/30 transition-all">
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-3 flex-1">
                 <img
                   src={job.logo}
                   alt={job.company}
-                  className="w-12 h-12 rounded-lg object-cover"
+                  className="w-12 h-12 rounded-lg object-cover border border-pink-100"
                 />
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900">{job.title}</h3>
@@ -66,7 +66,7 @@ export const JobRecommendations = () => {
                   <p className="text-sm text-gray-500">{job.location} • {job.salary}</p>
                   <div className="flex flex-wrap gap-1 mt-2">
                     {job.skills.map((skill, skillIndex) => (
-                      <Badge key={skillIndex} variant="outline" className="text-xs">
+                      <Badge key={skillIndex} variant="outline" className="text-xs border-pink-200 bg-pink-50 text-primary">
                         {skill}
                       </Badge>
                     ))}
@@ -75,12 +75,12 @@ export const JobRecommendations = () => {
               </div>
               <div className="text-right">
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-green-600">
+                  <span className="text-sm font-medium text-primary">
                     {job.matchScore}% match
                   </span>
-                  <div className="w-12 h-2 bg-gray-200 rounded-full">
+                  <div className="w-12 h-2 bg-pink-100 rounded-full">
                     <div 
-                      className="h-2 bg-green-500 rounded-full" 
+                      className="h-2 bg-primary rounded-full" 
                       style={{ width: `${job.matchScore}%` }}
                     ></div>
                   </div>
@@ -89,10 +89,10 @@ export const JobRecommendations = () => {
               </div>
             </div>
             <div className="flex gap-2 mt-4">
-              <Button size="sm" className="flex-1">
+              <Button size="sm" className="flex-1 bg-primary hover:bg-primary/90">
                 Auto Apply
               </Button>
-              <Button size="sm" variant="outline">
+              <Button size="sm" variant="outline" className="border-pink-200 hover:bg-pink-50 text-primary">
                 View Details
               </Button>
             </div>

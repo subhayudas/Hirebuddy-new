@@ -7,23 +7,22 @@ import {
   Lightbulb, 
   Sparkles, 
   TrendingUp, 
-  Users 
+  User
 } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent } from "@/components/ui/card";
+import { useEffect, useState } from "react";
 
 interface DashboardHeaderProps {
   userName: string;
   isNewSession?: boolean;
 }
 
-const getTimeOfDay = () => {
+function getTimeOfDay() {
   const hour = new Date().getHours();
   if (hour < 12) return "morning";
-  if (hour < 18) return "afternoon";
+  if (hour < 17) return "afternoon";
   return "evening";
-};
+}
 
 export function DashboardHeader({ userName, isNewSession = false }: DashboardHeaderProps) {
   const timeOfDay = getTimeOfDay();
@@ -49,89 +48,54 @@ export function DashboardHeader({ userName, isNewSession = false }: DashboardHea
   return (
     <div className="pb-8">
       {/* Welcome Section */}
-      <div className="mb-8">
-        <div className="flex items-center mb-2">
-          <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
-          <p className="text-sm font-medium text-green-600">Your career dashboard</p>
+      <div className="mb-8 bg-gradient-to-r from-pink-50 to-pink-100 p-6 rounded-xl border border-pink-200">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Good {timeOfDay}, {userName}!</h1>
+            <p className="text-muted-foreground mt-1">Here's what's happening with your job search today.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="outline" size="sm" className="bg-white/80 border-pink-200 hover:bg-pink-100 hover:text-primary">
+              <Link to="/resume-editor">
+                <FileText className="mr-2 h-4 w-4" />
+                Update Resume
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm" className="bg-white/80 border-pink-200 hover:bg-pink-100 hover:text-primary">
+              <Link to="/jobs">
+                <BriefcaseBusiness className="mr-2 h-4 w-4" />
+                Find Jobs
+              </Link>
+            </Button>
+            <Button asChild size="sm" className="bg-primary hover:bg-primary/90">
+              <Link to="/profile">
+                <User className="mr-2 h-4 w-4" />
+                Complete Profile
+                <ChevronRight className="ml-1 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </div>
-        <h1 className="text-3xl font-bold tracking-tight mb-1">
-          Good {timeOfDay}, {userName}
-        </h1>
-        <p className="text-gray-600">
-          Here's your job search progress and opportunities for today
-        </p>
+
+        {/* Quick Tips */}
+        <div className="mt-4 flex items-center gap-2 text-sm bg-white/60 p-3 rounded-lg border border-pink-200">
+          <Lightbulb className="h-4 w-4 text-primary" />
+          <span className="font-medium">Pro Tip:</span>
+          <span className="text-muted-foreground">Update your skills section to match job descriptions for better results.</span>
+          <Sparkles className="h-4 w-4 text-primary ml-auto" />
+        </div>
       </div>
-      
-      {/* Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-100 hover:shadow-md transition-shadow">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-              <BriefcaseBusiness className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <h3 className="font-medium">Find Jobs</h3>
-              <p className="text-sm text-gray-600">Browse latest openings</p>
-            </div>
-            <ChevronRight className="h-5 w-5 text-blue-600 ml-auto" />
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-100 hover:shadow-md transition-shadow">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-purple-500/10 flex items-center justify-center">
-              <FileText className="h-6 w-6 text-purple-600" />
-            </div>
-            <div>
-              <h3 className="font-medium">Resume</h3>
-              <p className="text-sm text-gray-600">Update & optimize</p>
-            </div>
-            <ChevronRight className="h-5 w-5 text-purple-600 ml-auto" />
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-100 hover:shadow-md transition-shadow">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-amber-600" />
-            </div>
-            <div>
-              <h3 className="font-medium">Analytics</h3>
-              <p className="text-sm text-gray-600">Track your progress</p>
-            </div>
-            <ChevronRight className="h-5 w-5 text-amber-600 ml-auto" />
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-100 hover:shadow-md transition-shadow">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
-              <Users className="h-6 w-6 text-green-600" />
-            </div>
-            <div>
-              <h3 className="font-medium">Interviews</h3>
-              <p className="text-sm text-gray-600">Prepare & practice</p>
-            </div>
-            <ChevronRight className="h-5 w-5 text-green-600 ml-auto" />
-          </CardContent>
-        </Card>
+
+      {/* Dashboard Title */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <Button variant="outline" size="sm" asChild>
+          <Link to="/analytics">
+            <TrendingUp className="mr-2 h-4 w-4" />
+            View Analytics
+          </Link>
+        </Button>
       </div>
-      
-      {/* Insight Card */}
-      <Card className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border-blue-100 mb-8">
-        <CardContent className="p-4 flex items-center gap-4">
-          <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-            <Sparkles className="h-5 w-5 text-indigo-600" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-medium text-indigo-900">Weekly Insight</h3>
-            <p className="text-sm text-gray-700">Updating your resume with industry keywords can increase interview chances by 70%</p>
-          </div>
-          <Button variant="outline" size="sm" className="border-indigo-200 text-indigo-700 hover:bg-indigo-100 whitespace-nowrap">
-            Learn More
-          </Button>
-        </CardContent>
-      </Card>
     </div>
   );
 }

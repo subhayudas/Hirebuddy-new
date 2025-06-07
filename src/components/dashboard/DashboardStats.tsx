@@ -6,25 +6,25 @@ const stats = [
     title: "Applications Sent",
     value: "27",
     change: "+5 this week",
-    color: "text-blue-600"
+    color: "text-primary"
   },
   {
     title: "Interview Invites",
     value: "4",
     change: "+2 this week",
-    color: "text-green-600"
+    color: "text-primary"
   },
   {
     title: "AI Match Score",
     value: "94%",
     change: "+3% improved",
-    color: "text-purple-600"
+    color: "text-primary"
   },
   {
     title: "Profile Views",
     value: "156",
     change: "+23 this week",
-    color: "text-orange-600"
+    color: "text-primary"
   }
 ];
 
@@ -32,8 +32,8 @@ export const DashboardStats = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat, index) => (
-        <Card key={index}>
-          <CardHeader className="pb-2">
+        <Card key={index} className="border-pink-100 hover:shadow-md transition-shadow">
+          <CardHeader className="pb-2 bg-gradient-to-r from-pink-50 to-pink-100 border-b">
             <CardTitle className="text-sm font-medium text-gray-600">
               {stat.title}
             </CardTitle>
