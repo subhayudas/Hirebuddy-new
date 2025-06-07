@@ -25,7 +25,6 @@ const SignIn = () => {
     
     try {
       await signInWithGoogle();
-      navigate('/dashboard');
     } catch (err) {
       setError('Failed to sign in with Google. Please try again.');
       console.error(err);
@@ -39,7 +38,6 @@ const SignIn = () => {
     
     try {
       await signInWithGithub();
-      navigate('/dashboard');
     } catch (err) {
       setError('Failed to sign in with GitHub. Please try again.');
       console.error(err);
