@@ -25,10 +25,7 @@ const SignUp = () => {
     
     try {
       await signInWithGoogle();
-      toast({
-        title: 'Welcome to Hirebuddy!',
-        description: 'Your account has been created successfully.',
-      });
+      navigate('/dashboard');
     } catch (err) {
       setError('Failed to sign up with Google. Please try again.');
       console.error(err);
@@ -42,10 +39,7 @@ const SignUp = () => {
     
     try {
       await signInWithGithub();
-      toast({
-        title: 'Welcome to Hirebuddy!',
-        description: 'Your account has been created successfully.',
-      });
+      navigate('/dashboard');
     } catch (err) {
       setError('Failed to sign up with GitHub. Please try again.');
       console.error(err);
@@ -80,7 +74,7 @@ const SignUp = () => {
                 <h1 className="text-2xl font-black text-black">Hirebuddy</h1>
               </div>
               
-              <h2 className="text-5xl font-black leading-tight mb-6 text-black">
+              <h2 className="text-3xl font-black leading-tight mb-3 text-black">
                 Land Your
                 <br />
                 <span className="text-[#dc425d] font-black">Dream Job</span>

@@ -25,10 +25,7 @@ const SignIn = () => {
     
     try {
       await signInWithGoogle();
-      toast({
-        title: 'Success',
-        description: 'Welcome to Hirebuddy!',
-      });
+      navigate('/dashboard');
     } catch (err) {
       setError('Failed to sign in with Google. Please try again.');
       console.error(err);
@@ -42,10 +39,7 @@ const SignIn = () => {
     
     try {
       await signInWithGithub();
-      toast({
-        title: 'Success',
-        description: 'Welcome to Hirebuddy!',
-      });
+      navigate('/dashboard');
     } catch (err) {
       setError('Failed to sign in with GitHub. Please try again.');
       console.error(err);
@@ -80,26 +74,30 @@ const SignIn = () => {
                 <h1 className="text-2xl font-black text-black">Hirebuddy</h1>
               </div>
               
-              <h2 className="text-5xl font-black leading-tight mb-6 text-black">
-                Ensure a Fast and
+              <h2 className="text-3xl font-black leading-tight mb-3 text-black">
+                Land Your
                 <br />
-                <span className="text-[#dc425d] font-black">Successful Journey</span> to
+                <span className="text-[#dc425d] font-black">Dream Job</span>
                 <br />
-                Your Next Career Move
+                Effortlessly
               </h2>
+              
+              <p className="text-xl text-black mb-8 leading-relaxed font-medium">
+                Hirebuddy finds, matches, and applies to jobs - so you don't have to
+              </p>
               
               <div className="space-y-4 text-black">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-[#f78f97] rounded-full"></div>
-                  <span className="text-lg font-semibold">2X More Qualified Job Matches</span>
+                  <span className="text-lg font-semibold">Find Jobs That Fit You</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-[#f78f97] rounded-full"></div>
-                  <span className="text-lg font-semibold">60% Time Savings in Job Searches</span>
+                  <span className="text-lg font-semibold">One Click Applications</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-[#f78f97] rounded-full"></div>
-                  <span className="text-lg font-semibold">50% More Interview Invites</span>
+                  <span className="text-lg font-semibold">More Interviews, Less Stress</span>
                 </div>
               </div>
             </div>
@@ -181,6 +179,29 @@ const SignIn = () => {
                 </Button>
               </div>
 
+              {/* Features Preview - Added to match SignUp page */}
+              <div className="mt-8 p-4 bg-gradient-to-r from-[#fcdfe6] to-[#fcdfe6]/50 rounded-2xl border border-[#feb7b7]/30 hover:shadow-md hover:border-[#feb7b7]/50 transition-all duration-300 animate-fadeIn animation-delay-300">
+                <h3 className="font-semibold text-gray-900 mb-3 text-center">What you'll get:</h3>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-center gap-2 hover:translate-x-1 transition-transform duration-300">
+                    <div className="w-1.5 h-1.5 bg-[#f78f97] rounded-full"></div>
+                    <span className="text-gray-700 hover:text-[#dc425d] transition-colors duration-300">Smart job alerts</span>
+                  </div>
+                  <div className="flex items-center gap-2 hover:translate-x-1 transition-transform duration-300">
+                    <div className="w-1.5 h-1.5 bg-[#f78f97] rounded-full"></div>
+                    <span className="text-gray-700 hover:text-[#dc425d] transition-colors duration-300">Resume builder</span>
+                  </div>
+                  <div className="flex items-center gap-2 hover:translate-x-1 transition-transform duration-300">
+                    <div className="w-1.5 h-1.5 bg-[#f78f97] rounded-full"></div>
+                    <span className="text-gray-700 hover:text-[#dc425d] transition-colors duration-300">Interview prep</span>
+                  </div>
+                  <div className="flex items-center gap-2 hover:translate-x-1 transition-transform duration-300">
+                    <div className="w-1.5 h-1.5 bg-[#f78f97] rounded-full"></div>
+                    <span className="text-gray-700 hover:text-[#dc425d] transition-colors duration-300">Career insights</span>
+                  </div>
+                </div>
+              </div>
+
               {/* Footer */}
               <div className="mt-8 text-center">
                 <p className="text-sm text-gray-600">
@@ -193,18 +214,7 @@ const SignIn = () => {
                   </Link>
                 </p>
                 
-                <div className="mt-6 pt-6 border-t border-gray-200/50">
-                  <p className="text-xs text-gray-500">
-                    By continuing, you agree to Hirebuddy's{' '}
-                    <a href="/terms" className="text-[#dc425d] hover:text-[#b24e56] transition-colors">
-                      Terms of Service
-                    </a>{' '}
-                    and{' '}
-                    <a href="/privacy" className="text-[#dc425d] hover:text-[#b24e56] transition-colors">
-                      Privacy Policy
-                    </a>
-                  </p>
-                </div>
+                
               </div>
             </div>
 
