@@ -1,8 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ChevronRight, Lightbulb, Settings } from "lucide-react";
+import { 
+  BriefcaseBusiness, 
+  ChevronRight, 
+  FileText, 
+  Lightbulb, 
+  Sparkles, 
+  TrendingUp, 
+  Users 
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface DashboardHeaderProps {
   userName: string;
@@ -38,35 +47,91 @@ export function DashboardHeader({ userName, isNewSession = false }: DashboardHea
   }, [toast]);
 
   return (
-    <div className="flex flex-col space-y-6 pb-6">
-      <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Good {timeOfDay}, {userName}!
+    <div className="pb-8">
+      {/* Welcome Section */}
+      <div className="mb-8">
+        <div className="flex items-center mb-2">
+          <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
+          <p className="text-sm font-medium text-green-600">Your career dashboard</p>
+        </div>
+        <h1 className="text-3xl font-bold tracking-tight mb-1">
+          Good {timeOfDay}, {userName}
         </h1>
-        <p className="text-muted-foreground">
-          Here's what's happening with your job search today.
+        <p className="text-gray-600">
+          Here's your job search progress and opportunities for today
         </p>
       </div>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" className="h-8">
-            <Settings className="mr-2 h-4 w-4" />
-            Settings
-          </Button>
-          <Button variant="outline" size="sm" className="h-8">
-            <Link to="/job-assistant" className="flex items-center">
-              Job Assistant
-              <ChevronRight className="ml-1 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className="bg-yellow-100 text-yellow-800 text-xs px-3 py-1 rounded-full flex items-center">
-            <Lightbulb className="mr-1 h-3 w-3" />
-            <span>AI Tip: Update your resume weekly for better matches</span>
-          </div>
-        </div>
+      
+      {/* Action Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-100 hover:shadow-md transition-shadow">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
+              <BriefcaseBusiness className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-medium">Find Jobs</h3>
+              <p className="text-sm text-gray-600">Browse latest openings</p>
+            </div>
+            <ChevronRight className="h-5 w-5 text-blue-600 ml-auto" />
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-100 hover:shadow-md transition-shadow">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-12 w-12 rounded-full bg-purple-500/10 flex items-center justify-center">
+              <FileText className="h-6 w-6 text-purple-600" />
+            </div>
+            <div>
+              <h3 className="font-medium">Resume</h3>
+              <p className="text-sm text-gray-600">Update & optimize</p>
+            </div>
+            <ChevronRight className="h-5 w-5 text-purple-600 ml-auto" />
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-100 hover:shadow-md transition-shadow">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center">
+              <TrendingUp className="h-6 w-6 text-amber-600" />
+            </div>
+            <div>
+              <h3 className="font-medium">Analytics</h3>
+              <p className="text-sm text-gray-600">Track your progress</p>
+            </div>
+            <ChevronRight className="h-5 w-5 text-amber-600 ml-auto" />
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-100 hover:shadow-md transition-shadow">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
+              <Users className="h-6 w-6 text-green-600" />
+            </div>
+            <div>
+              <h3 className="font-medium">Interviews</h3>
+              <p className="text-sm text-gray-600">Prepare & practice</p>
+            </div>
+            <ChevronRight className="h-5 w-5 text-green-600 ml-auto" />
+          </CardContent>
+        </Card>
       </div>
+      
+      {/* Insight Card */}
+      <Card className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border-blue-100 mb-8">
+        <CardContent className="p-4 flex items-center gap-4">
+          <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+            <Sparkles className="h-5 w-5 text-indigo-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-medium text-indigo-900">Weekly Insight</h3>
+            <p className="text-sm text-gray-700">Updating your resume with industry keywords can increase interview chances by 70%</p>
+          </div>
+          <Button variant="outline" size="sm" className="border-indigo-200 text-indigo-700 hover:bg-indigo-100 whitespace-nowrap">
+            Learn More
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }

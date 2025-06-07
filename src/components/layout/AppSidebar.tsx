@@ -65,9 +65,7 @@ export function AppSidebar() {
     <Sidebar className="border-r">
       <SidebarHeader className="p-4">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">AI</span>
-          </div>
+          
           {state === "expanded" && (
             <div>
               <h2 className="font-semibold text-lg">Hirebuddy</h2>
