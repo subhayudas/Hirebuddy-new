@@ -25,17 +25,10 @@ const SignIn = () => {
     
     try {
       await signInWithGoogle();
-      
-      // If we reach here without an error, sign-in was successful
-      toast({
-        title: "Welcome back!",
-        description: "Successfully signed in with Google.",
-      });
       navigate('/dashboard');
     } catch (err) {
       setError('Failed to sign in with Google. Please try again.');
       console.error(err);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -46,20 +39,14 @@ const SignIn = () => {
     
     try {
       await signInWithGithub();
-      
-      // If we reach here without an error, sign-in was successful
-      toast({
-        title: "Welcome back!",
-        description: "Successfully signed in with GitHub.",
-      });
       navigate('/dashboard');
     } catch (err) {
       setError('Failed to sign in with GitHub. Please try again.');
       console.error(err);
-    } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-gray-100 to-[#fcdfe6] p-4 sm:p-6 md:p-8">
       <motion.div 
