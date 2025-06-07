@@ -229,15 +229,7 @@ const SignUp = () => {
               </div>
             </div>
 
-            {/* Loading Overlay */}
-            {isLoading && (
-              <div className="absolute inset-0 bg-white/50 backdrop-blur-sm rounded-3xl flex items-center justify-center">
-                <div className="flex flex-col items-center gap-3">
-                  <div className="w-8 h-8 border-3 border-[#f78f97] border-t-transparent rounded-full animate-spin"></div>
-                  <p className="text-sm text-gray-600 font-medium">Creating your account...</p>
-                </div>
-              </div>
-            )}
+            
           </div>
         </div>
       </motion.div>
