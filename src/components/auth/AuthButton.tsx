@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,12 +9,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, LogOut } from 'lucide-react';
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User, LogOut } from "lucide-react";
+import SignInPopup from "@/components/SignInPopup";
 
-export const AuthButton = () => {
+interface AuthButtonProps {
+  openSignIn?: () => void;
+}
+
+export const AuthButton = ({ openSignIn }: AuthButtonProps = {}) => {
   const { user, signOut } = useAuth();
+  const [isSignInPopupOpen, setIsSignInPopupOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
@@ -21,20 +28,37 @@ export const AuthButton = () => {
 
   if (!user) {
     return (
-      <div className="flex items-center gap-4">
-        <Link to="/signin">
-          <Button variant="outline">Sign In</Button>
-        </Link>
-        <Link to="/signup">
-          <Button>Sign Up</Button>
-        </Link>
-      </div>
+      <>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            onClick={() => {
+              if (openSignIn) {
+                openSignIn();
+              } else {
+                setIsSignInPopupOpen(true);
+              }
+            }}
+          >
+            Sign In
+          </Button>
+          <Link to="/signup">
+            <Button>Sign Up</Button>
+          </Link>
+        </div>
+        {!openSignIn && (
+          <SignInPopup
+            isOpen={isSignInPopupOpen}
+            onClose={() => setIsSignInPopupOpen(false)}
+          />
+        )}
+      </>
     );
   }
 
   // Get user initials for avatar fallback
   const getInitials = () => {
-    if (!user.email) return 'U';
+    if (!user.email) return "U";
     return user.email.charAt(0).toUpperCase();
   };
 
