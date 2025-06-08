@@ -43,7 +43,7 @@ export const AuthButton = ({ openSignIn }: AuthButtonProps = {}) => {
             Sign In
           </Button>
           <Link to="/signup">
-            <Button>Sign Up</Button>
+            <Button>Join Now</Button>
           </Link>
         </div>
         {!openSignIn && (

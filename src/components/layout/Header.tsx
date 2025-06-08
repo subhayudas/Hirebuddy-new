@@ -262,12 +262,7 @@ export const Header = ({ openSignIn }: HeaderProps = {}) => {
             {/* Auth Button */}
             <AuthButton openSignIn={openSignIn} />
 
-            {/* Get Started Button */}
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button className="bg-pink-500 hover:bg-pink-600 text-white rounded-lg px-6 shadow-lg hover:shadow-xl transition-all duration-300 border-0">
-                Get Started Free
-              </Button>
-            </motion.div>
+            
           </motion.div>
 
           {/* Mobile Menu Trigger */}
@@ -357,9 +352,7 @@ export const Header = ({ openSignIn }: HeaderProps = {}) => {
                   {/* Mobile Footer */}
                   <div className="space-y-4 pt-6 border-t border-gray-200/50">
                     <AuthButton openSignIn={openSignIn} />
-                    <Button className="w-full bg-pink-500 hover:bg-pink-600 text-white rounded-lg">
-                      Get Started Free
-                    </Button>
+                    
                   </div>
                 </div>
               </SheetContent>
