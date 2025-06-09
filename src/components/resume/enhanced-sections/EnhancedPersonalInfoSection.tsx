@@ -11,11 +11,8 @@ interface PersonalInfo {
   phone: string;
   location: string;
   website: string;
-  websiteText?: string;
   linkedin: string;
-  linkedinText?: string;
   github: string;
-  githubText?: string;
 }
 
 interface EnhancedPersonalInfoSectionProps {
@@ -69,7 +66,7 @@ export const EnhancedPersonalInfoSection: React.FC<EnhancedPersonalInfoSectionPr
     },
     {
       key: 'website' as keyof PersonalInfo,
-      label: 'Website URL',
+      label: 'Portfolio Website',
       placeholder: 'https://johndoe.com',
       icon: Globe,
       required: false,
@@ -112,89 +109,28 @@ export const EnhancedPersonalInfoSection: React.FC<EnhancedPersonalInfoSectionPr
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className={field.key === 'name' || field.key === 'email' ? 'md:col-span-2' : ''}
+            className={field.required ? "md:col-span-1" : "md:col-span-1"}
           >
-            <Card className="border border-gray-200 hover:border-blue-300 transition-colors">
+            <Card className="h-full hover:shadow-md transition-shadow duration-200">
               <CardContent className="p-4">
-                <div className="space-y-2">
-                  <Label 
-                    htmlFor={field.key}
-                    className="text-sm font-medium text-gray-700 flex items-center gap-2"
-                  >
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
                     <field.icon className="w-4 h-4 text-blue-600" />
-                    {field.label}
-                    {field.required && <span className="text-red-500">*</span>}
-                  </Label>
+                    <Label htmlFor={field.key} className="text-sm font-medium">
+                      {field.label}
+                      {field.required && <span className="text-red-500 ml-1">*</span>}
+                    </Label>
+                  </div>
+                  
                   <Input
                     id={field.key}
                     type={field.type}
                     placeholder={field.placeholder}
-                    value={data[field.key]}
+                    value={data[field.key] || ''}
                     onChange={(e) => handleChange(field.key, e.target.value)}
-                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full"
                     required={field.required}
                   />
-                  {field.key === 'email' && data.email && !data.email.includes('@') && (
-                    <p className="text-xs text-red-600">Please enter a valid email address</p>
-                  )}
-                  {(field.type === 'url') && data[field.key] && !data[field.key].startsWith('http') && (
-                    <p className="text-xs text-amber-600">URL should start with http:// or https://</p>
-                  )}
-                  
-                  {/* Custom text fields for links */}
-                  {field.key === 'website' && (
-                    <div className="mt-2">
-                      <Label htmlFor="websiteText" className="text-xs text-gray-600">
-                        Custom Display Text (optional)
-                      </Label>
-                      <Input
-                        id="websiteText"
-                        placeholder="Portfolio | My Website | etc."
-                        value={data.websiteText || ''}
-                        onChange={(e) => handleChange('websiteText', e.target.value)}
-                        className="text-xs mt-1"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Leave blank to show the full URL
-                      </p>
-                    </div>
-                  )}
-                  
-                  {field.key === 'linkedin' && (
-                    <div className="mt-2">
-                      <Label htmlFor="linkedinText" className="text-xs text-gray-600">
-                        Custom Display Text (optional)
-                      </Label>
-                      <Input
-                        id="linkedinText"
-                        placeholder="LinkedIn Profile | Connect with me | etc."
-                        value={data.linkedinText || ''}
-                        onChange={(e) => handleChange('linkedinText', e.target.value)}
-                        className="text-xs mt-1"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Leave blank to show "LinkedIn Profile"
-                      </p>
-                    </div>
-                  )}
-                  
-                  {field.key === 'github' && (
-                    <div className="mt-2">
-                      <Label htmlFor="githubText" className="text-xs text-gray-600">
-                        Custom Display Text (optional)
-                      </Label>
-                      <Input
-                        id="githubText"
-                        placeholder="GitHub Profile | View my code | etc."
-                        value={data.githubText || ''}
-                        onChange={(e) => handleChange('githubText', e.target.value)}
-                        className="text-xs mt-1"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Leave blank to show "GitHub Profile"
-                      </p>
-                    </div>
-                  )}
                 </div>
               </CardContent>
             </Card>
@@ -206,44 +142,49 @@ export const EnhancedPersonalInfoSection: React.FC<EnhancedPersonalInfoSectionPr
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
+        transition={{ delay: 0.8 }}
       >
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
-          <CardContent className="p-4">
-            <h3 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-              <User className="w-4 h-4 text-blue-600" />
+        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <User className="w-5 h-5 mr-2 text-blue-600" />
               Preview
             </h3>
-            <div className="space-y-2">
-              <h4 className="text-lg font-semibold text-gray-900">
-                {data.name || 'Your Name'}
-              </h4>
-              <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+            
+            <div className="space-y-3">
+              <div>
+                <h4 className="text-xl font-bold text-gray-900">
+                  {data.name || 'Your Name'}
+                </h4>
+              </div>
+              
+              <div className="space-y-2 text-sm text-gray-600">
                 {data.email && (
-                  <span className="flex items-center gap-1">
-                    <Mail className="w-3 h-3" />
-                    {data.email}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    <span>{data.email}</span>
+                  </div>
                 )}
                 {data.phone && (
-                  <span className="flex items-center gap-1">
-                    <Phone className="w-3 h-3" />
-                    {data.phone}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4" />
+                    <span>{data.phone}</span>
+                  </div>
                 )}
                 {data.location && (
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />
-                    {data.location}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4" />
+                    <span>{data.location}</span>
+                  </div>
                 )}
               </div>
+
               {(data.website || data.linkedin || data.github) && (
                 <div className="flex flex-wrap gap-3 text-sm">
                   {data.website && (
                     <span className="flex items-center gap-1 text-blue-600">
                       <Globe className="w-3 h-3" />
-                      Website
+                      Portfolio
                     </span>
                   )}
                   {data.linkedin && (

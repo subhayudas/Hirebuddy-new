@@ -7,11 +7,8 @@ export interface ResumeData {
     phone: string;
     location: string;
     website?: string;
-    websiteText?: string;
     linkedin?: string;
-    linkedinText?: string;
     github?: string;
-    githubText?: string;
   };
   summary: string;
   experience: Array<{
@@ -180,12 +177,12 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
         <div className="mb-6">
           <div className="font-bold text-lg">{data.personalInfo.name}</div>
           <div className="space-y-1">
-            {data.personalInfo.email && <div>{data.personalInfo.email}</div>}
-            {data.personalInfo.phone && <div>{data.personalInfo.phone}</div>}
-            {data.personalInfo.location && <div>{data.personalInfo.location}</div>}
-            {data.personalInfo.website && <div>{data.personalInfo.websiteText || data.personalInfo.website}</div>}
-            {data.personalInfo.linkedin && <div>{data.personalInfo.linkedinText || data.personalInfo.linkedin}</div>}
-            {data.personalInfo.github && <div>{data.personalInfo.githubText || data.personalInfo.github}</div>}
+            {data.personalInfo.email && <div>Email: {data.personalInfo.email}</div>}
+            {data.personalInfo.phone && <div>Phone: {data.personalInfo.phone}</div>}
+            {data.personalInfo.location && <div>Location: {data.personalInfo.location}</div>}
+            {data.personalInfo.website && <div>Portfolio: {data.personalInfo.website}</div>}
+            {data.personalInfo.linkedin && <div>LinkedIn: {data.personalInfo.linkedin}</div>}
+            {data.personalInfo.github && <div>GitHub: {data.personalInfo.github}</div>}
           </div>
         </div>
         
@@ -260,7 +257,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
                   <div>
                     {renderContactLink(
                       data.personalInfo.website.startsWith('http') ? data.personalInfo.website : `https://${data.personalInfo.website}`,
-                      data.personalInfo.websiteText || data.personalInfo.website,
+                      data.personalInfo.website,
                       'website'
                     )}
                   </div>
@@ -269,7 +266,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
                   <div>
                     {renderContactLink(
                       data.personalInfo.linkedin.startsWith('http') ? data.personalInfo.linkedin : `https://linkedin.com/in/${data.personalInfo.linkedin}`,
-                      data.personalInfo.linkedinText || 'LinkedIn Profile',
+                      'LinkedIn Profile',
                       'linkedin'
                     )}
                   </div>
@@ -278,7 +275,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
                   <div>
                     {renderContactLink(
                       data.personalInfo.github.startsWith('http') ? data.personalInfo.github : `https://github.com/${data.personalInfo.github}`,
-                      data.personalInfo.githubText || 'GitHub Profile',
+                      'GitHub Profile',
                       'github'
                     )}
                   </div>
@@ -303,7 +300,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
                   <span className="flex items-center">
                     {renderContactLink(
                       data.personalInfo.website.startsWith('http') ? data.personalInfo.website : `https://${data.personalInfo.website}`,
-                      data.personalInfo.websiteText || data.personalInfo.website,
+                      data.personalInfo.website,
                       'website'
                     )}
                   </span>
@@ -312,7 +309,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
                   <span className="flex items-center">
                     {renderContactLink(
                       data.personalInfo.linkedin.startsWith('http') ? data.personalInfo.linkedin : `https://linkedin.com/in/${data.personalInfo.linkedin}`,
-                      data.personalInfo.linkedinText || 'LinkedIn',
+                      'LinkedIn',
                       'linkedin'
                     )}
                   </span>
@@ -321,7 +318,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
                   <span className="flex items-center">
                     {renderContactLink(
                       data.personalInfo.github.startsWith('http') ? data.personalInfo.github : `https://github.com/${data.personalInfo.github}`,
-                      data.personalInfo.githubText || 'GitHub',
+                      'GitHub',
                       'github'
                     )}
                   </span>

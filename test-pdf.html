@@ -39,7 +39,7 @@
         .contact-info {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 32px;
             font-size: 14px;
             color: #666;
             align-items: center;
@@ -48,6 +48,7 @@
         .contact-item {
             display: flex;
             align-items: center;
+            padding: 4px 8px;
         }
         
         .contact-item a {
@@ -117,20 +118,22 @@
             <h1>John Doe</h1>
             <div class="contact-info">
                 <span class="contact-item">
-                    <a href="mailto:john.doe@email.com" data-link="mailto:john.doe@email.com" data-link-type="email">john.doe@email.com</a>
+                    <strong>Email:</strong> <a href="mailto:john.doe@email.com" data-link="mailto:john.doe@email.com" data-link-type="email">john.doe@email.com</a>
                 </span>
                 <span class="contact-item">
-                    <a href="tel:+1234567890" data-link="tel:+1234567890" data-link-type="phone">+1 (234) 567-8900</a>
-                </span>
-                <span class="contact-item">New York, NY</span>
-                <span class="contact-item">
-                    <a href="https://johndoe.com" data-link="https://johndoe.com" data-link-type="website">johndoe.com</a>
+                    <strong>Phone:</strong> <a href="tel:+1234567890" data-link="tel:+1234567890" data-link-type="phone">+1 (234) 567-8900</a>
                 </span>
                 <span class="contact-item">
-                    <a href="https://linkedin.com/in/johndoe" data-link="https://linkedin.com/in/johndoe" data-link-type="linkedin">LinkedIn</a>
+                    <strong>Location:</strong> New York, NY
                 </span>
                 <span class="contact-item">
-                    <a href="https://github.com/johndoe" data-link="https://github.com/johndoe" data-link-type="github">GitHub</a>
+                    <strong>Portfolio:</strong> <a href="https://johndoe.com" data-link="https://johndoe.com" data-link-type="website">johndoe.com</a>
+                </span>
+                <span class="contact-item">
+                    <strong>LinkedIn:</strong> <a href="https://linkedin.com/in/johndoe" data-link="https://linkedin.com/in/johndoe" data-link-type="linkedin">LinkedIn</a>
+                </span>
+                <span class="contact-item">
+                    <strong>GitHub:</strong> <a href="https://github.com/johndoe" data-link="https://github.com/johndoe" data-link-type="github">GitHub</a>
                 </span>
             </div>
         </header>

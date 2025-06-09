@@ -67,11 +67,8 @@ interface ResumeData {
     phone: string;
     location: string;
     website: string;
-    websiteText?: string;
     linkedin: string;
-    linkedinText?: string;
     github: string;
-    githubText?: string;
   };
   summary: string;
   experience: Array<{
@@ -176,11 +173,8 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
       phone: "",
       location: "",
       website: "",
-      websiteText: "",
       linkedin: "",
-      linkedinText: "",
       github: "",
-      githubText: "",
     },
     summary: "",
     experience: [],

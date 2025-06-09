@@ -8,11 +8,8 @@ interface PersonalInfo {
   phone: string;
   location: string;
   website?: string;
-  websiteText?: string;
   linkedin?: string;
-  linkedinText?: string;
   github?: string;
-  githubText?: string;
 }
 
 interface PersonalInfoSectionProps {
@@ -67,73 +64,37 @@ export const PersonalInfoSection = ({ personalInfo, onUpdate }: PersonalInfoSect
           </div>
           
           {/* Website Section */}
-          <div className="md:col-span-2">
-            <Label htmlFor="website">Website URL</Label>
+          <div>
+            <Label htmlFor="website">Portfolio Website</Label>
             <Input
               id="website"
               type="url"
               value={personalInfo.website || ""}
               onChange={(e) => handleChange('website', e.target.value)}
-              placeholder="https://yourwebsite.com"
+              placeholder="https://yourportfolio.com"
             />
-          </div>
-          <div className="md:col-span-2">
-            <Label htmlFor="websiteText">Website Display Text (optional)</Label>
-            <Input
-              id="websiteText"
-              value={personalInfo.websiteText || ""}
-              onChange={(e) => handleChange('websiteText', e.target.value)}
-              placeholder="Portfolio | My Website | etc."
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Leave blank to show the full URL. Enter custom text to display instead of the URL.
-            </p>
           </div>
           
           {/* LinkedIn Section */}
-          <div className="md:col-span-2">
+          <div>
             <Label htmlFor="linkedin">LinkedIn Profile</Label>
             <Input
               id="linkedin"
               value={personalInfo.linkedin || ""}
               onChange={(e) => handleChange('linkedin', e.target.value)}
-              placeholder="https://linkedin.com/in/yourprofile or just 'yourprofile'"
+              placeholder="https://linkedin.com/in/yourprofile"
             />
-          </div>
-          <div className="md:col-span-2">
-            <Label htmlFor="linkedinText">LinkedIn Display Text (optional)</Label>
-            <Input
-              id="linkedinText"
-              value={personalInfo.linkedinText || ""}
-              onChange={(e) => handleChange('linkedinText', e.target.value)}
-              placeholder="LinkedIn Profile | Connect with me | etc."
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Leave blank to show "LinkedIn Profile". Enter custom text to display instead.
-            </p>
           </div>
           
           {/* GitHub Section */}
-          <div className="md:col-span-2">
+          <div>
             <Label htmlFor="github">GitHub Profile</Label>
             <Input
               id="github"
               value={personalInfo.github || ""}
               onChange={(e) => handleChange('github', e.target.value)}
-              placeholder="https://github.com/yourusername or just 'yourusername'"
+              placeholder="https://github.com/yourusername"
             />
-          </div>
-          <div className="md:col-span-2">
-            <Label htmlFor="githubText">GitHub Display Text (optional)</Label>
-            <Input
-              id="githubText"
-              value={personalInfo.githubText || ""}
-              onChange={(e) => handleChange('githubText', e.target.value)}
-              placeholder="GitHub Profile | View my code | etc."
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Leave blank to show "GitHub Profile". Enter custom text to display instead.
-            </p>
           </div>
         </div>
     </div>

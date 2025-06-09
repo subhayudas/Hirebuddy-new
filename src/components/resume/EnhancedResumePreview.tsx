@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Globe, Github, Linkedin, Calendar, ExternalLink } from 'lucide-react';
+import { Calendar, ExternalLink } from 'lucide-react';
 
 interface ResumeData {
   personalInfo: {
@@ -9,11 +9,8 @@ interface ResumeData {
     phone: string;
     location: string;
     website: string;
-    websiteText?: string;
     linkedin: string;
-    linkedinText?: string;
     github: string;
-    githubText?: string;
   };
   summary: string;
   experience: Array<{
@@ -151,61 +148,61 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
 }) => {
   const colors = colorSchemes[settings.colorScheme as keyof typeof colorSchemes] || colorSchemes.blue;
   
-  // Get template-specific styles - Four distinct minimal designs
+  // Get template-specific styles - Four distinct minimal designs with smaller text
   const getTemplateStyles = () => {
     switch (settings.template) {
-      case "minimal-professional":
+              case "minimal-professional":
         return {
           container: "font-sans bg-white text-gray-900 leading-relaxed",
-          header: "text-left mb-8 pb-4 border-b border-gray-300",
-          headerName: "text-3xl font-bold text-gray-900 mb-2 tracking-tight",
-          headerDetails: "text-sm text-gray-600 space-y-1",
-          section: "mb-8",
-          sectionTitle: "text-lg font-semibold text-gray-900 mb-4 pb-1 border-b border-gray-200 uppercase tracking-wide",
+          header: "text-left mb-6 pb-4 border-b border-gray-300",
+          headerName: "text-2xl font-bold text-gray-900 mb-3 tracking-tight",
+          headerDetails: "text-xs text-gray-600 space-y-1 mt-2",
+          section: "mb-6",
+          sectionTitle: "text-sm font-semibold text-gray-900 mb-3 pb-1 border-b border-gray-200 uppercase tracking-wide",
           layout: "single-column"
         };
       
-      case "modern-executive":
+              case "modern-executive":
         return {
           container: "font-serif bg-white text-gray-900 leading-relaxed",
-          header: "text-center mb-10 pb-6 border-b-2 border-gray-900",
-          headerName: "text-4xl font-bold text-gray-900 mb-3 tracking-wide",
-          headerDetails: "text-sm text-gray-600 space-y-1 max-w-md mx-auto",
-          section: "mb-10",
-          sectionTitle: "text-xl font-bold text-gray-900 mb-5 pb-2 border-b-2 border-gray-900 text-center uppercase tracking-widest",
+          header: "text-center mb-8 pb-5 border-b-2 border-gray-900",
+          headerName: "text-3xl font-bold text-gray-900 mb-4 tracking-wide",
+          headerDetails: "text-xs text-gray-600 space-y-2 max-w-md mx-auto mt-3",
+          section: "mb-8",
+          sectionTitle: "text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-900 text-center uppercase tracking-widest",
           layout: "center-aligned"
         };
 
-      case "technical-clean":
+              case "technical-clean":
         return {
-          container: "font-mono bg-white text-gray-900 text-sm leading-normal",
-          header: "mb-8 pb-4 border-b-2 border-gray-900",
-          headerName: "text-2xl font-bold text-gray-900 mb-2 tracking-wider uppercase",
-          headerDetails: "text-xs text-gray-600 space-y-1 font-mono",
-          section: "mb-8",
-          sectionTitle: "text-sm font-bold text-gray-900 uppercase tracking-widest mb-4 pb-1 border-b border-gray-400",
+          container: "font-mono bg-white text-gray-900 text-xs leading-normal",
+          header: "mb-6 pb-4 border-b-2 border-gray-900",
+          headerName: "text-xl font-bold text-gray-900 mb-3 tracking-wider uppercase",
+          headerDetails: "text-xs text-gray-600 space-y-1 font-mono mt-2",
+          section: "mb-6",
+          sectionTitle: "text-xs font-bold text-gray-900 uppercase tracking-widest mb-3 pb-1 border-b border-gray-400",
           layout: "compact"
         };
 
-      case "academic-simple":
+              case "academic-simple":
         return {
           container: "font-serif bg-white text-gray-900 leading-relaxed",
-          header: "text-center mb-8 pb-4 border-b border-gray-400",
-          headerName: "text-2xl font-bold text-gray-900 mb-2 tracking-wide",
-          headerDetails: "text-sm text-gray-600 space-y-1",
-          section: "mb-8",
-          sectionTitle: "text-base font-bold text-gray-900 mb-4 pb-1 border-b border-gray-300 uppercase tracking-wide",
+          header: "text-center mb-6 pb-4 border-b border-gray-400",
+          headerName: "text-xl font-bold text-gray-900 mb-3 tracking-wide",
+          headerDetails: "text-xs text-gray-600 space-y-2 mt-2",
+          section: "mb-6",
+          sectionTitle: "text-sm font-bold text-gray-900 mb-3 pb-1 border-b border-gray-300 uppercase tracking-wide",
           layout: "traditional"
         };
 
       default:
         return {
           container: "font-sans bg-white text-gray-900 leading-relaxed",
-          header: "text-left mb-8 pb-4 border-b border-gray-300",
-          headerName: "text-3xl font-bold text-gray-900 mb-2 tracking-tight",
-          headerDetails: "text-sm text-gray-600 space-y-1",
-          section: "mb-8",
-          sectionTitle: "text-lg font-semibold text-gray-900 mb-4 pb-1 border-b border-gray-200 uppercase tracking-wide",
+          header: "text-left mb-6 pb-4 border-b border-gray-300",
+          headerName: "text-2xl font-bold text-gray-900 mb-3 tracking-tight",
+          headerDetails: "text-xs text-gray-600 space-y-1 mt-2",
+          section: "mb-6",
+          sectionTitle: "text-sm font-semibold text-gray-900 mb-3 pb-1 border-b border-gray-200 uppercase tracking-wide",
           layout: "single-column"
         };
     }
@@ -237,55 +234,57 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
 
   const renderContactInfo = () => {
     const contacts = [
-      { icon: Mail, value: data.personalInfo.email, href: `mailto:${data.personalInfo.email}`, type: 'email', displayText: data.personalInfo.email },
-      { icon: Phone, value: data.personalInfo.phone, href: `tel:${data.personalInfo.phone}`, type: 'phone', displayText: data.personalInfo.phone },
-      { icon: MapPin, value: data.personalInfo.location, type: 'location', displayText: data.personalInfo.location },
+      { label: 'Email:', value: data.personalInfo.email, href: `mailto:${data.personalInfo.email}`, type: 'email' },
+      { label: 'Phone:', value: data.personalInfo.phone, href: `tel:${data.personalInfo.phone}`, type: 'phone' },
+      { label: 'Location:', value: data.personalInfo.location, type: 'location' },
       { 
-        icon: Globe, 
+        label: 'Portfolio:', 
         value: data.personalInfo.website, 
         href: data.personalInfo.website?.startsWith('http') ? data.personalInfo.website : `https://${data.personalInfo.website}`, 
-        type: 'website',
-        displayText: data.personalInfo.websiteText || data.personalInfo.website
+        type: 'website'
       },
       { 
-        icon: Linkedin, 
+        label: 'LinkedIn:', 
         value: data.personalInfo.linkedin, 
         href: data.personalInfo.linkedin?.startsWith('http') ? data.personalInfo.linkedin : `https://linkedin.com/in/${data.personalInfo.linkedin}`, 
-        type: 'linkedin',
-        displayText: data.personalInfo.linkedinText || 'LinkedIn Profile'
+        type: 'linkedin'
       },
       { 
-        icon: Github, 
+        label: 'GitHub:', 
         value: data.personalInfo.github, 
         href: data.personalInfo.github?.startsWith('http') ? data.personalInfo.github : `https://github.com/${data.personalInfo.github}`, 
-        type: 'github',
-        displayText: data.personalInfo.githubText || 'GitHub Profile'
+        type: 'github'
       },
     ].filter(contact => contact.value);
 
     // Template-specific contact layout
     if (templateStyles.layout === "center-aligned" || templateStyles.layout === "traditional") {
       return (
-        <div className="space-y-1 text-center">
+        <div className="space-y-3 text-center">
           {contacts.map((contact, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="text-gray-600"
+              className="text-gray-600 text-xs py-1 px-2"
             >
               {contact.href ? (
-                <a 
-                  href={contact.href} 
-                  className="hover:underline text-inherit"
-                  data-link={contact.href}
-                  data-link-type={contact.type}
-                >
-                  {contact.displayText}
-                </a>
+                <span className="whitespace-nowrap">
+                  <span className="font-medium">{contact.label}</span>{' '}
+                  <a 
+                    href={contact.href} 
+                    className="hover:underline text-inherit"
+                    data-link={contact.href}
+                    data-link-type={contact.type}
+                  >
+                    {contact.value}
+                  </a>
+                </span>
               ) : (
-                <span>{contact.displayText}</span>
+                <span className="whitespace-nowrap">
+                  <span className="font-medium">{contact.label}</span> {contact.value}
+                </span>
               )}
             </motion.div>
           ))}
@@ -294,33 +293,33 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
     }
 
     return (
-      <div className={`flex flex-wrap gap-3 text-sm text-gray-600 items-center ${templateStyles.layout === "compact" ? "font-mono text-xs" : ""}`}>
+      <div className={`flex flex-wrap gap-10 text-xs text-gray-600 items-center ${templateStyles.layout === "compact" ? "font-mono gap-8" : ""}`}>
         {contacts.map((contact, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="flex items-center gap-1"
+            className="flex items-center px-2 py-1"
           >
-            {templateStyles.layout !== "compact" && (
-              <contact.icon 
-                className="w-3 h-3 text-gray-600 flex-shrink-0" 
-                style={{ verticalAlign: 'middle' }}
-              />
-            )}
             {contact.href ? (
-              <a 
-                href={contact.href} 
-                className="hover:underline text-gray-600"
-                data-link={contact.href}
-                data-link-type={contact.type}
-              >
-                {contact.displayText}
-              </a>
+              <span className="whitespace-nowrap">
+                <span className="font-medium">{contact.label}</span>{' '}
+                <a 
+                  href={contact.href} 
+                  className="hover:underline text-gray-600"
+                  data-link={contact.href}
+                  data-link-type={contact.type}
+                >
+                  {contact.value}
+                </a>
+              </span>
             ) : (
-              <span>{contact.displayText}</span>
+              <span className="whitespace-nowrap">
+                <span className="font-medium">{contact.label}</span> {contact.value}
+              </span>
             )}
+
           </motion.div>
         ))}
       </div>
@@ -366,22 +365,22 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             />
             <div className="flex justify-between items-start mb-2">
               <div>
-                <h3 className="font-semibold text-gray-900">{exp.jobTitle}</h3>
-                <p className="text-gray-700 font-medium">{exp.company}</p>
-                {exp.location && <p className="text-sm text-gray-600">{exp.location}</p>}
+                <h3 className="font-semibold text-sm text-gray-900">{exp.jobTitle}</h3>
+                <p className="text-xs text-gray-700 font-medium">{exp.company}</p>
+                {exp.location && <p className="text-xs text-gray-600">{exp.location}</p>}
               </div>
-              <div className="text-sm text-gray-600 flex items-center gap-1">
+              <div className="text-xs text-gray-600 flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
                 {formatDateRange(exp.startDate, exp.endDate, exp.current)}
               </div>
             </div>
             {exp.description && (
-              <p className="text-gray-700 mb-2 leading-relaxed">{exp.description}</p>
+              <p className="text-xs text-gray-700 mb-2 leading-relaxed">{exp.description}</p>
             )}
             {exp.achievements && exp.achievements.length > 0 && (
               <ul className="space-y-1">
                 {exp.achievements.map((achievement, i) => (
-                  <li key={i} className="text-sm text-gray-700 flex items-start gap-2">
+                  <li key={i} className="text-xs text-gray-700 flex items-start gap-2">
                     <span className="w-1 h-1 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: colors.primary }} />
                     {achievement}
                   </li>
@@ -415,20 +414,20 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             />
             <div className="flex justify-between items-start mb-2">
               <div>
-                <h3 className="font-semibold text-gray-900">{edu.degree}</h3>
-                <p className="text-gray-700 font-medium">{edu.school}</p>
-                {edu.location && <p className="text-sm text-gray-600">{edu.location}</p>}
-                {edu.gpa && <p className="text-sm text-gray-600">GPA: {edu.gpa}</p>}
-                {edu.honors && <p className="text-sm text-gray-600">{edu.honors}</p>}
+                <h3 className="font-semibold text-sm text-gray-900">{edu.degree}</h3>
+                <p className="text-xs text-gray-700 font-medium">{edu.school}</p>
+                {edu.location && <p className="text-xs text-gray-600">{edu.location}</p>}
+                {edu.gpa && <p className="text-xs text-gray-600">GPA: {edu.gpa}</p>}
+                {edu.honors && <p className="text-xs text-gray-600">{edu.honors}</p>}
               </div>
-              <div className="text-sm text-gray-600 flex items-center gap-1">
+              <div className="text-xs text-gray-600 flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
                 {formatDateRange(edu.startDate, edu.endDate)}
               </div>
             </div>
             {edu.coursework && edu.coursework.length > 0 && (
               <div className="mt-2">
-                <p className="text-sm font-medium text-gray-700 mb-1">Relevant Coursework:</p>
+                <p className="text-xs font-medium text-gray-700 mb-1">Relevant Coursework:</p>
                 <div className="flex flex-wrap gap-1">
                   {edu.coursework.map((course, i) => (
                     <span
@@ -463,7 +462,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
       <div className="space-y-3">
         {skillCategories.map((category, categoryIndex) => (
           <div key={category.label}>
-            <h4 className={`font-medium text-gray-800 mb-2 ${templateStyles.layout === "compact" ? "text-xs font-mono uppercase" : ""}`}>
+            <h4 className={`font-medium text-gray-800 mb-2 text-xs ${templateStyles.layout === "compact" ? "font-mono uppercase" : ""}`}>
               {category.label}
             </h4>
             <div className={templateStyles.layout === "compact" ? "grid grid-cols-3 gap-2" : "flex flex-wrap gap-2"}>
@@ -473,12 +472,12 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.05 }}
-                  className={`text-sm font-medium ${
+                  className={`text-xs font-medium ${
                     templateStyles.layout === "compact" 
-                      ? "bg-gray-100 text-gray-700 px-2 py-1 rounded font-mono text-xs text-center" 
+                      ? "bg-gray-100 text-gray-700 px-2 py-1 rounded font-mono text-center" 
                       : templateStyles.layout === "traditional"
                       ? "text-gray-700 mr-4"
-                      : "px-3 py-1 rounded bg-gray-100 text-gray-700"
+                      : "px-2 py-1 rounded bg-gray-100 text-gray-700"
                   }`}
                 >
                   {templateStyles.layout === "traditional" ? `• ${skill}` : skill}
@@ -512,38 +511,38 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             />
             <div className="flex justify-between items-start mb-2">
               <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-gray-900">{project.name}</h3>
-                  {project.link && (
-                    <a 
-                      href={project.link.startsWith('http') ? project.link : `https://${project.link}`} 
-                      className="text-blue-600 hover:text-blue-800"
-                      data-link={project.link.startsWith('http') ? project.link : `https://${project.link}`}
-                      data-link-type="project"
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-                  {project.github && (
-                    <a 
-                      href={project.github.startsWith('http') ? project.github : `https://github.com/${project.github}`} 
-                      className="text-gray-600 hover:text-gray-800"
-                      data-link={project.github.startsWith('http') ? project.github : `https://github.com/${project.github}`}
-                      data-link-type="github"
-                    >
-                      <Github className="w-3 h-3" />
-                    </a>
-                  )}
-                </div>
-              </div>
-              <div className="text-sm text-gray-600 flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                {formatDateRange(project.startDate, project.endDate)}
+                              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-sm text-gray-900">{project.name}</h3>
+                {project.link && (
+                  <a 
+                    href={project.link.startsWith('http') ? project.link : `https://${project.link}`} 
+                    className="text-blue-600 hover:text-blue-800"
+                    data-link={project.link.startsWith('http') ? project.link : `https://${project.link}`}
+                    data-link-type="project"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+                {project.github && (
+                  <a 
+                    href={project.github.startsWith('http') ? project.github : `https://github.com/${project.github}`} 
+                    className="text-gray-600 hover:text-gray-800"
+                    data-link={project.github.startsWith('http') ? project.github : `https://github.com/${project.github}`}
+                    data-link-type="github"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
               </div>
             </div>
-            {project.description && (
-              <p className="text-gray-700 mb-2 leading-relaxed">{project.description}</p>
-            )}
+            <div className="text-xs text-gray-600 flex items-center gap-1">
+              <Calendar className="w-3 h-3" />
+              {formatDateRange(project.startDate, project.endDate)}
+            </div>
+          </div>
+          {project.description && (
+            <p className="text-xs text-gray-700 mb-2 leading-relaxed">{project.description}</p>
+          )}
             {project.technologies && project.technologies.length > 0 && (
               <div className="flex flex-wrap gap-1">
                 {project.technologies.map((tech, i) => (
@@ -579,7 +578,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
           >
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-gray-900">{cert.name}</h3>
+                <h3 className="font-semibold text-sm text-gray-900">{cert.name}</h3>
                 {cert.link && (
                   <a 
                     href={cert.link.startsWith('http') ? cert.link : `https://${cert.link}`} 
@@ -591,12 +590,12 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
                   </a>
                 )}
               </div>
-              <p className="text-gray-700">{cert.issuer}</p>
+              <p className="text-xs text-gray-700">{cert.issuer}</p>
               {cert.credentialId && (
-                <p className="text-sm text-gray-600">ID: {cert.credentialId}</p>
+                <p className="text-xs text-gray-600">ID: {cert.credentialId}</p>
               )}
             </div>
-            <div className="text-sm text-gray-600 text-right">
+            <div className="text-xs text-gray-600 text-right">
               <p>{formatDate(cert.date)}</p>
               {cert.expiryDate && (
                 <p className="text-xs">Expires: {formatDate(cert.expiryDate)}</p>
@@ -622,9 +621,9 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             transition={{ delay: index * 0.1 }}
             className="flex justify-between items-center"
           >
-            <span className="font-medium text-gray-900">{lang.language}</span>
+            <span className="font-medium text-xs text-gray-900">{lang.language}</span>
             <span 
-              className="text-sm px-2 py-1 rounded"
+              className="text-xs px-2 py-1 rounded"
               style={{ backgroundColor: colors.accent, color: colors.text }}
             >
               {lang.proficiency}
@@ -656,16 +655,16 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             />
             <div className="flex justify-between items-start mb-2">
               <div>
-                <h3 className="font-semibold text-gray-900">{vol.role}</h3>
-                <p className="text-gray-700 font-medium">{vol.organization}</p>
+                <h3 className="font-semibold text-sm text-gray-900">{vol.role}</h3>
+                <p className="text-xs text-gray-700 font-medium">{vol.organization}</p>
               </div>
-              <div className="text-sm text-gray-600 flex items-center gap-1">
+              <div className="text-xs text-gray-600 flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
                 {formatDateRange(vol.startDate, vol.endDate)}
               </div>
             </div>
             {vol.description && (
-              <p className="text-gray-700 leading-relaxed">{vol.description}</p>
+              <p className="text-xs text-gray-700 leading-relaxed">{vol.description}</p>
             )}
           </motion.div>
         ))}
@@ -681,14 +680,15 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
       className={`w-full bg-white ${templateStyles.container}`}
       style={{ 
         fontFamily: settings.fontFamily,
-        fontSize: `${settings.fontSize}px`,
-        lineHeight: 1.4,
+        fontSize: `${Math.max(settings.fontSize * 0.8, 10)}px`,
+        lineHeight: 1.3,
         width: '210mm',
         minHeight: '297mm',
-        padding: '15mm',
+        padding: '12mm',
         margin: '0',
         boxSizing: 'border-box'
       }}
+      data-pdf-optimized="true"
       id="resume-content"
     >
       {/* Header */}
@@ -720,7 +720,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6 }}
-            className="text-gray-700 leading-relaxed"
+            className="text-xs text-gray-700 leading-relaxed"
           >
             {data.summary}
           </motion.p>

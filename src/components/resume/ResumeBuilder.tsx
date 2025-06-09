@@ -45,11 +45,8 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
     phone: "",
     location: "",
     website: "",
-    websiteText: "",
     linkedin: "",
-    linkedinText: "",
     github: "",
-    githubText: "",
     summary: "",
     experience: [],
     education: [],
@@ -74,11 +71,8 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
       phone: resumeData.phone,
       location: resumeData.location,
       website: resumeData.website,
-      websiteText: resumeData.websiteText,
       linkedin: resumeData.linkedin,
-      linkedinText: resumeData.linkedinText,
-      github: resumeData.github,
-      githubText: resumeData.githubText
+      github: resumeData.github
     },
     summary: resumeData.summary,
     experience: resumeData.experience,
@@ -207,11 +201,8 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
       phone: "",
       location: "",
       website: "",
-      websiteText: "",
       linkedin: "",
-      linkedinText: "",
       github: "",
-      githubText: "",
       summary: "",
       experience: [],
       education: [],
@@ -474,11 +465,8 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
                             phone: resumeData.phone,
                             location: resumeData.location,
                             website: resumeData.website,
-                            websiteText: resumeData.websiteText,
                             linkedin: resumeData.linkedin,
-                            linkedinText: resumeData.linkedinText,
-                            github: resumeData.github,
-                            githubText: resumeData.githubText
+                            github: resumeData.github
                           }}
                           onUpdate={updatePersonalInfo}
                         />
