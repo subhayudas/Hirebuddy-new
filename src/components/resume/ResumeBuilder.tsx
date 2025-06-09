@@ -209,12 +209,10 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
 
   const getTemplateDisplayName = (templateId: string) => {
     const templateNames = {
-      'academic-modern': 'Academic Modern',
-      'professional-clean': 'Professional Clean',
-      'technical-modern': 'Technical Modern',
-      'executive-elite': 'Executive Elite',
-      'creative-minimal': 'Creative Minimal',
-      'consulting-pro': 'Consulting Pro'
+      'minimal-professional': 'Minimal Professional',
+      'modern-executive': 'Modern Executive',
+      'technical-clean': 'Technical Clean',
+      'academic-simple': 'Academic Simple'
     };
     return templateNames[templateId] || templateId;
   };

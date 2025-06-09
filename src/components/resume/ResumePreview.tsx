@@ -30,192 +30,123 @@ interface ResumePreviewProps {
 }
 
 export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }: ResumePreviewProps) => {
-  // Get template-specific styles with new Overleaf-inspired designs
+  // Get template-specific styles - Four distinct minimal designs
   const getTemplateStyles = () => {
     switch (template) {
-      case "academic-modern":
+      case "minimal-professional":
         return {
-          container: "font-serif bg-white text-gray-900 leading-relaxed",
-          header: "text-center pb-4 mb-6 border-b border-gray-300",
-          headerName: "text-2xl font-bold tracking-wide uppercase text-gray-900 mb-2",
-          headerDetails: "text-sm text-gray-700 space-y-1",
-          section: "mb-6",
-          sectionTitle: "text-base font-bold text-gray-900 uppercase tracking-wide border-b border-gray-400 pb-1 mb-3",
-          experienceItem: "mb-4",
-          experienceHeader: "flex justify-between items-start mb-1",
-          experienceTitle: "font-semibold text-gray-900",
-          experienceCompany: "text-gray-800 italic",
-          experienceDuration: "text-sm text-gray-600 italic",
-          experienceDescription: "text-sm text-gray-800 mt-1 leading-relaxed",
-          educationItem: "mb-3",
-          educationHeader: "flex justify-between items-start",
-          educationDegree: "font-semibold text-gray-900",
-          educationSchool: "text-gray-800 italic",
-          educationYear: "text-sm text-gray-600 italic",
-          skillsContainer: "text-sm text-gray-800",
-          skill: "inline-block mr-4 mb-1"
-        };
-      
-      case "professional-clean":
-        return {
-          container: "font-sans bg-white text-gray-900 leading-normal",
-          header: "mb-6 pb-4 border-b-2 border-gray-200",
-          headerName: "text-2xl font-bold text-gray-900 mb-2",
-          headerDetails: "text-sm text-gray-700 flex flex-wrap gap-4 justify-center",
-          section: "mb-6",
-          sectionTitle: "text-lg font-semibold text-gray-900 mb-3 pb-1 border-b border-gray-300",
-          experienceItem: "mb-4",
-          experienceHeader: "flex justify-between items-start mb-1",
-          experienceTitle: "font-semibold text-gray-900",
-          experienceCompany: "text-gray-800",
-          experienceDuration: "text-sm text-gray-600",
-          experienceDescription: "text-sm text-gray-800 mt-1",
-          educationItem: "mb-3",
-          educationHeader: "flex justify-between items-start",
-          educationDegree: "font-semibold text-gray-900",
-          educationSchool: "text-gray-800",
-          educationYear: "text-sm text-gray-600",
-          skillsContainer: "flex flex-wrap gap-2",
-          skill: "bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm"
-        };
-
-      case "technical-modern":
-        return {
-          container: "font-mono bg-white text-gray-900 text-sm leading-normal",
-          header: "mb-6 pb-4 border-b-2 border-gray-800",
-          headerName: "text-xl font-bold text-gray-900 mb-2 tracking-wide",
-          headerDetails: "text-sm text-gray-700 space-y-1",
-          section: "mb-6",
-          sectionTitle: "text-sm font-bold text-gray-900 uppercase tracking-widest mb-3 pb-1 border-b border-gray-400",
-          experienceItem: "mb-4",
-          experienceHeader: "flex justify-between items-start mb-1",
-          experienceTitle: "font-bold text-gray-900",
-          experienceCompany: "text-gray-800",
-          experienceDuration: "text-xs text-gray-600",
-          experienceDescription: "text-xs text-gray-800 mt-1 leading-relaxed",
-          educationItem: "mb-2",
-          educationHeader: "flex justify-between items-start",
-          educationDegree: "font-bold text-gray-900",
-          educationSchool: "text-gray-800",
-          educationYear: "text-xs text-gray-600",
-          skillsContainer: "grid grid-cols-2 gap-1",
-          skill: "text-xs text-gray-800 bg-gray-100 px-2 py-1 rounded font-mono"
-        };
-
-      case "executive-elite":
-        return {
-          container: "font-serif bg-white text-gray-900 leading-relaxed",
-          header: "text-center mb-8 pb-6 border-b-2 border-gray-800",
-          headerName: "text-3xl font-bold text-gray-900 mb-3 tracking-wide",
-          headerDetails: "text-sm text-gray-700 space-y-1",
+          container: "font-sans bg-white text-gray-900 leading-relaxed max-w-4xl mx-auto p-8",
+          header: "text-left mb-8 pb-4 border-b border-gray-300",
+          headerName: "text-3xl font-bold text-gray-900 mb-2 tracking-tight",
+          headerDetails: "text-sm text-gray-600 space-y-1",
           section: "mb-8",
-          sectionTitle: "text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-800",
+          sectionTitle: "text-lg font-semibold text-gray-900 mb-4 pb-1 border-b border-gray-200 uppercase tracking-wide",
           experienceItem: "mb-6",
           experienceHeader: "flex justify-between items-start mb-2",
-          experienceTitle: "text-lg font-bold text-gray-900",
-          experienceCompany: "text-gray-800 font-medium",
-          experienceDuration: "text-sm text-gray-600 italic",
-          experienceDescription: "text-sm text-gray-800 mt-2 leading-relaxed",
+          experienceTitle: "font-semibold text-gray-900 text-base",
+          experienceCompany: "text-gray-700 font-medium",
+          experienceDuration: "text-sm text-gray-500 italic",
+          experienceDescription: "text-sm text-gray-700 mt-2 leading-relaxed",
           educationItem: "mb-4",
           educationHeader: "flex justify-between items-start",
-          educationDegree: "font-bold text-gray-900",
-          educationSchool: "text-gray-800 font-medium",
-          educationYear: "text-sm text-gray-600 italic",
-          skillsContainer: "flex flex-wrap gap-3",
-          skill: "text-sm text-gray-800 border border-gray-300 px-3 py-1 rounded"
-        };
-
-      case "creative-minimal":
-        return {
-          container: "font-sans bg-white text-gray-900 leading-normal",
-          header: "mb-6 pb-4",
-          headerName: "text-2xl font-light text-gray-900 mb-2 tracking-wide",
-          headerDetails: "text-sm text-gray-600 space-y-1",
-          section: "mb-6",
-          sectionTitle: "text-base font-medium text-gray-900 mb-3 pb-1 border-b border-gray-200",
-          experienceItem: "mb-4",
-          experienceHeader: "flex justify-between items-start mb-1",
-          experienceTitle: "font-medium text-gray-900",
-          experienceCompany: "text-gray-700",
-          experienceDuration: "text-sm text-gray-500",
-          experienceDescription: "text-sm text-gray-700 mt-1",
-          educationItem: "mb-3",
-          educationHeader: "flex justify-between items-start",
-          educationDegree: "font-medium text-gray-900",
+          educationDegree: "font-semibold text-gray-900",
           educationSchool: "text-gray-700",
-          educationYear: "text-sm text-gray-500",
-          skillsContainer: "flex flex-wrap gap-2",
-          skill: "text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded-full"
+          educationYear: "text-sm text-gray-500 italic",
+          skillsContainer: "text-sm text-gray-700",
+          skill: "inline-block mr-6 mb-2"
+        };
+      
+      case "modern-executive":
+        return {
+          container: "font-serif bg-white text-gray-900 leading-relaxed max-w-4xl mx-auto p-8",
+          header: "text-center mb-10 pb-6 border-b-2 border-gray-900",
+          headerName: "text-4xl font-bold text-gray-900 mb-3 tracking-wide",
+          headerDetails: "text-sm text-gray-600 space-y-1 max-w-md mx-auto",
+          section: "mb-10",
+          sectionTitle: "text-xl font-bold text-gray-900 mb-5 pb-2 border-b-2 border-gray-900 text-center uppercase tracking-widest",
+          experienceItem: "mb-8",
+          experienceHeader: "text-center mb-3",
+          experienceTitle: "text-lg font-bold text-gray-900 block",
+          experienceCompany: "text-gray-700 font-medium text-base block mt-1",
+          experienceDuration: "text-sm text-gray-500 italic block mt-1",
+          experienceDescription: "text-sm text-gray-700 mt-3 leading-relaxed text-center max-w-3xl mx-auto",
+          educationItem: "mb-6 text-center",
+          educationHeader: "block",
+          educationDegree: "font-bold text-gray-900 text-base block",
+          educationSchool: "text-gray-700 font-medium block mt-1",
+          educationYear: "text-sm text-gray-500 italic block mt-1",
+          skillsContainer: "text-center",
+          skill: "inline-block mx-3 mb-2 text-sm text-gray-700"
         };
 
-      case "consulting-pro":
+      case "technical-clean":
         return {
-          container: "font-sans bg-white text-gray-900 leading-normal",
-          header: "mb-6 pb-4 border-b border-gray-300",
-          headerName: "text-2xl font-bold text-gray-900 mb-2",
-          headerDetails: "text-sm text-gray-700 flex flex-wrap gap-4",
-          section: "mb-6",
-          sectionTitle: "text-base font-bold text-gray-900 mb-3 pb-1 border-b border-gray-400",
-          experienceItem: "mb-5",
+          container: "font-mono bg-white text-gray-900 text-sm leading-normal max-w-4xl mx-auto p-8",
+          header: "mb-8 pb-4 border-b-2 border-gray-900",
+          headerName: "text-2xl font-bold text-gray-900 mb-2 tracking-wider uppercase",
+          headerDetails: "text-xs text-gray-600 space-y-1 font-mono",
+          section: "mb-8",
+          sectionTitle: "text-sm font-bold text-gray-900 uppercase tracking-widest mb-4 pb-1 border-b border-gray-400",
+          experienceItem: "mb-6",
           experienceHeader: "flex justify-between items-start mb-1",
-          experienceTitle: "font-bold text-gray-900",
-          experienceCompany: "text-gray-800 font-medium",
-          experienceDuration: "text-sm text-gray-600",
-          experienceDescription: "text-sm text-gray-800 mt-1",
-          educationItem: "mb-3",
+          experienceTitle: "font-bold text-gray-900 text-sm uppercase tracking-wide",
+          experienceCompany: "text-gray-700 text-sm",
+          experienceDuration: "text-xs text-gray-500 font-mono",
+          experienceDescription: "text-xs text-gray-700 mt-2 leading-relaxed font-mono",
+          educationItem: "mb-4",
           educationHeader: "flex justify-between items-start",
-          educationDegree: "font-bold text-gray-900",
-          educationSchool: "text-gray-800 font-medium",
-          educationYear: "text-sm text-gray-600",
+          educationDegree: "font-bold text-gray-900 text-sm uppercase tracking-wide",
+          educationSchool: "text-gray-700 text-sm",
+          educationYear: "text-xs text-gray-500 font-mono",
           skillsContainer: "grid grid-cols-3 gap-2",
-          skill: "text-sm text-gray-800 bg-blue-50 px-2 py-1 rounded text-center"
+          skill: "text-xs text-gray-700 bg-gray-100 px-2 py-1 rounded font-mono text-center"
         };
 
-      // Legacy templates for backward compatibility
-      case "modern":
+      case "academic-simple":
         return {
-          container: "font-sans bg-white text-gray-800",
-          header: "bg-blue-600 text-white p-6",
-          headerName: "text-2xl font-bold",
-          headerDetails: "mt-2 flex flex-wrap gap-3 text-sm",
-          section: "p-6",
-          sectionTitle: "text-lg font-bold text-blue-600 border-b border-blue-200 pb-1 mb-3",
-          experienceItem: "mb-4",
+          container: "font-serif bg-white text-gray-900 leading-relaxed max-w-4xl mx-auto p-8",
+          header: "text-center mb-8 pb-4 border-b border-gray-400",
+          headerName: "text-2xl font-bold text-gray-900 mb-2 tracking-wide",
+          headerDetails: "text-sm text-gray-600 space-y-1",
+          section: "mb-8",
+          sectionTitle: "text-base font-bold text-gray-900 mb-4 pb-1 border-b border-gray-300 uppercase tracking-wide",
+          experienceItem: "mb-6",
           experienceHeader: "flex justify-between items-start mb-1",
-          experienceTitle: "font-bold",
-          experienceCompany: "text-blue-600",
-          experienceDuration: "text-sm text-gray-600 italic",
-          experienceDescription: "mt-1 text-sm",
-          educationItem: "mb-3",
+          experienceTitle: "font-semibold text-gray-900",
+          experienceCompany: "text-gray-700 italic",
+          experienceDuration: "text-sm text-gray-500 italic",
+          experienceDescription: "text-sm text-gray-700 mt-2 leading-relaxed",
+          educationItem: "mb-4",
           educationHeader: "flex justify-between items-start",
-          educationDegree: "font-bold",
-          educationSchool: "text-blue-600",
-          educationYear: "text-sm text-gray-600 italic",
-          skillsContainer: "flex flex-wrap gap-2",
-          skill: "bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm"
+          educationDegree: "font-semibold text-gray-900",
+          educationSchool: "text-gray-700 italic",
+          educationYear: "text-sm text-gray-500 italic",
+          skillsContainer: "text-sm text-gray-700",
+          skill: "inline-block mr-4 mb-1"
         };
 
       default:
+        // Default to minimal-professional template
         return {
-          container: "font-serif bg-white text-gray-900 leading-relaxed",
-          header: "text-center pb-4 mb-6 border-b border-gray-300",
-          headerName: "text-2xl font-bold tracking-wide uppercase text-gray-900 mb-2",
-          headerDetails: "text-sm text-gray-700 space-y-1",
-          section: "mb-6",
-          sectionTitle: "text-base font-bold text-gray-900 uppercase tracking-wide border-b border-gray-400 pb-1 mb-3",
-          experienceItem: "mb-4",
-          experienceHeader: "flex justify-between items-start mb-1",
-          experienceTitle: "font-semibold text-gray-900",
-          experienceCompany: "text-gray-800 italic",
-          experienceDuration: "text-sm text-gray-600 italic",
-          experienceDescription: "text-sm text-gray-800 mt-1 leading-relaxed",
-          educationItem: "mb-3",
+          container: "font-sans bg-white text-gray-900 leading-relaxed max-w-4xl mx-auto p-8",
+          header: "text-left mb-8 pb-4 border-b border-gray-300",
+          headerName: "text-3xl font-bold text-gray-900 mb-2 tracking-tight",
+          headerDetails: "text-sm text-gray-600 space-y-1",
+          section: "mb-8",
+          sectionTitle: "text-lg font-semibold text-gray-900 mb-4 pb-1 border-b border-gray-200 uppercase tracking-wide",
+          experienceItem: "mb-6",
+          experienceHeader: "flex justify-between items-start mb-2",
+          experienceTitle: "font-semibold text-gray-900 text-base",
+          experienceCompany: "text-gray-700 font-medium",
+          experienceDuration: "text-sm text-gray-500 italic",
+          experienceDescription: "text-sm text-gray-700 mt-2 leading-relaxed",
+          educationItem: "mb-4",
           educationHeader: "flex justify-between items-start",
           educationDegree: "font-semibold text-gray-900",
-          educationSchool: "text-gray-800 italic",
-          educationYear: "text-sm text-gray-600 italic",
-          skillsContainer: "text-sm text-gray-800",
-          skill: "inline-block mr-4 mb-1"
+          educationSchool: "text-gray-700",
+          educationYear: "text-sm text-gray-500 italic",
+          skillsContainer: "text-sm text-gray-700",
+          skill: "inline-block mr-6 mb-2"
         };
     }
   };
@@ -273,7 +204,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
             {data.personalInfo.name || "Your Name"}
           </h1>
           <div className={styles.headerDetails}>
-            {template === "academic-modern" || template === "executive-elite" || template === "creative-minimal" ? (
+            {template === "academic-simple" || template === "modern-executive" ? (
               <div className="space-y-1 text-center">
                 {data.personalInfo.email && <div>{data.personalInfo.email}</div>}
                 {data.personalInfo.phone && <div>{data.personalInfo.phone}</div>}
@@ -310,9 +241,26 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
                   </div>
                   <div className={styles.experienceDuration}>{exp.duration || "Duration"}</div>
                 </div>
-                <p className={styles.experienceDescription}>
-                  {exp.description || "Describe your key responsibilities, achievements, and impact in this role."}
-                </p>
+                {exp.description ? (
+                  <div className={styles.experienceDescription}>
+                    {exp.description.split('\n').map((item, i) => (
+                      <div key={i} className="flex items-start mb-1">
+                        {item.trim().startsWith('•') ? (
+                          <>
+                            <span className="mr-2">{item.trim().substring(0, 1)}</span>
+                            <span>{item.trim().substring(1).trim()}</span>
+                          </>
+                        ) : (
+                          <span>{item}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className={styles.experienceDescription}>
+                    Describe your key responsibilities, achievements, and impact in this role.
+                  </p>
+                )}
               </div>
             ))
           ) : (
@@ -349,7 +297,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
           <h2 className={styles.sectionTitle}>Skills</h2>
           {data.skills && data.skills.length > 0 ? (
             <div className={styles.skillsContainer}>
-              {template === "academic-modern" ? (
+              {template === "academic-simple" ? (
                 data.skills.map((skill, index) => (
                   <span key={index} className={styles.skill}>
                     • {skill}
