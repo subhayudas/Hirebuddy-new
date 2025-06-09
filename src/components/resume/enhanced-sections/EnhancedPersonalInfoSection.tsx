@@ -11,8 +11,11 @@ interface PersonalInfo {
   phone: string;
   location: string;
   website: string;
+  websiteText?: string;
   linkedin: string;
+  linkedinText?: string;
   github: string;
+  githubText?: string;
 }
 
 interface EnhancedPersonalInfoSectionProps {
@@ -66,7 +69,7 @@ export const EnhancedPersonalInfoSection: React.FC<EnhancedPersonalInfoSectionPr
     },
     {
       key: 'website' as keyof PersonalInfo,
-      label: 'Website',
+      label: 'Website URL',
       placeholder: 'https://johndoe.com',
       icon: Globe,
       required: false,
@@ -136,6 +139,61 @@ export const EnhancedPersonalInfoSection: React.FC<EnhancedPersonalInfoSectionPr
                   )}
                   {(field.type === 'url') && data[field.key] && !data[field.key].startsWith('http') && (
                     <p className="text-xs text-amber-600">URL should start with http:// or https://</p>
+                  )}
+                  
+                  {/* Custom text fields for links */}
+                  {field.key === 'website' && (
+                    <div className="mt-2">
+                      <Label htmlFor="websiteText" className="text-xs text-gray-600">
+                        Custom Display Text (optional)
+                      </Label>
+                      <Input
+                        id="websiteText"
+                        placeholder="Portfolio | My Website | etc."
+                        value={data.websiteText || ''}
+                        onChange={(e) => handleChange('websiteText', e.target.value)}
+                        className="text-xs mt-1"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Leave blank to show the full URL
+                      </p>
+                    </div>
+                  )}
+                  
+                  {field.key === 'linkedin' && (
+                    <div className="mt-2">
+                      <Label htmlFor="linkedinText" className="text-xs text-gray-600">
+                        Custom Display Text (optional)
+                      </Label>
+                      <Input
+                        id="linkedinText"
+                        placeholder="LinkedIn Profile | Connect with me | etc."
+                        value={data.linkedinText || ''}
+                        onChange={(e) => handleChange('linkedinText', e.target.value)}
+                        className="text-xs mt-1"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Leave blank to show "LinkedIn Profile"
+                      </p>
+                    </div>
+                  )}
+                  
+                  {field.key === 'github' && (
+                    <div className="mt-2">
+                      <Label htmlFor="githubText" className="text-xs text-gray-600">
+                        Custom Display Text (optional)
+                      </Label>
+                      <Input
+                        id="githubText"
+                        placeholder="GitHub Profile | View my code | etc."
+                        value={data.githubText || ''}
+                        onChange={(e) => handleChange('githubText', e.target.value)}
+                        className="text-xs mt-1"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Leave blank to show "GitHub Profile"
+                      </p>
+                    </div>
                   )}
                 </div>
               </CardContent>

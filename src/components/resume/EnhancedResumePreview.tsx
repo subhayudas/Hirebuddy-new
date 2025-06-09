@@ -9,8 +9,11 @@ interface ResumeData {
     phone: string;
     location: string;
     website: string;
+    websiteText?: string;
     linkedin: string;
+    linkedinText?: string;
     github: string;
+    githubText?: string;
   };
   summary: string;
   experience: Array<{
@@ -234,12 +237,30 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
 
   const renderContactInfo = () => {
     const contacts = [
-      { icon: Mail, value: data.personalInfo.email, href: `mailto:${data.personalInfo.email}` },
-      { icon: Phone, value: data.personalInfo.phone, href: `tel:${data.personalInfo.phone}` },
-      { icon: MapPin, value: data.personalInfo.location },
-      { icon: Globe, value: data.personalInfo.website, href: data.personalInfo.website },
-      { icon: Linkedin, value: data.personalInfo.linkedin, href: data.personalInfo.linkedin },
-      { icon: Github, value: data.personalInfo.github, href: data.personalInfo.github },
+      { icon: Mail, value: data.personalInfo.email, href: `mailto:${data.personalInfo.email}`, type: 'email', displayText: data.personalInfo.email },
+      { icon: Phone, value: data.personalInfo.phone, href: `tel:${data.personalInfo.phone}`, type: 'phone', displayText: data.personalInfo.phone },
+      { icon: MapPin, value: data.personalInfo.location, type: 'location', displayText: data.personalInfo.location },
+      { 
+        icon: Globe, 
+        value: data.personalInfo.website, 
+        href: data.personalInfo.website?.startsWith('http') ? data.personalInfo.website : `https://${data.personalInfo.website}`, 
+        type: 'website',
+        displayText: data.personalInfo.websiteText || data.personalInfo.website
+      },
+      { 
+        icon: Linkedin, 
+        value: data.personalInfo.linkedin, 
+        href: data.personalInfo.linkedin?.startsWith('http') ? data.personalInfo.linkedin : `https://linkedin.com/in/${data.personalInfo.linkedin}`, 
+        type: 'linkedin',
+        displayText: data.personalInfo.linkedinText || 'LinkedIn Profile'
+      },
+      { 
+        icon: Github, 
+        value: data.personalInfo.github, 
+        href: data.personalInfo.github?.startsWith('http') ? data.personalInfo.github : `https://github.com/${data.personalInfo.github}`, 
+        type: 'github',
+        displayText: data.personalInfo.githubText || 'GitHub Profile'
+      },
     ].filter(contact => contact.value);
 
     // Template-specific contact layout
@@ -255,11 +276,16 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
               className="text-gray-600"
             >
               {contact.href ? (
-                <a href={contact.href} className="hover:underline">
-                  {contact.value}
+                <a 
+                  href={contact.href} 
+                  className="hover:underline text-inherit"
+                  data-link={contact.href}
+                  data-link-type={contact.type}
+                >
+                  {contact.displayText}
                 </a>
               ) : (
-                <span>{contact.value}</span>
+                <span>{contact.displayText}</span>
               )}
             </motion.div>
           ))}
@@ -268,7 +294,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
     }
 
     return (
-      <div className={`flex flex-wrap gap-4 text-sm text-gray-600 ${templateStyles.layout === "compact" ? "font-mono text-xs" : ""}`}>
+      <div className={`flex flex-wrap gap-3 text-sm text-gray-600 items-center ${templateStyles.layout === "compact" ? "font-mono text-xs" : ""}`}>
         {contacts.map((contact, index) => (
           <motion.div
             key={index}
@@ -277,16 +303,23 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             transition={{ delay: index * 0.1 }}
             className="flex items-center gap-1"
           >
-            {templateStyles.layout !== "compact" && <contact.icon className="w-4 h-4 text-gray-600" />}
+            {templateStyles.layout !== "compact" && (
+              <contact.icon 
+                className="w-3 h-3 text-gray-600 flex-shrink-0" 
+                style={{ verticalAlign: 'middle' }}
+              />
+            )}
             {contact.href ? (
               <a 
                 href={contact.href} 
                 className="hover:underline text-gray-600"
+                data-link={contact.href}
+                data-link-type={contact.type}
               >
-                {contact.value}
+                {contact.displayText}
               </a>
             ) : (
-              <span>{contact.value}</span>
+              <span>{contact.displayText}</span>
             )}
           </motion.div>
         ))}
@@ -482,12 +515,22 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold text-gray-900">{project.name}</h3>
                   {project.link && (
-                    <a href={project.link} className="text-blue-600 hover:text-blue-800">
+                    <a 
+                      href={project.link.startsWith('http') ? project.link : `https://${project.link}`} 
+                      className="text-blue-600 hover:text-blue-800"
+                      data-link={project.link.startsWith('http') ? project.link : `https://${project.link}`}
+                      data-link-type="project"
+                    >
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   )}
                   {project.github && (
-                    <a href={project.github} className="text-gray-600 hover:text-gray-800">
+                    <a 
+                      href={project.github.startsWith('http') ? project.github : `https://github.com/${project.github}`} 
+                      className="text-gray-600 hover:text-gray-800"
+                      data-link={project.github.startsWith('http') ? project.github : `https://github.com/${project.github}`}
+                      data-link-type="github"
+                    >
                       <Github className="w-3 h-3" />
                     </a>
                   )}
@@ -535,7 +578,19 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             className="flex justify-between items-start"
           >
             <div>
-              <h3 className="font-semibold text-gray-900">{cert.name}</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-gray-900">{cert.name}</h3>
+                {cert.link && (
+                  <a 
+                    href={cert.link.startsWith('http') ? cert.link : `https://${cert.link}`} 
+                    className="text-blue-600 hover:text-blue-800"
+                    data-link={cert.link.startsWith('http') ? cert.link : `https://${cert.link}`}
+                    data-link-type="certification"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
               <p className="text-gray-700">{cert.issuer}</p>
               {cert.credentialId && (
                 <p className="text-sm text-gray-600">ID: {cert.credentialId}</p>
@@ -623,12 +678,18 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className={`max-w-4xl mx-auto shadow-2xl rounded-lg overflow-hidden p-8 ${templateStyles.container}`}
+      className={`w-full bg-white ${templateStyles.container}`}
       style={{ 
         fontFamily: settings.fontFamily,
         fontSize: `${settings.fontSize}px`,
-        lineHeight: 1.5
+        lineHeight: 1.4,
+        width: '210mm',
+        minHeight: '297mm',
+        padding: '15mm',
+        margin: '0',
+        boxSizing: 'border-box'
       }}
+      id="resume-content"
     >
       {/* Header */}
       <header className={templateStyles.header}>

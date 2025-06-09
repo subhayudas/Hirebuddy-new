@@ -6,6 +6,12 @@ export interface ResumeData {
     email: string;
     phone: string;
     location: string;
+    website?: string;
+    websiteText?: string;
+    linkedin?: string;
+    linkedinText?: string;
+    github?: string;
+    githubText?: string;
   };
   summary: string;
   experience: Array<{
@@ -35,123 +41,137 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
     switch (template) {
       case "minimal-professional":
         return {
-          container: "font-sans bg-white text-gray-900 leading-relaxed max-w-4xl mx-auto p-8",
-          header: "text-left mb-8 pb-4 border-b border-gray-300",
-          headerName: "text-3xl font-bold text-gray-900 mb-2 tracking-tight",
-          headerDetails: "text-sm text-gray-600 space-y-1",
-          section: "mb-8",
-          sectionTitle: "text-lg font-semibold text-gray-900 mb-4 pb-1 border-b border-gray-200 uppercase tracking-wide",
-          experienceItem: "mb-6",
+          container: "font-sans bg-white text-gray-900 leading-relaxed",
+          header: "text-left mb-6 pb-3 border-b border-gray-300",
+          headerName: "text-2xl font-bold text-gray-900 mb-2 tracking-tight",
+          headerDetails: "text-sm text-gray-600 leading-relaxed",
+          section: "mb-6",
+          sectionTitle: "text-base font-semibold text-gray-900 mb-3 pb-1 border-b border-gray-200 uppercase tracking-wide",
+          experienceItem: "mb-5",
           experienceHeader: "flex justify-between items-start mb-2",
-          experienceTitle: "font-semibold text-gray-900 text-base",
-          experienceCompany: "text-gray-700 font-medium",
-          experienceDuration: "text-sm text-gray-500 italic",
-          experienceDescription: "text-sm text-gray-700 mt-2 leading-relaxed",
-          educationItem: "mb-4",
+          experienceTitle: "font-semibold text-gray-900 text-sm",
+          experienceCompany: "text-gray-700 font-medium text-sm",
+          experienceDuration: "text-xs text-gray-500 italic",
+          experienceDescription: "text-xs text-gray-700 mt-2 leading-relaxed",
+          educationItem: "mb-3",
           educationHeader: "flex justify-between items-start",
-          educationDegree: "font-semibold text-gray-900",
-          educationSchool: "text-gray-700",
-          educationYear: "text-sm text-gray-500 italic",
-          skillsContainer: "text-sm text-gray-700",
-          skill: "inline-block mr-6 mb-2"
+          educationDegree: "font-semibold text-gray-900 text-sm",
+          educationSchool: "text-gray-700 text-sm",
+          educationYear: "text-xs text-gray-500 italic",
+          skillsContainer: "text-xs text-gray-700",
+          skill: "inline-block mr-4 mb-1"
         };
       
       case "modern-executive":
         return {
-          container: "font-serif bg-white text-gray-900 leading-relaxed max-w-4xl mx-auto p-8",
-          header: "text-center mb-10 pb-6 border-b-2 border-gray-900",
-          headerName: "text-4xl font-bold text-gray-900 mb-3 tracking-wide",
-          headerDetails: "text-sm text-gray-600 space-y-1 max-w-md mx-auto",
-          section: "mb-10",
-          sectionTitle: "text-xl font-bold text-gray-900 mb-5 pb-2 border-b-2 border-gray-900 text-center uppercase tracking-widest",
-          experienceItem: "mb-8",
+          container: "font-serif bg-white text-gray-900 leading-relaxed",
+          header: "text-center mb-8 pb-4 border-b-2 border-gray-900",
+          headerName: "text-3xl font-bold text-gray-900 mb-3 tracking-wide",
+          headerDetails: "text-sm text-gray-600 leading-relaxed max-w-md mx-auto",
+          section: "mb-8",
+          sectionTitle: "text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-900 text-center uppercase tracking-widest",
+          experienceItem: "mb-6",
           experienceHeader: "text-center mb-3",
-          experienceTitle: "text-lg font-bold text-gray-900 block",
-          experienceCompany: "text-gray-700 font-medium text-base block mt-1",
-          experienceDuration: "text-sm text-gray-500 italic block mt-1",
+          experienceTitle: "text-base font-bold text-gray-900 block",
+          experienceCompany: "text-gray-700 font-medium text-sm block mt-1",
+          experienceDuration: "text-xs text-gray-500 italic block mt-1",
           experienceDescription: "text-sm text-gray-700 mt-3 leading-relaxed text-center max-w-3xl mx-auto",
-          educationItem: "mb-6 text-center",
+          educationItem: "mb-5 text-center",
           educationHeader: "block",
-          educationDegree: "font-bold text-gray-900 text-base block",
-          educationSchool: "text-gray-700 font-medium block mt-1",
-          educationYear: "text-sm text-gray-500 italic block mt-1",
+          educationDegree: "font-bold text-gray-900 text-sm block",
+          educationSchool: "text-gray-700 font-medium block mt-1 text-sm",
+          educationYear: "text-xs text-gray-500 italic block mt-1",
           skillsContainer: "text-center",
-          skill: "inline-block mx-3 mb-2 text-sm text-gray-700"
+          skill: "inline-block mx-2 mb-1 text-xs text-gray-700"
         };
 
       case "technical-clean":
         return {
-          container: "font-mono bg-white text-gray-900 text-sm leading-normal max-w-4xl mx-auto p-8",
-          header: "mb-8 pb-4 border-b-2 border-gray-900",
-          headerName: "text-2xl font-bold text-gray-900 mb-2 tracking-wider uppercase",
-          headerDetails: "text-xs text-gray-600 space-y-1 font-mono",
-          section: "mb-8",
-          sectionTitle: "text-sm font-bold text-gray-900 uppercase tracking-widest mb-4 pb-1 border-b border-gray-400",
-          experienceItem: "mb-6",
+          container: "font-mono bg-white text-gray-900 text-xs leading-normal",
+          header: "mb-6 pb-3 border-b-2 border-gray-900",
+          headerName: "text-xl font-bold text-gray-900 mb-2 tracking-wider uppercase",
+          headerDetails: "text-xs text-gray-600 font-mono leading-relaxed",
+          section: "mb-6",
+          sectionTitle: "text-xs font-bold text-gray-900 uppercase tracking-widest mb-3 pb-1 border-b border-gray-400",
+          experienceItem: "mb-4",
           experienceHeader: "flex justify-between items-start mb-1",
-          experienceTitle: "font-bold text-gray-900 text-sm uppercase tracking-wide",
-          experienceCompany: "text-gray-700 text-sm",
+          experienceTitle: "font-bold text-gray-900 text-xs uppercase tracking-wide",
+          experienceCompany: "text-gray-700 text-xs",
           experienceDuration: "text-xs text-gray-500 font-mono",
           experienceDescription: "text-xs text-gray-700 mt-2 leading-relaxed font-mono",
-          educationItem: "mb-4",
+          educationItem: "mb-3",
           educationHeader: "flex justify-between items-start",
-          educationDegree: "font-bold text-gray-900 text-sm uppercase tracking-wide",
-          educationSchool: "text-gray-700 text-sm",
+          educationDegree: "font-bold text-gray-900 text-xs uppercase tracking-wide",
+          educationSchool: "text-gray-700 text-xs",
           educationYear: "text-xs text-gray-500 font-mono",
-          skillsContainer: "grid grid-cols-3 gap-2",
+          skillsContainer: "grid grid-cols-3 gap-1",
           skill: "text-xs text-gray-700 bg-gray-100 px-2 py-1 rounded font-mono text-center"
         };
 
       case "academic-simple":
         return {
-          container: "font-serif bg-white text-gray-900 leading-relaxed max-w-4xl mx-auto p-8",
-          header: "text-center mb-8 pb-4 border-b border-gray-400",
-          headerName: "text-2xl font-bold text-gray-900 mb-2 tracking-wide",
-          headerDetails: "text-sm text-gray-600 space-y-1",
-          section: "mb-8",
-          sectionTitle: "text-base font-bold text-gray-900 mb-4 pb-1 border-b border-gray-300 uppercase tracking-wide",
-          experienceItem: "mb-6",
+          container: "font-serif bg-white text-gray-900 leading-relaxed",
+          header: "text-center mb-6 pb-3 border-b border-gray-400",
+          headerName: "text-xl font-bold text-gray-900 mb-2 tracking-wide",
+          headerDetails: "text-sm text-gray-600 leading-relaxed",
+          section: "mb-6",
+          sectionTitle: "text-sm font-bold text-gray-900 mb-3 pb-1 border-b border-gray-300 uppercase tracking-wide",
+          experienceItem: "mb-5",
           experienceHeader: "flex justify-between items-start mb-1",
-          experienceTitle: "font-semibold text-gray-900",
-          experienceCompany: "text-gray-700 italic",
-          experienceDuration: "text-sm text-gray-500 italic",
-          experienceDescription: "text-sm text-gray-700 mt-2 leading-relaxed",
-          educationItem: "mb-4",
+          experienceTitle: "font-semibold text-gray-900 text-sm",
+          experienceCompany: "text-gray-700 italic text-sm",
+          experienceDuration: "text-xs text-gray-500 italic",
+          experienceDescription: "text-xs text-gray-700 mt-2 leading-relaxed",
+          educationItem: "mb-3",
           educationHeader: "flex justify-between items-start",
-          educationDegree: "font-semibold text-gray-900",
-          educationSchool: "text-gray-700 italic",
-          educationYear: "text-sm text-gray-500 italic",
-          skillsContainer: "text-sm text-gray-700",
-          skill: "inline-block mr-4 mb-1"
+          educationDegree: "font-semibold text-gray-900 text-sm",
+          educationSchool: "text-gray-700 italic text-sm",
+          educationYear: "text-xs text-gray-500 italic",
+          skillsContainer: "text-xs text-gray-700",
+          skill: "inline-block mr-3 mb-1"
         };
 
       default:
         // Default to minimal-professional template
         return {
-          container: "font-sans bg-white text-gray-900 leading-relaxed max-w-4xl mx-auto p-8",
-          header: "text-left mb-8 pb-4 border-b border-gray-300",
-          headerName: "text-3xl font-bold text-gray-900 mb-2 tracking-tight",
-          headerDetails: "text-sm text-gray-600 space-y-1",
-          section: "mb-8",
-          sectionTitle: "text-lg font-semibold text-gray-900 mb-4 pb-1 border-b border-gray-200 uppercase tracking-wide",
-          experienceItem: "mb-6",
+          container: "font-sans bg-white text-gray-900 leading-relaxed",
+          header: "text-left mb-6 pb-3 border-b border-gray-300",
+          headerName: "text-2xl font-bold text-gray-900 mb-2 tracking-tight",
+          headerDetails: "text-sm text-gray-600 leading-relaxed",
+          section: "mb-6",
+          sectionTitle: "text-base font-semibold text-gray-900 mb-3 pb-1 border-b border-gray-200 uppercase tracking-wide",
+          experienceItem: "mb-5",
           experienceHeader: "flex justify-between items-start mb-2",
-          experienceTitle: "font-semibold text-gray-900 text-base",
-          experienceCompany: "text-gray-700 font-medium",
-          experienceDuration: "text-sm text-gray-500 italic",
-          experienceDescription: "text-sm text-gray-700 mt-2 leading-relaxed",
-          educationItem: "mb-4",
+          experienceTitle: "font-semibold text-gray-900 text-sm",
+          experienceCompany: "text-gray-700 font-medium text-sm",
+          experienceDuration: "text-xs text-gray-500 italic",
+          experienceDescription: "text-xs text-gray-700 mt-2 leading-relaxed",
+          educationItem: "mb-3",
           educationHeader: "flex justify-between items-start",
-          educationDegree: "font-semibold text-gray-900",
-          educationSchool: "text-gray-700",
-          educationYear: "text-sm text-gray-500 italic",
-          skillsContainer: "text-sm text-gray-700",
-          skill: "inline-block mr-6 mb-2"
+          educationDegree: "font-semibold text-gray-900 text-sm",
+          educationSchool: "text-gray-700 text-sm",
+          educationYear: "text-xs text-gray-500 italic",
+          skillsContainer: "text-xs text-gray-700",
+          skill: "inline-block mr-4 mb-1"
         };
     }
   };
 
   const styles = getTemplateStyles();
+
+  // Helper function to render contact links with custom text
+  const renderContactLink = (href: string, text: string, type: string) => {
+    return (
+      <a 
+        href={href}
+        className="hover:underline text-inherit"
+        data-link={href}
+        data-link-type={type}
+      >
+        {text}
+      </a>
+    );
+  };
 
   // ATS-friendly view (plain text formatting)
   if (showAtsView) {
@@ -159,7 +179,14 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
       <div className="bg-white p-6 text-gray-800 font-mono text-sm whitespace-pre-wrap max-w-4xl mx-auto" style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}>
         <div className="mb-6">
           <div className="font-bold text-lg">{data.personalInfo.name}</div>
-          <div>{data.personalInfo.email} | {data.personalInfo.phone} | {data.personalInfo.location}</div>
+          <div className="space-y-1">
+            {data.personalInfo.email && <div>{data.personalInfo.email}</div>}
+            {data.personalInfo.phone && <div>{data.personalInfo.phone}</div>}
+            {data.personalInfo.location && <div>{data.personalInfo.location}</div>}
+            {data.personalInfo.website && <div>{data.personalInfo.websiteText || data.personalInfo.website}</div>}
+            {data.personalInfo.linkedin && <div>{data.personalInfo.linkedinText || data.personalInfo.linkedin}</div>}
+            {data.personalInfo.github && <div>{data.personalInfo.githubText || data.personalInfo.github}</div>}
+          </div>
         </div>
         
         <div className="mb-6">
@@ -196,8 +223,20 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
 
   // Styled resume based on template
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className={cn(styles.container, "shadow-lg min-h-[11in] p-8")} style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+    <div className="w-full">
+      <div 
+        className={cn(styles.container, "min-h-[11in] w-full")} 
+        style={{ 
+          transform: `scale(${scale})`, 
+          transformOrigin: 'top left',
+          width: '210mm',
+          minHeight: '297mm',
+          padding: '15mm',
+          margin: '0',
+          boxSizing: 'border-box'
+        }}
+        id="resume-content"
+      >
         {/* Header */}
         <header className={styles.header}>
           <h1 className={styles.headerName}>
@@ -206,16 +245,88 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
           <div className={styles.headerDetails}>
             {template === "academic-simple" || template === "modern-executive" ? (
               <div className="space-y-1 text-center">
-                {data.personalInfo.email && <div>{data.personalInfo.email}</div>}
-                {data.personalInfo.phone && <div>{data.personalInfo.phone}</div>}
+                {data.personalInfo.email && (
+                  <div>
+                    {renderContactLink(`mailto:${data.personalInfo.email}`, data.personalInfo.email, 'email')}
+                  </div>
+                )}
+                {data.personalInfo.phone && (
+                  <div>
+                    {renderContactLink(`tel:${data.personalInfo.phone}`, data.personalInfo.phone, 'phone')}
+                  </div>
+                )}
                 {data.personalInfo.location && <div>{data.personalInfo.location}</div>}
+                {data.personalInfo.website && (
+                  <div>
+                    {renderContactLink(
+                      data.personalInfo.website.startsWith('http') ? data.personalInfo.website : `https://${data.personalInfo.website}`,
+                      data.personalInfo.websiteText || data.personalInfo.website,
+                      'website'
+                    )}
+                  </div>
+                )}
+                {data.personalInfo.linkedin && (
+                  <div>
+                    {renderContactLink(
+                      data.personalInfo.linkedin.startsWith('http') ? data.personalInfo.linkedin : `https://linkedin.com/in/${data.personalInfo.linkedin}`,
+                      data.personalInfo.linkedinText || 'LinkedIn Profile',
+                      'linkedin'
+                    )}
+                  </div>
+                )}
+                {data.personalInfo.github && (
+                  <div>
+                    {renderContactLink(
+                      data.personalInfo.github.startsWith('http') ? data.personalInfo.github : `https://github.com/${data.personalInfo.github}`,
+                      data.personalInfo.githubText || 'GitHub Profile',
+                      'github'
+                    )}
+                  </div>
+                )}
               </div>
             ) : (
-              <>
-                {data.personalInfo.email && <span>{data.personalInfo.email}</span>}
-                {data.personalInfo.phone && <span>{data.personalInfo.phone}</span>}
-                {data.personalInfo.location && <span>{data.personalInfo.location}</span>}
-              </>
+              <div className="flex flex-wrap gap-3 text-sm items-center">
+                {data.personalInfo.email && (
+                  <span className="flex items-center">
+                    {renderContactLink(`mailto:${data.personalInfo.email}`, data.personalInfo.email, 'email')}
+                  </span>
+                )}
+                {data.personalInfo.phone && (
+                  <span className="flex items-center">
+                    {renderContactLink(`tel:${data.personalInfo.phone}`, data.personalInfo.phone, 'phone')}
+                  </span>
+                )}
+                {data.personalInfo.location && (
+                  <span className="flex items-center">{data.personalInfo.location}</span>
+                )}
+                {data.personalInfo.website && (
+                  <span className="flex items-center">
+                    {renderContactLink(
+                      data.personalInfo.website.startsWith('http') ? data.personalInfo.website : `https://${data.personalInfo.website}`,
+                      data.personalInfo.websiteText || data.personalInfo.website,
+                      'website'
+                    )}
+                  </span>
+                )}
+                {data.personalInfo.linkedin && (
+                  <span className="flex items-center">
+                    {renderContactLink(
+                      data.personalInfo.linkedin.startsWith('http') ? data.personalInfo.linkedin : `https://linkedin.com/in/${data.personalInfo.linkedin}`,
+                      data.personalInfo.linkedinText || 'LinkedIn',
+                      'linkedin'
+                    )}
+                  </span>
+                )}
+                {data.personalInfo.github && (
+                  <span className="flex items-center">
+                    {renderContactLink(
+                      data.personalInfo.github.startsWith('http') ? data.personalInfo.github : `https://github.com/${data.personalInfo.github}`,
+                      data.personalInfo.githubText || 'GitHub',
+                      'github'
+                    )}
+                  </span>
+                )}
+              </div>
             )}
           </div>
         </header>
@@ -223,7 +334,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
         {/* Professional Summary */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Professional Summary</h2>
-          <p className="text-sm leading-relaxed">
+          <p className="text-xs leading-relaxed">
             {data.summary || "Add a professional summary to highlight your key skills and experience that align with your target role."}
           </p>
         </section>
@@ -264,7 +375,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
               </div>
             ))
           ) : (
-            <p className="text-sm text-gray-500 italic leading-relaxed">
+            <p className="text-xs text-gray-500 italic leading-relaxed">
               Add your work experience to showcase your professional background and achievements.
             </p>
           )}
@@ -286,7 +397,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
               </div>
             ))
           ) : (
-            <p className="text-sm text-gray-500 italic leading-relaxed">
+            <p className="text-xs text-gray-500 italic leading-relaxed">
               Add your educational background to highlight your qualifications and academic achievements.
             </p>
           )}
@@ -312,7 +423,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
               )}
             </div>
           ) : (
-            <p className="text-sm text-gray-500 italic leading-relaxed">
+            <p className="text-xs text-gray-500 italic leading-relaxed">
               Add your key skills and competencies to demonstrate your expertise and capabilities.
             </p>
           )}

@@ -44,6 +44,12 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
     email: "",
     phone: "",
     location: "",
+    website: "",
+    websiteText: "",
+    linkedin: "",
+    linkedinText: "",
+    github: "",
+    githubText: "",
     summary: "",
     experience: [],
     education: [],
@@ -66,7 +72,13 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
       name: resumeData.name,
       email: resumeData.email,
       phone: resumeData.phone,
-      location: resumeData.location
+      location: resumeData.location,
+      website: resumeData.website,
+      websiteText: resumeData.websiteText,
+      linkedin: resumeData.linkedin,
+      linkedinText: resumeData.linkedinText,
+      github: resumeData.github,
+      githubText: resumeData.githubText
     },
     summary: resumeData.summary,
     experience: resumeData.experience,
@@ -142,32 +154,27 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
     try {
       setIsGeneratingPdf(true);
       
-      const canvas = await html2canvas(targetRef, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
+      const { generateResumePDF } = await import('@/utils/pdfGenerator');
       
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
+      // Find the actual resume content element
+      const resumeContent = targetRef.querySelector('#resume-content') || targetRef;
       
-      const imgWidth = 210;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      const contactInfo = {
+        email: resumeData.email,
+        phone: resumeData.phone,
+        linkedin: resumeData.linkedin,
+        github: resumeData.github,
+        website: resumeData.website
+      };
       
       const fileName = resumeData.name ? 
         `${resumeData.name.replace(/\s+/g, '_')}_Resume.pdf` : 
         'Resume.pdf';
         
-      pdf.save(fileName);
+      await generateResumePDF(resumeContent as HTMLElement, contactInfo, fileName);
     } catch (error) {
       console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
     } finally {
       setIsGeneratingPdf(false);
     }
@@ -199,6 +206,12 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
       email: "",
       phone: "",
       location: "",
+      website: "",
+      websiteText: "",
+      linkedin: "",
+      linkedinText: "",
+      github: "",
+      githubText: "",
       summary: "",
       experience: [],
       education: [],
@@ -293,16 +306,16 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
                         Preview
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto">
                       <DialogHeader>
                         <DialogTitle>Resume Preview</DialogTitle>
                       </DialogHeader>
                       <div className="mt-4">
-                        <div ref={modalResumeRef}>
+                        <div ref={modalResumeRef} className="flex justify-center">
                           <ResumePreview 
                             data={formattedData} 
                             template={template}
-                            scale={0.8}
+                            scale={0.75}
                             showAtsView={showAtsView}
                           />
                         </div>
@@ -459,7 +472,13 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
                             name: resumeData.name,
                             email: resumeData.email,
                             phone: resumeData.phone,
-                            location: resumeData.location
+                            location: resumeData.location,
+                            website: resumeData.website,
+                            websiteText: resumeData.websiteText,
+                            linkedin: resumeData.linkedin,
+                            linkedinText: resumeData.linkedinText,
+                            github: resumeData.github,
+                            githubText: resumeData.githubText
                           }}
                           onUpdate={updatePersonalInfo}
                         />
@@ -598,15 +617,17 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-2">
                     <div className="border rounded-lg overflow-hidden bg-white">
-                      <div ref={resumeRef}>
-                        <ResumePreview 
-                          data={formattedData} 
-                          template={template}
-                          scale={0.4}
-                          showAtsView={showAtsView}
-                        />
+                      <div ref={resumeRef} className="flex justify-center">
+                        <div className="w-full">
+                          <ResumePreview 
+                            data={formattedData} 
+                            template={template}
+                            scale={0.35}
+                            showAtsView={showAtsView}
+                          />
+                        </div>
                       </div>
                     </div>
                   </CardContent>

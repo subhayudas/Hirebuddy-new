@@ -67,8 +67,11 @@ interface ResumeData {
     phone: string;
     location: string;
     website: string;
+    websiteText?: string;
     linkedin: string;
+    linkedinText?: string;
     github: string;
+    githubText?: string;
   };
   summary: string;
   experience: Array<{
@@ -173,8 +176,11 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
       phone: "",
       location: "",
       website: "",
+      websiteText: "",
       linkedin: "",
+      linkedinText: "",
       github: "",
+      githubText: "",
     },
     summary: "",
     experience: [],
@@ -402,35 +408,27 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     
     setIsGeneratingPdf(true);
     try {
-      const { default: html2canvas } = await import('html2canvas');
-      const { default: jsPDF } = await import('jspdf');
+      const { generateResumePDF } = await import('@/utils/pdfGenerator');
       
-      const canvas = await html2canvas(previewRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
+      // Find the actual resume content element
+      const resumeContent = previewRef.current.querySelector('#resume-content') || previewRef.current;
       
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-      
-      const imgWidth = 210;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      const contactInfo = {
+        email: resumeData.personalInfo.email,
+        phone: resumeData.personalInfo.phone,
+        linkedin: resumeData.personalInfo.linkedin,
+        github: resumeData.personalInfo.github,
+        website: resumeData.personalInfo.website
+      };
       
       const fileName = resumeData.personalInfo.name ? 
         `${resumeData.personalInfo.name.replace(/\s+/g, '_')}_Resume.pdf` : 
         'Resume.pdf';
         
-      pdf.save(fileName);
+      await generateResumePDF(resumeContent as HTMLElement, contactInfo, fileName);
     } catch (error) {
       console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
     } finally {
       setIsGeneratingPdf(false);
     }
