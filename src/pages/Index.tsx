@@ -1,12 +1,17 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Hero } from "@/components/landing/Hero";
-import { Features } from "@/components/landing/Features";
-import { AICapabilities } from "@/components/landing/AICapabilities";
-import { Testimonials } from "@/components/landing/Testimonials";
-import { CTA } from "@/components/landing/CTA";
 import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import { Hero } from "@/components/landing/Hero";
+import { Problem } from "@/components/landing/Problem";
+import { Solution } from "@/components/landing/Solution";
+import { Meet } from "@/components/landing/Meet";
+import { Working } from "@/components/landing/Working";
+import { Testimonials } from "@/components/landing/Testimonials";
+import { Pricing } from "@/components/landing/Pricing";
+import { FAQ } from "@/components/landing/FAQ";
+import { Newsletter } from "@/components/landing/Newsletter";
+import { ContactForm } from "@/components/landing/ContactForm";
+import { Footer } from "@/components/landing/Footer";
 import SignInPopup from "@/components/SignInPopup";
 
 const Index = () => {
@@ -22,19 +27,33 @@ const Index = () => {
   }, [location]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <main className="min-h-screen">
       <Header openSignIn={() => setIsSignInPopupOpen(true)} />
       <Hero />
-      <Features />
-      <AICapabilities />
+      <div className="relative w-full min-h-[40vh] md:min-h-[70vh] lg:min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 -mt-4 lg:-mt-16">
+        <div className="absolute inset-0 w-full h-full bg-transparent" />
+        <div className="absolute bottom-0 left-0 w-full h-1/4 bg-transparent" />
+        <img
+          src="/hero-image.png"
+          alt="Hero illustration"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+      </div>
+      <Problem />
+      <Solution />
+      <Meet />
+      <Working />
       <Testimonials />
-      <CTA />
+      <Pricing />
+      <FAQ />
+      <Newsletter />
+      <ContactForm />
       <Footer />
       <SignInPopup
         isOpen={isSignInPopupOpen}
         onClose={() => setIsSignInPopupOpen(false)}
       />
-    </div>
+    </main>
   );
 };
 
