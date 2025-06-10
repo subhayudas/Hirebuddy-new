@@ -84,6 +84,12 @@ interface Settings {
   showPhoto: boolean;
   sectionOrder: string[];
   enabledSections: Record<string, boolean>;
+  margins?: string;
+  headerStyle?: string;
+  showDividers?: boolean;
+  bulletStyle?: string;
+  sectionSpacing?: number;
+  textAlign?: string;
 }
 
 interface EnhancedResumePreviewProps {
@@ -148,10 +154,86 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
 }) => {
   const colors = colorSchemes[settings.colorScheme as keyof typeof colorSchemes] || colorSchemes.blue;
   
+  // Get font family CSS value
+  const getFontFamily = () => {
+    switch (settings.fontFamily) {
+      case 'Inter':
+        return 'Inter, sans-serif';
+      case 'Roboto':
+        return 'Roboto, sans-serif';
+      case 'Open Sans':
+        return '"Open Sans", sans-serif';
+      case 'Lato':
+        return 'Lato, sans-serif';
+      case 'Arial':
+        return 'Arial, sans-serif';
+      case 'Times New Roman':
+        return '"Times New Roman", serif';
+      case 'Georgia':
+        return 'Georgia, serif';
+      default:
+        return 'Inter, sans-serif';
+    }
+  };
+
+  // Get line height based on spacing
+  const getLineHeight = () => {
+    switch (settings.spacing) {
+      case 'compact':
+        return 1.3;
+      case 'normal':
+        return 1.4;
+      case 'relaxed':
+        return 1.6;
+      default:
+        return 1.4;
+    }
+  };
+
+  // Get margins based on settings
+  const getMargins = () => {
+    switch (settings.margins) {
+      case 'narrow':
+        return '12mm';
+      case 'normal':
+        return '15mm';
+      case 'wide':
+        return '20mm';
+      default:
+        return '15mm';
+    }
+  };
+
+  // Get header layout based on header style
+  const getHeaderLayout = () => {
+    switch (settings.headerStyle) {
+      case 'centered':
+        return 'text-center';
+      case 'modern':
+        return 'flex justify-between items-start';
+      case 'classic':
+      default:
+        return 'text-left';
+    }
+  };
+
+  // Get dynamic font sizes based on base font size
+  const getFontSizes = () => {
+    const base = settings.fontSize;
+    return {
+      name: `${Math.max(base + 8, 16)}px`, // Name should be larger
+      sectionTitle: `${Math.max(base + 2, 12)}px`, // Section titles slightly larger
+      body: `${base}px`, // Body text uses base size
+      small: `${Math.max(base - 1, 8)}px`, // Small text slightly smaller
+    };
+  };
+
+  const fontSizes = getFontSizes();
+
   // Software Engineer template styles
   const getTemplateStyles = () => {
     return {
-      container: "font-serif bg-white text-black leading-relaxed",
+      container: "bg-white text-black",
       header: "flex justify-between items-start mb-4",
       headerName: "text-xl font-bold mb-2",
       headerDetails: "text-xs space-y-1",
@@ -285,8 +367,14 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className={templateStyles.section}
+        style={{ 
+          marginBottom: `${settings.sectionSpacing || 16}px`,
+          textAlign: settings.textAlign === 'justify' ? 'justify' : 'left'
+        }}
       >
-        <h2 className={templateStyles.sectionTitle}>
+        <h2 className={templateStyles.sectionTitle} style={{
+          borderBottom: settings.showDividers !== false ? '1px solid black' : 'none'
+        }}>
           {title}
         </h2>
         {children}
@@ -331,7 +419,11 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
               <ul className="space-y-1">
                 {exp.achievements.map((achievement, i) => (
                   <li key={i} className="text-xs text-gray-700 flex items-start gap-2">
-                    <span className="w-1 h-1 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: colors.primary }} />
+                    <span className="flex-shrink-0 mt-1">
+                      {settings.bulletStyle === 'dash' ? '-' :
+                       settings.bulletStyle === 'arrow' ? '→' :
+                       settings.bulletStyle === 'chevron' ? '›' : '•'}
+                    </span>
                     {achievement}
                   </li>
                 ))}
@@ -625,81 +717,186 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
   // Software Engineer Template Render
   return (
     <div className="w-full max-w-4xl">
-      <div id="resume-content" className="bg-white text-black p-8 shadow-lg min-h-[11in] font-serif text-xs"
+      <div id="resume-content" className="bg-white text-black shadow-lg min-h-[11in]"
            style={{ 
              width: '210mm',
              minHeight: '297mm',
-             padding: '15mm',
+             padding: getMargins(),
              margin: '0',
-             boxSizing: 'border-box'
+             boxSizing: 'border-box',
+             fontFamily: getFontFamily(),
+             fontSize: `${settings.fontSize}pt`,
+             lineHeight: getLineHeight(),
+             textAlign: settings.textAlign === 'justify' ? 'justify' : 'left'
            }}>
         {/* Header */}
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h1 className="text-xl font-bold mb-2">{data.personalInfo.name || 'Your Name'}</h1>
-            <div className="space-y-1 text-xs">
-              {data.personalInfo.website && (
-                <div>
-                  <strong>Portfolio:</strong>{' '}
-                  <a href={data.personalInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                    {data.personalInfo.website}
-                  </a>
-                </div>
-              )}
-              {data.personalInfo.github && (
-                <div>
-                  <strong>Github:</strong>{' '}
-                  <a href={data.personalInfo.github} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                    {data.personalInfo.github}
-                  </a>
-                </div>
-              )}
+        <div className={getHeaderLayout()} style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
+          {settings.headerStyle === 'centered' ? (
+            <div className="text-center">
+              <h1 className="font-bold mb-2" style={{ fontSize: fontSizes.name }}>
+                {data.personalInfo.name || 'Your Name'}
+              </h1>
+              <div className="space-y-1" style={{ fontSize: fontSizes.small }}>
+                {data.personalInfo.email && (
+                  <div>
+                    <strong>Email:</strong>{' '}
+                    <a href={`mailto:${data.personalInfo.email}`} className="text-blue-600 underline">
+                      {data.personalInfo.email}
+                    </a>
+                  </div>
+                )}
+                {data.personalInfo.phone && (
+                  <div><strong>Mobile:</strong> {data.personalInfo.phone}</div>
+                )}
+                {data.personalInfo.website && (
+                  <div>
+                    <strong>Portfolio:</strong>{' '}
+                    <a href={data.personalInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {data.personalInfo.website}
+                    </a>
+                  </div>
+                )}
+                {data.personalInfo.linkedin && (
+                  <div>
+                    <strong>LinkedIn:</strong>{' '}
+                    <a href={data.personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {data.personalInfo.linkedin}
+                    </a>
+                  </div>
+                )}
+                {data.personalInfo.github && (
+                  <div>
+                    <strong>GitHub:</strong>{' '}
+                    <a href={data.personalInfo.github} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {data.personalInfo.github}
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-          <div className="text-right text-xs space-y-1">
-            {data.personalInfo.email && (
+          ) : settings.headerStyle === 'modern' ? (
+            <>
               <div>
-                <strong>Email:</strong>{' '}
-                <a href={`mailto:${data.personalInfo.email}`} className="text-blue-600 underline">
-                  {data.personalInfo.email}
-                </a>
+                <h1 className="font-bold mb-2" style={{ fontSize: fontSizes.name }}>
+                  {data.personalInfo.name || 'Your Name'}
+                </h1>
+                <div className="space-y-1" style={{ fontSize: fontSizes.small }}>
+                  {data.personalInfo.website && (
+                    <div>
+                      <strong>Portfolio:</strong>{' '}
+                      <a href={data.personalInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                        {data.personalInfo.website}
+                      </a>
+                    </div>
+                  )}
+                  {data.personalInfo.github && (
+                    <div>
+                      <strong>GitHub:</strong>{' '}
+                      <a href={data.personalInfo.github} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                        {data.personalInfo.github}
+                      </a>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-            {data.personalInfo.phone && (
-              <div><strong>Mobile:</strong> {data.personalInfo.phone}</div>
-            )}
-            {data.personalInfo.linkedin && (
-              <div>
-                <strong>Linkedin:</strong>{' '}
-                <a href={data.personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                  {data.personalInfo.linkedin}
-                </a>
+              <div className="text-right space-y-1" style={{ fontSize: fontSizes.small }}>
+                {data.personalInfo.email && (
+                  <div>
+                    <strong>Email:</strong>{' '}
+                    <a href={`mailto:${data.personalInfo.email}`} className="text-blue-600 underline">
+                      {data.personalInfo.email}
+                    </a>
+                  </div>
+                )}
+                {data.personalInfo.phone && (
+                  <div><strong>Mobile:</strong> {data.personalInfo.phone}</div>
+                )}
+                {data.personalInfo.linkedin && (
+                  <div>
+                    <strong>LinkedIn:</strong>{' '}
+                    <a href={data.personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {data.personalInfo.linkedin}
+                    </a>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </>
+          ) : (
+            // Classic style
+            <div>
+              <h1 className="font-bold mb-2" style={{ fontSize: fontSizes.name }}>
+                {data.personalInfo.name || 'Your Name'}
+              </h1>
+              <div className="space-y-1" style={{ fontSize: fontSizes.small }}>
+                {data.personalInfo.email && (
+                  <div>
+                    <strong>Email:</strong>{' '}
+                    <a href={`mailto:${data.personalInfo.email}`} className="text-blue-600 underline">
+                      {data.personalInfo.email}
+                    </a>
+                  </div>
+                )}
+                {data.personalInfo.phone && (
+                  <div><strong>Mobile:</strong> {data.personalInfo.phone}</div>
+                )}
+                {data.personalInfo.website && (
+                  <div>
+                    <strong>Portfolio:</strong>{' '}
+                    <a href={data.personalInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {data.personalInfo.website}
+                    </a>
+                  </div>
+                )}
+                {data.personalInfo.linkedin && (
+                  <div>
+                    <strong>LinkedIn:</strong>{' '}
+                    <a href={data.personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {data.personalInfo.linkedin}
+                    </a>
+                  </div>
+                )}
+                {data.personalInfo.github && (
+                  <div>
+                    <strong>GitHub:</strong>{' '}
+                    <a href={data.personalInfo.github} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {data.personalInfo.github}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Education */}
         {data.education.length > 0 && (
-          <div className="mb-4">
-            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">EDUCATION</h2>
+          <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
+            <h2 
+              className="font-bold mb-2 pb-1" 
+              style={{ 
+                fontSize: fontSizes.sectionTitle,
+                borderBottom: settings.showDividers !== false ? '1px solid black' : 'none'
+              }}
+            >
+              EDUCATION
+            </h2>
             {data.education.map((edu, index) => (
               <div key={edu.id || index} className="flex justify-between items-start mb-2">
                 <div>
-                  <div className="font-bold text-xs">{edu.school}</div>
-                  <div className="italic text-xs">
+                  <div className="font-bold" style={{ fontSize: fontSizes.body }}>{edu.school}</div>
+                  <div className="italic" style={{ fontSize: fontSizes.body }}>
                     {edu.degree}
                     {edu.gpa && (
                       <>; GPA: {edu.gpa}</>
                     )}
                   </div>
                   {edu.coursework && edu.coursework.length > 0 && (
-                    <div className="text-xs mt-1">
+                    <div className="mt-1" style={{ fontSize: fontSizes.small }}>
                       <strong>Courses:</strong> {edu.coursework.join(', ')}
                     </div>
                   )}
                 </div>
-                <div className="text-right text-xs">
+                <div className="text-right" style={{ fontSize: fontSizes.small }}>
                   <div>{edu.location}</div>
                   <div>{formatDateRange(edu.startDate, edu.endDate)}</div>
                 </div>
@@ -710,9 +907,17 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
 
         {/* Skills Summary */}
         {(data.skills.languages?.length > 0 || data.skills.frameworks?.length > 0 || data.skills.technical?.length > 0 || data.skills.soft?.length > 0) && (
-          <div className="mb-4">
-            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">SKILLS SUMMARY</h2>
-            <div className="space-y-1 text-xs">
+          <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
+            <h2 
+              className="font-bold mb-2 pb-1" 
+              style={{ 
+                fontSize: fontSizes.sectionTitle,
+                borderBottom: settings.showDividers !== false ? '1px solid black' : 'none'
+              }}
+            >
+              SKILLS SUMMARY
+            </h2>
+            <div className="space-y-1" style={{ fontSize: fontSizes.body }}>
               {data.skills.languages?.length > 0 && (
                 <div>
                   <strong>Languages:</strong> {data.skills.languages.join(', ')}
@@ -739,29 +944,41 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
 
         {/* Experience */}
         {data.experience.length > 0 && (
-          <div className="mb-4">
-            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">EXPERIENCE</h2>
+          <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
+            <h2 
+              className="font-bold mb-2 pb-1" 
+              style={{ 
+                fontSize: fontSizes.sectionTitle,
+                borderBottom: settings.showDividers !== false ? '1px solid black' : 'none'
+              }}
+            >
+              EXPERIENCE
+            </h2>
             {data.experience.map((exp) => (
               <div key={exp.id} className="mb-3">
                 <div className="flex justify-between items-start mb-1">
                   <div>
-                    <div className="font-bold text-xs">{exp.company}</div>
-                    <div className="italic text-xs">{exp.jobTitle}</div>
+                    <div className="font-bold" style={{ fontSize: fontSizes.body }}>{exp.company}</div>
+                    <div className="italic" style={{ fontSize: fontSizes.body }}>{exp.jobTitle}</div>
                   </div>
-                  <div className="text-right text-xs">
+                  <div className="text-right" style={{ fontSize: fontSizes.small }}>
                     <div>{exp.location}</div>
                     <div>{formatDateRange(exp.startDate, exp.endDate, exp.current)}</div>
                   </div>
                 </div>
                 {exp.description && (
                   <div className="ml-3 mb-1">
-                    <div className="text-xs">{exp.description}</div>
+                    <div style={{ fontSize: fontSizes.body }}>{exp.description}</div>
                   </div>
                 )}
                 {exp.achievements && exp.achievements.length > 0 && (
                   <div className="ml-3">
                     {exp.achievements.map((achievement, idx) => (
-                      <div key={idx} className="text-xs mb-1">• {achievement}</div>
+                      <div key={idx} className="mb-1" style={{ fontSize: fontSizes.body }}>
+                        {settings.bulletStyle === 'dash' ? '-' :
+                         settings.bulletStyle === 'arrow' ? '→' :
+                         settings.bulletStyle === 'chevron' ? '›' : '•'} {achievement}
+                      </div>
                     ))}
                   </div>
                 )}
@@ -772,11 +989,19 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
 
         {/* Projects */}
         {data.projects.length > 0 && (
-          <div className="mb-4">
-            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">PROJECTS</h2>
+          <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
+            <h2 
+              className="font-bold mb-2 pb-1" 
+              style={{ 
+                fontSize: fontSizes.sectionTitle,
+                borderBottom: settings.showDividers !== false ? '1px solid black' : 'none'
+              }}
+            >
+              PROJECTS
+            </h2>
             {data.projects.map((project) => (
               <div key={project.id} className="mb-2">
-                <div className="text-xs">
+                <div style={{ fontSize: fontSizes.body }}>
                   <strong>{project.name}:</strong> {project.description}
                   {project.technologies && project.technologies.length > 0 && (
                     <> Tech: {project.technologies.join(', ')}</>
@@ -789,11 +1014,23 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
 
         {/* Certifications as Honors and Awards */}
         {data.certifications.length > 0 && (
-          <div className="mb-4">
-            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">HONORS AND AWARDS</h2>
+          <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
+            <h2 
+              className="font-bold mb-2 pb-1" 
+              style={{ 
+                fontSize: fontSizes.sectionTitle,
+                borderBottom: settings.showDividers !== false ? '1px solid black' : 'none'
+              }}
+            >
+              HONORS AND AWARDS
+            </h2>
             {data.certifications.map((cert) => (
               <div key={cert.id} className="mb-1">
-                <div className="text-xs">• {cert.name} - {cert.issuer}</div>
+                <div style={{ fontSize: fontSizes.body }}>
+                  {settings.bulletStyle === 'dash' ? '-' :
+                   settings.bulletStyle === 'arrow' ? '→' :
+                   settings.bulletStyle === 'chevron' ? '›' : '•'} {cert.name} - {cert.issuer}
+                </div>
               </div>
             ))}
           </div>
@@ -801,16 +1038,24 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
 
         {/* Volunteer Experience */}
         {data.volunteer.length > 0 && (
-          <div className="mb-4">
-            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">VOLUNTEER EXPERIENCE</h2>
+          <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
+            <h2 
+              className="font-bold mb-2 pb-1" 
+              style={{ 
+                fontSize: fontSizes.sectionTitle,
+                borderBottom: settings.showDividers !== false ? '1px solid black' : 'none'
+              }}
+            >
+              VOLUNTEER EXPERIENCE
+            </h2>
             {data.volunteer.map((vol) => (
               <div key={vol.id} className="mb-3">
                 <div className="flex justify-between items-start mb-1">
                   <div>
-                    <div className="font-bold text-xs">{vol.role} at {vol.organization}</div>
-                    <div className="italic text-xs">{vol.description}</div>
+                    <div className="font-bold" style={{ fontSize: fontSizes.body }}>{vol.role} at {vol.organization}</div>
+                    <div className="italic" style={{ fontSize: fontSizes.body }}>{vol.description}</div>
                   </div>
-                  <div className="text-right text-xs">
+                  <div className="text-right" style={{ fontSize: fontSizes.small }}>
                     <div>{formatDateRange(vol.startDate, vol.endDate)}</div>
                   </div>
                 </div>

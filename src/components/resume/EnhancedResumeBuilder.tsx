@@ -45,6 +45,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 
+
 // Enhanced form sections
 import { EnhancedPersonalInfoSection } from "./enhanced-sections/EnhancedPersonalInfoSection";
 import { EnhancedSummarySection } from "./enhanced-sections/EnhancedSummarySection";
@@ -145,6 +146,12 @@ interface Settings {
   showPhoto: boolean;
   sectionOrder: string[];
   enabledSections: Record<string, boolean>;
+  margins?: string;
+  headerStyle?: string;
+  showDividers?: boolean;
+  bulletStyle?: string;
+  sectionSpacing?: number;
+  textAlign?: string;
 }
 
 interface EnhancedResumeBuilderProps {
@@ -220,6 +227,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   const [activeSection, setActiveSection] = useState('ai');
   const [atsScore, setAtsScore] = useState(0);
   const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
+  const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -353,6 +361,32 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
       }
     }
   }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Ctrl/Cmd + E to toggle expand preview
+      if ((event.ctrlKey || event.metaKey) && event.key === 'e') {
+        event.preventDefault();
+        setIsPreviewExpanded(!isPreviewExpanded);
+      }
+      // Ctrl/Cmd + S to save
+      if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+        event.preventDefault();
+        localStorage.setItem('enhanced_resume_data', JSON.stringify(resumeData));
+        localStorage.setItem('enhanced_resume_settings', JSON.stringify(settings));
+        setLastSaved(new Date());
+      }
+      // Ctrl/Cmd + F to toggle fullscreen
+      if ((event.ctrlKey || event.metaKey) && event.key === 'f') {
+        event.preventDefault();
+        setIsFullscreenPreview(!isFullscreenPreview);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isPreviewExpanded, isFullscreenPreview, resumeData, settings]);
 
   // Update functions
   const updateResumeData = (section: keyof ResumeData, data: any) => {
@@ -603,18 +637,41 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     Settings
                   </Button>
                   
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsPreviewExpanded(!isPreviewExpanded)}
-                  >
-                    {isPreviewExpanded ? (
-                      <Minimize2 className="w-4 h-4 mr-2" />
-                    ) : (
-                      <Maximize2 className="w-4 h-4 mr-2" />
-                    )}
-                    {isPreviewExpanded ? 'Minimize' : 'Expand'} Preview
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsPreviewExpanded(!isPreviewExpanded)}
+                      >
+                        {isPreviewExpanded ? (
+                          <Minimize2 className="w-4 h-4 mr-2" />
+                        ) : (
+                          <Maximize2 className="w-4 h-4 mr-2" />
+                        )}
+                        {isPreviewExpanded ? 'Minimize' : 'Expand'} Preview
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Keyboard shortcut: Ctrl/Cmd + E</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsFullscreenPreview(true)}
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        Fullscreen
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Keyboard shortcut: Ctrl/Cmd + F</p>
+                    </TooltipContent>
+                  </Tooltip>
 
                   <Button 
                     onClick={generatePDF}
@@ -792,19 +849,55 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                         <Eye className="w-5 h-5 text-blue-600" />
                         Live Preview
                       </CardTitle>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">Scale:</span>
-                        <Slider
-                          value={[previewScale]}
-                          onValueChange={([value]) => setPreviewScale(value)}
-                          min={0.5}
-                          max={1.2}
-                          step={0.1}
-                          className="w-20"
-                        />
-                        <span className="text-sm text-gray-600 w-12">
-                          {Math.round(previewScale * 100)}%
-                        </span>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-600">Scale:</span>
+                          <Slider
+                            value={[previewScale]}
+                            onValueChange={([value]) => setPreviewScale(value)}
+                            min={0.5}
+                            max={1.2}
+                            step={0.1}
+                            className="w-20"
+                          />
+                          <span className="text-sm text-gray-600 w-12">
+                            {Math.round(previewScale * 100)}%
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPreviewScale(0.5)}
+                            className="px-2 py-1 text-xs"
+                          >
+                            50%
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPreviewScale(0.75)}
+                            className="px-2 py-1 text-xs"
+                          >
+                            75%
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPreviewScale(1)}
+                            className="px-2 py-1 text-xs"
+                          >
+                            100%
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPreviewScale(1.2)}
+                            className="px-2 py-1 text-xs"
+                          >
+                            120%
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardHeader>
@@ -856,31 +949,91 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
               </div>
 
               {/* Font Settings */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <label className="text-sm font-medium">Font Family</label>
-                  <Select value={settings.fontFamily} onValueChange={(value) => updateSettings({ fontFamily: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Inter">Inter</SelectItem>
-                      <SelectItem value="Roboto">Roboto</SelectItem>
-                      <SelectItem value="Open Sans">Open Sans</SelectItem>
-                      <SelectItem value="Lato">Lato</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <label className="text-sm font-medium">Font Family</label>
+                    <Select value={settings.fontFamily} onValueChange={(value) => updateSettings({ fontFamily: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Inter">
+                          <span style={{ fontFamily: 'Inter, sans-serif' }}>Inter (Modern Sans-serif)</span>
+                        </SelectItem>
+                        <SelectItem value="Roboto">
+                          <span style={{ fontFamily: 'Roboto, sans-serif' }}>Roboto (Clean Sans-serif)</span>
+                        </SelectItem>
+                        <SelectItem value="Open Sans">
+                          <span style={{ fontFamily: '"Open Sans", sans-serif' }}>Open Sans (Friendly Sans-serif)</span>
+                        </SelectItem>
+                        <SelectItem value="Lato">
+                          <span style={{ fontFamily: 'Lato, sans-serif' }}>Lato (Humanist Sans-serif)</span>
+                        </SelectItem>
+                        <SelectItem value="Arial">
+                          <span style={{ fontFamily: 'Arial, sans-serif' }}>Arial (Classic Sans-serif)</span>
+                        </SelectItem>
+                        <SelectItem value="Times New Roman">
+                          <span style={{ fontFamily: '"Times New Roman", serif' }}>Times New Roman (Traditional Serif)</span>
+                        </SelectItem>
+                        <SelectItem value="Georgia">
+                          <span style={{ fontFamily: 'Georgia, serif' }}>Georgia (Modern Serif)</span>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-sm font-medium">Font Size: {settings.fontSize}pt</label>
+                    <Slider
+                      value={[settings.fontSize]}
+                      onValueChange={([value]) => updateSettings({ fontSize: value })}
+                      min={8}
+                      max={16}
+                      step={0.5}
+                    />
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>8pt</span>
+                      <span>12pt</span>
+                      <span>16pt</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-3">
-                  <label className="text-sm font-medium">Font Size: {settings.fontSize}pt</label>
-                  <Slider
-                    value={[settings.fontSize]}
-                    onValueChange={([value]) => updateSettings({ fontSize: value })}
-                    min={9}
-                    max={14}
-                    step={0.5}
-                  />
+                
+                {/* Font Preview */}
+                <div className="p-4 border rounded-lg bg-gray-50">
+                  <div className="text-sm font-medium text-gray-700 mb-2">Font Preview</div>
+                  <div 
+                    style={{ 
+                      fontFamily: settings.fontFamily === 'Inter' ? 'Inter, sans-serif' :
+                                 settings.fontFamily === 'Roboto' ? 'Roboto, sans-serif' :
+                                 settings.fontFamily === 'Open Sans' ? '"Open Sans", sans-serif' :
+                                 settings.fontFamily === 'Lato' ? 'Lato, sans-serif' :
+                                 settings.fontFamily === 'Arial' ? 'Arial, sans-serif' :
+                                 settings.fontFamily === 'Times New Roman' ? '"Times New Roman", serif' :
+                                 settings.fontFamily === 'Georgia' ? 'Georgia, serif' : 'Inter, sans-serif',
+                      fontSize: `${settings.fontSize}pt`,
+                      lineHeight: settings.spacing === 'compact' ? 1.3 : settings.spacing === 'relaxed' ? 1.6 : 1.4
+                    }}
+                  >
+                    <div className="font-bold mb-1">John Doe</div>
+                    <div className="text-sm">Software Engineer with 5+ years of experience in full-stack development.</div>
+                  </div>
                 </div>
+              </div>
+
+              {/* Spacing Settings */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium">Line Spacing</label>
+                <Select value={settings.spacing} onValueChange={(value) => updateSettings({ spacing: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="compact">Compact (1.3)</SelectItem>
+                    <SelectItem value="normal">Normal (1.4)</SelectItem>
+                    <SelectItem value="relaxed">Relaxed (1.6)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Color Scheme */}
@@ -898,6 +1051,160 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       {color}
                     </Button>
                   ))}
+                </div>
+              </div>
+
+              {/* Advanced Settings */}
+              <div className="space-y-4 pt-4 border-t">
+                <h4 className="text-sm font-semibold text-gray-900">Advanced Settings</h4>
+                
+                {/* Margins */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium">Page Margins</label>
+                  <Select value={settings.margins || 'normal'} onValueChange={(value) => updateSettings({ margins: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="narrow">Narrow (0.5 inch)</SelectItem>
+                      <SelectItem value="normal">Normal (0.75 inch)</SelectItem>
+                      <SelectItem value="wide">Wide (1 inch)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Header Style */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium">Header Style</label>
+                  <Select value={settings.headerStyle || 'classic'} onValueChange={(value) => updateSettings({ headerStyle: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="classic">Classic (Left-aligned)</SelectItem>
+                      <SelectItem value="centered">Centered</SelectItem>
+                      <SelectItem value="modern">Modern (Split layout)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Section Spacing */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium">Section Spacing: {settings.sectionSpacing || 16}px</label>
+                  <Slider
+                    value={[settings.sectionSpacing || 16]}
+                    onValueChange={([value]) => updateSettings({ sectionSpacing: value })}
+                    min={8}
+                    max={32}
+                    step={2}
+                  />
+                  <div className="flex justify-between text-xs text-gray-500">
+                    <span>Tight</span>
+                    <span>Normal</span>
+                    <span>Loose</span>
+                  </div>
+                </div>
+
+                {/* Section Dividers */}
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium">Section Dividers</label>
+                  <Switch
+                    checked={settings.showDividers !== false}
+                    onCheckedChange={(checked) => updateSettings({ showDividers: checked })}
+                  />
+                </div>
+
+                {/* Bullet Points Style */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium">Bullet Point Style</label>
+                  <Select value={settings.bulletStyle || 'bullet'} onValueChange={(value) => updateSettings({ bulletStyle: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="bullet">• Bullet</SelectItem>
+                      <SelectItem value="dash">- Dash</SelectItem>
+                      <SelectItem value="arrow">→ Arrow</SelectItem>
+                      <SelectItem value="chevron">› Chevron</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Text Alignment */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium">Text Alignment</label>
+                  <Select value={settings.textAlign || 'left'} onValueChange={(value) => updateSettings({ textAlign: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="left">Left Aligned</SelectItem>
+                      <SelectItem value="justify">Justified</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Theme Presets */}
+              <div className="space-y-4 pt-4 border-t">
+                <h4 className="text-sm font-semibold text-gray-900">Theme Presets</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => updateSettings({
+                      fontFamily: 'Times New Roman',
+                      fontSize: 11,
+                      spacing: 'normal',
+                      colorScheme: 'blue',
+                      margins: 'normal'
+                    })}
+                    className="justify-start"
+                  >
+                    📄 Traditional
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => updateSettings({
+                      fontFamily: 'Inter',
+                      fontSize: 10,
+                      spacing: 'compact',
+                      colorScheme: 'indigo',
+                      margins: 'narrow'
+                    })}
+                    className="justify-start"
+                  >
+                    🚀 Modern
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => updateSettings({
+                      fontFamily: 'Georgia',
+                      fontSize: 12,
+                      spacing: 'relaxed',
+                      colorScheme: 'green',
+                      margins: 'wide'
+                    })}
+                    className="justify-start"
+                  >
+                    🎨 Creative
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => updateSettings({
+                      fontFamily: 'Arial',
+                      fontSize: 9,
+                      spacing: 'compact',
+                      colorScheme: 'purple',
+                      margins: 'narrow'
+                    })}
+                    className="justify-start"
+                  >
+                    📊 Executive
+                  </Button>
                 </div>
               </div>
 
@@ -920,6 +1227,82 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                   ))}
                 </div>
               </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Fullscreen Preview Dialog */}
+        <Dialog open={isFullscreenPreview} onOpenChange={setIsFullscreenPreview}>
+          <DialogContent className="max-w-[95vw] max-h-[95vh] w-full h-full p-0">
+            <DialogHeader className="p-6 pb-0">
+              <div className="flex items-center justify-between">
+                <DialogTitle className="flex items-center gap-2">
+                  <Eye className="w-5 h-5" />
+                  Fullscreen Preview
+                </DialogTitle>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Scale:</span>
+                    <Slider
+                      value={[previewScale]}
+                      onValueChange={([value]) => setPreviewScale(value)}
+                      min={0.3}
+                      max={1.5}
+                      step={0.1}
+                      className="w-24"
+                    />
+                    <span className="text-sm text-gray-600 w-12">
+                      {Math.round(previewScale * 100)}%
+                    </span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPreviewScale(1)}
+                  >
+                    Reset Zoom
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={generatePDF}
+                    disabled={isGeneratingPdf}
+                  >
+                    {isGeneratingPdf ? (
+                      <>
+                        <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-gray-600 border-t-transparent" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4 mr-2" />
+                        Download PDF
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </DialogHeader>
+            <div className="flex-1 p-6 pt-4">
+              <ScrollArea className="h-[calc(95vh-8rem)]">
+                <div className="flex justify-center">
+                  <motion.div
+                    style={{ 
+                      transform: `scale(${previewScale})`, 
+                      transformOrigin: 'top center',
+                      marginBottom: `${(1 - previewScale) * 500}px` // Adjust margin based on scale
+                    }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <EnhancedResumePreview
+                      data={resumeData}
+                      settings={settings}
+                    />
+                  </motion.div>
+                </div>
+              </ScrollArea>
             </div>
           </DialogContent>
         </Dialog>
