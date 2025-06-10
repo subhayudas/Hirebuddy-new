@@ -211,6 +211,14 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
         return 'text-center';
       case 'modern':
         return 'flex justify-between items-start';
+      case 'split-balanced':
+        return 'grid grid-cols-2 gap-4 items-start';
+      case 'split-contact-right':
+        return 'flex justify-between items-start';
+      case 'split-contact-left':
+        return 'flex flex-row-reverse justify-between items-start';
+      case 'minimalist':
+        return 'space-y-2';
       case 'classic':
       default:
         return 'text-left';
@@ -774,7 +782,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
                 )}
               </div>
             </div>
-          ) : settings.headerStyle === 'modern' ? (
+          ) : settings.headerStyle === 'modern' || settings.headerStyle === 'split-contact-right' ? (
             <>
               <div>
                 <h1 className="font-bold mb-2" style={{ fontSize: fontSizes.name }}>
@@ -818,6 +826,129 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
                       {data.personalInfo.linkedin}
                     </a>
                   </div>
+                )}
+              </div>
+            </>
+          ) : settings.headerStyle === 'split-contact-left' ? (
+            <>
+              <div className="text-left space-y-1" style={{ fontSize: fontSizes.small }}>
+                {data.personalInfo.email && (
+                  <div>
+                    <strong>Email:</strong>{' '}
+                    <a href={`mailto:${data.personalInfo.email}`} className="text-blue-600 underline">
+                      {data.personalInfo.email}
+                    </a>
+                  </div>
+                )}
+                {data.personalInfo.phone && (
+                  <div><strong>Mobile:</strong> {data.personalInfo.phone}</div>
+                )}
+                {data.personalInfo.linkedin && (
+                  <div>
+                    <strong>LinkedIn:</strong>{' '}
+                    <a href={data.personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {data.personalInfo.linkedin}
+                    </a>
+                  </div>
+                )}
+              </div>
+              <div>
+                <h1 className="font-bold mb-2 text-right" style={{ fontSize: fontSizes.name }}>
+                  {data.personalInfo.name || 'Your Name'}
+                </h1>
+                <div className="space-y-1 text-right" style={{ fontSize: fontSizes.small }}>
+                  {data.personalInfo.website && (
+                    <div>
+                      <strong>Portfolio:</strong>{' '}
+                      <a href={data.personalInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                        {data.personalInfo.website}
+                      </a>
+                    </div>
+                  )}
+                  {data.personalInfo.github && (
+                    <div>
+                      <strong>GitHub:</strong>{' '}
+                      <a href={data.personalInfo.github} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                        {data.personalInfo.github}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : settings.headerStyle === 'split-balanced' ? (
+            <>
+              <div>
+                <h1 className="font-bold mb-2" style={{ fontSize: fontSizes.name }}>
+                  {data.personalInfo.name || 'Your Name'}
+                </h1>
+                {data.personalInfo.email && (
+                  <div style={{ fontSize: fontSizes.small }}>
+                    <strong>Email:</strong>{' '}
+                    <a href={`mailto:${data.personalInfo.email}`} className="text-blue-600 underline">
+                      {data.personalInfo.email}
+                    </a>
+                  </div>
+                )}
+                {data.personalInfo.phone && (
+                  <div style={{ fontSize: fontSizes.small }}><strong>Mobile:</strong> {data.personalInfo.phone}</div>
+                )}
+              </div>
+              <div className="space-y-1" style={{ fontSize: fontSizes.small }}>
+                {data.personalInfo.website && (
+                  <div>
+                    <strong>Portfolio:</strong>{' '}
+                    <a href={data.personalInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {data.personalInfo.website}
+                    </a>
+                  </div>
+                )}
+                {data.personalInfo.linkedin && (
+                  <div>
+                    <strong>LinkedIn:</strong>{' '}
+                    <a href={data.personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {data.personalInfo.linkedin}
+                    </a>
+                  </div>
+                )}
+                {data.personalInfo.github && (
+                  <div>
+                    <strong>GitHub:</strong>{' '}
+                    <a href={data.personalInfo.github} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {data.personalInfo.github}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : settings.headerStyle === 'minimalist' ? (
+            <>
+              <h1 className="font-bold" style={{ fontSize: fontSizes.name }}>
+                {data.personalInfo.name || 'Your Name'}
+              </h1>
+              <div className="flex flex-wrap gap-x-4 gap-y-1" style={{ fontSize: fontSizes.small }}>
+                {data.personalInfo.email && (
+                  <a href={`mailto:${data.personalInfo.email}`} className="text-blue-600 underline">
+                    {data.personalInfo.email}
+                  </a>
+                )}
+                {data.personalInfo.phone && (
+                  <span>{data.personalInfo.phone}</span>
+                )}
+                {data.personalInfo.website && (
+                  <a href={data.personalInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    Portfolio
+                  </a>
+                )}
+                {data.personalInfo.linkedin && (
+                  <a href={data.personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    LinkedIn
+                  </a>
+                )}
+                {data.personalInfo.github && (
+                  <a href={data.personalInfo.github} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    GitHub
+                  </a>
                 )}
               </div>
             </>

@@ -938,52 +938,19 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
 
               {/* Font Settings */}
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <label className="text-sm font-medium">Font Family</label>
-                    <Select value={settings.fontFamily} onValueChange={(value) => updateSettings({ fontFamily: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Inter">
-                          <span style={{ fontFamily: 'Inter, sans-serif' }}>Inter (Modern Sans-serif)</span>
-                        </SelectItem>
-                        <SelectItem value="Roboto">
-                          <span style={{ fontFamily: 'Roboto, sans-serif' }}>Roboto (Clean Sans-serif)</span>
-                        </SelectItem>
-                        <SelectItem value="Open Sans">
-                          <span style={{ fontFamily: '"Open Sans", sans-serif' }}>Open Sans (Friendly Sans-serif)</span>
-                        </SelectItem>
-                        <SelectItem value="Lato">
-                          <span style={{ fontFamily: 'Lato, sans-serif' }}>Lato (Humanist Sans-serif)</span>
-                        </SelectItem>
-                        <SelectItem value="Arial">
-                          <span style={{ fontFamily: 'Arial, sans-serif' }}>Arial (Classic Sans-serif)</span>
-                        </SelectItem>
-                        <SelectItem value="Times New Roman">
-                          <span style={{ fontFamily: '"Times New Roman", serif' }}>Times New Roman (Traditional Serif)</span>
-                        </SelectItem>
-                        <SelectItem value="Georgia">
-                          <span style={{ fontFamily: 'Georgia, serif' }}>Georgia (Modern Serif)</span>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-3">
-                    <label className="text-sm font-medium">Font Size: {settings.fontSize}pt</label>
-                    <Slider
-                      value={[settings.fontSize]}
-                      onValueChange={([value]) => updateSettings({ fontSize: value })}
-                      min={8}
-                      max={16}
-                      step={0.5}
-                    />
-                    <div className="flex justify-between text-xs text-gray-500">
-                      <span>8pt</span>
-                      <span>12pt</span>
-                      <span>16pt</span>
-                    </div>
+                <div className="space-y-3">
+                  <label className="text-sm font-medium">Font Size: {settings.fontSize}pt</label>
+                  <Slider
+                    value={[settings.fontSize]}
+                    onValueChange={([value]) => updateSettings({ fontSize: value })}
+                    min={8}
+                    max={16}
+                    step={0.5}
+                  />
+                  <div className="flex justify-between text-xs text-gray-500">
+                    <span>8pt</span>
+                    <span>12pt</span>
+                    <span>16pt</span>
                   </div>
                 </div>
                 
@@ -1072,6 +1039,10 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       <SelectItem value="classic">Classic (Left-aligned)</SelectItem>
                       <SelectItem value="centered">Centered</SelectItem>
                       <SelectItem value="modern">Modern (Split layout)</SelectItem>
+                      <SelectItem value="split-balanced">Split Balanced (Equal columns)</SelectItem>
+                      <SelectItem value="split-contact-right">Split Contact (Contact info right)</SelectItem>
+                      <SelectItem value="split-contact-left">Split Contact (Contact info left)</SelectItem>
+                      <SelectItem value="minimalist">Minimalist (Clean spacing)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
