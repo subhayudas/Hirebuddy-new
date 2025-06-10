@@ -637,25 +637,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     Settings
                   </Button>
                   
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setIsPreviewExpanded(!isPreviewExpanded)}
-                      >
-                        {isPreviewExpanded ? (
-                          <Minimize2 className="w-4 h-4 mr-2" />
-                        ) : (
-                          <Maximize2 className="w-4 h-4 mr-2" />
-                        )}
-                        {isPreviewExpanded ? 'Minimize' : 'Expand'} Preview
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Keyboard shortcut: Ctrl/Cmd + E</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  
 
                   <Tooltip>
                     <TooltipTrigger asChild>
