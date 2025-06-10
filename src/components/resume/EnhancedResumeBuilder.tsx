@@ -160,7 +160,7 @@ interface EnhancedResumeBuilderProps {
 }
 
 const SECTION_CONFIGS = [
-  { id: 'ai', label: 'AI Assistant', icon: Sparkles, color: 'purple' },
+  { id: 'ai', label: 'Resume Copilot', icon: Sparkles, color: 'purple' },
   { id: 'personal', label: 'Personal Info', icon: User, color: 'blue' },
   { id: 'summary', label: 'Summary', icon: FileText, color: 'green' },
   { id: 'experience', label: 'Experience', icon: Briefcase, color: 'purple' },
@@ -231,6 +231,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showManageSections, setShowManageSections] = useState(false);
   const [previewScale, setPreviewScale] = useState(0.8);
 
   // Refs
@@ -401,6 +402,9 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   };
 
   const toggleSection = (sectionId: string) => {
+    // Skip if trying to toggle the AI section or Personal Info section
+    if (sectionId === 'ai' || sectionId === 'personal') return;
+    
     setSettings(prev => ({
       ...prev,
       enabledSections: {
@@ -586,12 +590,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     <Sparkles className="w-5 h-5 text-blue-600" />
                     Enhanced Resume Builder
                   </h1>
-                  <p className="text-sm text-gray-600">
-                    {template} Template • {progress.completedSections}/{progress.totalSections} sections complete
-                  </p>
-                  <p className="text-xs text-blue-600">
-                    Current template: {settings.template}
-                  </p>
+                  
                 </div>
               </div>
 
@@ -637,7 +636,14 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     Settings
                   </Button>
                   
-                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowManageSections(true)}
+                  >
+                    <Layout className="w-4 h-4 mr-2" />
+                    Manage Sections
+                  </Button>
 
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -721,17 +727,17 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => setActiveSection(section.id)}
-                                    disabled={!isEnabled}
+                                    disabled={!isEnabled && section.id !== 'ai'} // Never disable Resume Copilot
                                     className={`justify-start h-auto p-3 w-full ${
                                       activeSection === section.id 
                                         ? 'bg-blue-50 border border-blue-200 text-blue-700' 
                                         : 'hover:bg-gray-50'
-                                    } ${!isEnabled ? 'opacity-50' : ''}`}
+                                    } ${!isEnabled && section.id !== 'ai' ? 'opacity-50' : ''}`}
                                   >
                                     <div className="flex items-center gap-2 w-full">
                                       {getSectionIcon(section.id, isCompleted)}
                                       <span className="text-sm font-medium">{section.label}</span>
-                                      {!isEnabled && (
+                                      {!isEnabled && section.id !== 'ai' && (
                                         <Badge variant="secondary" className="ml-auto text-xs">
                                           Disabled
                                         </Badge>
@@ -1189,11 +1195,25 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                   </Button>
                 </div>
               </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
-              {/* Section Management */}
+        {/* Manage Sections Dialog */}
+        <Dialog open={showManageSections} onOpenChange={setShowManageSections}>
+          <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Layout className="w-5 h-5" />
+                Manage Resume Sections
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6 mt-4">
               <div className="space-y-3">
-                <label className="text-sm font-medium">Enabled Sections</label>
-                <div className="grid grid-cols-2 gap-3">
+                <p className="text-sm text-gray-600">
+                  Enable or disable sections to customize your resume. The Resume Copilot section is always enabled to help you optimize your resume.
+                </p>
+                <div className="grid grid-cols-1 gap-3">
                   {SECTION_CONFIGS.map((section) => (
                     <div key={section.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center gap-2">
@@ -1203,7 +1223,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       <Switch
                         checked={settings.enabledSections[section.id]}
                         onCheckedChange={() => toggleSection(section.id)}
-                        disabled={section.id === 'personal'} // Personal info is always required
+                        disabled={section.id === 'personal' || section.id === 'ai'} // Personal info and Resume Copilot are always required
                       />
                     </div>
                   ))}
