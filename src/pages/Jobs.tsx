@@ -843,6 +843,17 @@ const Jobs = () => {
                                       <div className="w-2 h-2 bg-yellow-500 rounded-full" />
                                       <span className="text-gray-700">Location preference partially matches</span>
                                     </div>
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                                      <span className="text-gray-700">
+                                        <a 
+                                          href="/resume-builder" 
+                                          className="text-blue-600 hover:underline font-medium"
+                                        >
+                                          Optimize your resume for this job →
+                                        </a>
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
 

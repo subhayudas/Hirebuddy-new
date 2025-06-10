@@ -174,7 +174,7 @@ Return the response in this exact JSON format:
     const resumeText = this.extractResumeText(resumeData);
     
     const prompt = `
-Analyze how well this resume matches the job description and provide tailoring suggestions:
+You are an expert ATS optimization specialist and resume writer. Analyze how well this resume matches the job description and provide comprehensive tailoring suggestions.
 
 RESUME:
 ${resumeText}
@@ -182,47 +182,106 @@ ${resumeText}
 JOB DESCRIPTION:
 ${jobDescription}
 
-Provide:
-1. Matching score (0-100)
-2. Keywords that already match
-3. Important keywords missing from resume
-4. Specific suggestions for:
-   - Updated professional summary
-   - Experience descriptions improvements
-   - Skills to add or emphasize
+Please provide a detailed analysis including:
 
-Return the response in this exact JSON format:
+1. MATCHING SCORE (0-100): Calculate based on:
+   - Skills alignment (40%)
+   - Experience relevance (30%)
+   - Keyword presence (20%)
+   - Education/qualifications match (10%)
+
+2. KEYWORD ANALYSIS:
+   - Keywords that already match between resume and job description
+   - Important keywords missing from resume (focus on technical skills, tools, methodologies, certifications)
+
+3. OPTIMIZATION SUGGESTIONS:
+   - Updated professional summary that incorporates job-specific keywords and requirements
+   - Specific improvements for each experience entry with job-relevant language
+   - Skills to add (technical and soft skills mentioned in job description)
+   - Skills to emphasize (existing skills that match job requirements)
+
+Focus on:
+- ATS-friendly keywords and phrases
+- Quantifiable achievements and metrics
+- Industry-specific terminology
+- Action verbs that match the job requirements
+- Technical skills and tools mentioned in the job posting
+- Soft skills and competencies required
+- Certifications and qualifications needed
+
+Return the response in this exact JSON format (ensure valid JSON):
 {
   "matchingScore": 75,
-  "keywordMatches": ["keyword 1", "keyword 2", ...],
-  "missingKeywords": ["missing 1", "missing 2", ...],
+  "keywordMatches": ["React", "JavaScript", "Team Leadership", "Agile", "Problem Solving"],
+  "missingKeywords": ["TypeScript", "AWS", "Docker", "CI/CD", "Scrum Master"],
   "suggestedChanges": {
-    "summary": "Updated professional summary text...",
+    "summary": "Results-driven Software Engineer with 5+ years of experience in React, JavaScript, and team leadership. Proven track record of delivering scalable web applications using Agile methodologies. Expertise in problem-solving and cross-functional collaboration, with strong background in modern development practices and cloud technologies.",
     "experienceUpdates": [
       {
         "experienceId": "exp-1",
-        "suggestedDescription": "Updated description...",
-        "suggestedAchievements": ["achievement 1", "achievement 2"]
+        "suggestedDescription": "Led development of responsive web applications using React and JavaScript, collaborating with cross-functional teams in Agile environment. Implemented CI/CD pipelines and deployed applications to AWS cloud infrastructure.",
+        "suggestedAchievements": [
+          "Increased application performance by 40% through code optimization and implementation of best practices",
+          "Mentored 3 junior developers and conducted code reviews to ensure quality standards",
+          "Successfully delivered 15+ projects on time using Scrum methodology"
+        ]
       }
     ],
-    "skillsToAdd": ["skill 1", "skill 2", ...],
-    "skillsToEmphasize": ["skill 1", "skill 2", ...]
+    "skillsToAdd": ["TypeScript", "AWS", "Docker", "CI/CD", "Scrum"],
+    "skillsToEmphasize": ["React", "JavaScript", "Team Leadership", "Agile"]
   }
 }
+
+Important: Ensure the response is valid JSON. Do not include any text before or after the JSON object.
 `;
 
     const messages = [
-      { role: 'system', content: 'You are an expert ATS optimization specialist and resume writer.' },
+      { role: 'system', content: 'You are an expert ATS optimization specialist and resume writer. Always respond with valid JSON only.' },
       { role: 'user', content: prompt }
     ];
 
     const response = await this.makeRequest(messages, 0.3); // Lower temperature for more consistent formatting
     
     try {
-      return JSON.parse(response);
+      // Clean the response to ensure it's valid JSON
+      const cleanedResponse = response.trim();
+      const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
+      const jsonString = jsonMatch ? jsonMatch[0] : cleanedResponse;
+      
+      const result = JSON.parse(jsonString);
+      
+      // Validate the result structure
+      if (!result.matchingScore || !result.keywordMatches || !result.missingKeywords || !result.suggestedChanges) {
+        throw new Error('Invalid response structure from AI service');
+      }
+      
+      // Ensure arrays exist
+      result.keywordMatches = result.keywordMatches || [];
+      result.missingKeywords = result.missingKeywords || [];
+      result.suggestedChanges.skillsToAdd = result.suggestedChanges.skillsToAdd || [];
+      result.suggestedChanges.skillsToEmphasize = result.suggestedChanges.skillsToEmphasize || [];
+      result.suggestedChanges.experienceUpdates = result.suggestedChanges.experienceUpdates || [];
+      
+      // Ensure matching score is within valid range
+      result.matchingScore = Math.max(0, Math.min(100, result.matchingScore));
+      
+      return result;
     } catch (error) {
       console.error('Failed to parse job matching response:', error);
-      throw new Error('Invalid response format from AI service');
+      console.error('Raw response:', response);
+      
+      // Return a fallback response with basic analysis
+      return {
+        matchingScore: 50,
+        keywordMatches: [],
+        missingKeywords: ['Please try again - AI analysis failed'],
+        suggestedChanges: {
+          summary: 'Unable to generate optimized summary. Please try the analysis again.',
+          experienceUpdates: [],
+          skillsToAdd: [],
+          skillsToEmphasize: []
+        }
+      };
     }
   }
 

@@ -7,6 +7,7 @@ import { SmartContentSuggestions } from "./SmartContentSuggestions";
 import { SkillGapAnalysis } from "./SkillGapAnalysis";
 import { JobDescriptionMatcher } from "./JobDescriptionMatcher";
 import { ContentSuggestion, JobMatchingResult } from "@/services/openaiService";
+import { toast } from "sonner";
 
 interface AIDashboardProps {
   resumeData: any;
@@ -111,9 +112,12 @@ export const AIDashboard: React.FC<AIDashboardProps> = ({
   };
 
   const handleApplyJobMatchChanges = (changes: JobMatchingResult['suggestedChanges']) => {
+    let appliedCount = 0;
+    
     // Update summary
     if (changes.summary) {
       onUpdateResumeData('summary', changes.summary);
+      appliedCount++;
     }
 
     // Update experience descriptions
@@ -122,29 +126,104 @@ export const AIDashboard: React.FC<AIDashboardProps> = ({
       
       changes.experienceUpdates.forEach((update, index) => {
         if (updatedExperience[index]) {
+          // Merge suggested description with existing content
+          const existingDescription = updatedExperience[index].description || '';
+          const newDescription = update.suggestedDescription;
+          
+          // Use the suggested description if it's more comprehensive
           updatedExperience[index] = {
             ...updatedExperience[index],
-            description: update.suggestedDescription,
+            description: newDescription.length > existingDescription.length ? newDescription : existingDescription,
             achievements: [
               ...(updatedExperience[index].achievements || []),
-              ...update.suggestedAchievements
+              ...update.suggestedAchievements.filter(ach => 
+                !(updatedExperience[index].achievements || []).includes(ach)
+              )
             ]
           };
+          appliedCount++;
         }
       });
 
       onUpdateResumeData('experience', updatedExperience);
     }
 
-    // Add new skills
+    // Add new skills intelligently
     if (changes.skillsToAdd && changes.skillsToAdd.length > 0) {
-      handleAddSkills(changes.skillsToAdd);
+      const currentSkills = resumeData.skills || { technical: [], soft: [], languages: [], frameworks: [] };
+      const updatedSkills = { ...currentSkills };
+      
+      changes.skillsToAdd.forEach(skill => {
+        // Categorize skills intelligently
+        const skillLower = skill.toLowerCase();
+        
+        // Technical skills
+        if (skillLower.includes('javascript') || skillLower.includes('python') || 
+            skillLower.includes('java') || skillLower.includes('c++') || 
+            skillLower.includes('sql') || skillLower.includes('html') || 
+            skillLower.includes('css') || skillLower.includes('git')) {
+          if (!updatedSkills.technical.includes(skill)) {
+            updatedSkills.technical.push(skill);
+          }
+        }
+        // Frameworks
+        else if (skillLower.includes('react') || skillLower.includes('angular') || 
+                 skillLower.includes('vue') || skillLower.includes('node') || 
+                 skillLower.includes('express') || skillLower.includes('django') ||
+                 skillLower.includes('spring') || skillLower.includes('laravel')) {
+          if (!updatedSkills.frameworks.includes(skill)) {
+            updatedSkills.frameworks.push(skill);
+          }
+        }
+        // Soft skills
+        else if (skillLower.includes('leadership') || skillLower.includes('communication') || 
+                 skillLower.includes('teamwork') || skillLower.includes('problem') || 
+                 skillLower.includes('management') || skillLower.includes('collaboration')) {
+          if (!updatedSkills.soft.includes(skill)) {
+            updatedSkills.soft.push(skill);
+          }
+        }
+        // Default to technical
+        else {
+          if (!updatedSkills.technical.includes(skill)) {
+            updatedSkills.technical.push(skill);
+          }
+        }
+      });
+
+      onUpdateResumeData('skills', updatedSkills);
+      appliedCount += changes.skillsToAdd.length;
     }
 
-    // Note: skillsToEmphasize would require UI changes to highlight them
-    // For now, we'll just ensure they're in the skills list
+    // Handle skills to emphasize (move them to the front of their respective arrays)
     if (changes.skillsToEmphasize && changes.skillsToEmphasize.length > 0) {
-      handleAddSkills(changes.skillsToEmphasize);
+      const currentSkills = resumeData.skills || { technical: [], soft: [], languages: [], frameworks: [] };
+      const updatedSkills = { ...currentSkills };
+      
+      changes.skillsToEmphasize.forEach(skill => {
+        // Find and move skill to front of appropriate array
+        Object.keys(updatedSkills).forEach(category => {
+          const skillIndex = updatedSkills[category].indexOf(skill);
+          if (skillIndex > 0) {
+            // Move to front
+            updatedSkills[category].splice(skillIndex, 1);
+            updatedSkills[category].unshift(skill);
+          }
+        });
+      });
+
+      onUpdateResumeData('skills', updatedSkills);
+    }
+
+    // Provide detailed feedback
+    const feedbackMessages = [];
+    if (changes.summary) feedbackMessages.push('Professional summary updated');
+    if (changes.experienceUpdates?.length > 0) feedbackMessages.push(`${changes.experienceUpdates.length} experience entries enhanced`);
+    if (changes.skillsToAdd?.length > 0) feedbackMessages.push(`${changes.skillsToAdd.length} new skills added`);
+    if (changes.skillsToEmphasize?.length > 0) feedbackMessages.push(`${changes.skillsToEmphasize.length} skills emphasized`);
+    
+    if (feedbackMessages.length > 0) {
+      toast.success(`Applied changes: ${feedbackMessages.join(', ')}`);
     }
   };
 
