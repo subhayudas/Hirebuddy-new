@@ -722,6 +722,21 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
     );
   };
 
+  const renderSummary = () => {
+    if (!settings.enabledSections.summary || !data.summary) return null;
+
+    return renderSection(
+      'Professional Summary',
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <p className="text-gray-700 leading-relaxed" style={{ fontSize: fontSizes.body }}>{data.summary}</p>
+      </motion.div>
+    );
+  };
+
   // Software Engineer Template Render
   return (
     <div className="w-full max-w-4xl">
@@ -998,6 +1013,9 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             </div>
           )}
         </div>
+
+        {/* Professional Summary */}
+        {renderSummary()}
 
         {/* Education */}
         {data.education.length > 0 && (
