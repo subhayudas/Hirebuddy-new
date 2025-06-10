@@ -24,25 +24,10 @@ interface TemplatePreviewPanelProps {
 }
 
 const templateStyles = {
-  "minimal-professional": {
-    layout: "single-column",
-    colors: { primary: "#1f2937", secondary: "#6b7280", accent: "#3b82f6" },
-    typography: { heading: "font-bold", body: "font-normal" }
-  },
-  "modern-executive": {
-    layout: "two-column",
-    colors: { primary: "#111827", secondary: "#4b5563", accent: "#059669" },
-    typography: { heading: "font-semibold", body: "font-light" }
-  },
-  "technical-clean": {
-    layout: "skills-focused",
-    colors: { primary: "#0f172a", secondary: "#64748b", accent: "#8b5cf6" },
-    typography: { heading: "font-bold", body: "font-medium" }
-  },
-  "academic-simple": {
-    layout: "traditional",
-    colors: { primary: "#1e293b", secondary: "#475569", accent: "#dc2626" },
-    typography: { heading: "font-semibold", body: "font-normal" }
+  "perfect-fit": {
+    layout: "academic-style",
+    colors: { primary: "#000000", secondary: "#374151", accent: "#2563eb" },
+    typography: { heading: "font-bold", body: "font-serif" }
   }
 };
 
@@ -89,7 +74,7 @@ export const TemplatePreviewPanel = ({
     "header", "summary", "experience", "education", "skills"
   ]);
 
-  const currentStyle = templateStyles[selectedTemplate as keyof typeof templateStyles] || templateStyles["minimal-professional"];
+  const currentStyle = templateStyles[selectedTemplate as keyof typeof templateStyles] || templateStyles["perfect-fit"];
 
   const handleDragStart = (e: React.DragEvent, sectionId: string) => {
     setDraggedSection(sectionId);

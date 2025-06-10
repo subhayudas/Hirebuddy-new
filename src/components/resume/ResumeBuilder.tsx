@@ -212,13 +212,7 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
   };
 
   const getTemplateDisplayName = (templateId: string) => {
-    const templateNames = {
-      'minimal-professional': 'Minimal Professional',
-      'modern-executive': 'Modern Executive',
-      'technical-clean': 'Technical Clean',
-      'academic-simple': 'Academic Simple'
-    };
-    return templateNames[templateId] || templateId;
+    return 'Software Engineer';
   };
 
   const getAtsScoreColor = (score: number) => {

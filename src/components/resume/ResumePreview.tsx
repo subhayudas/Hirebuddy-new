@@ -33,129 +33,6 @@ interface ResumePreviewProps {
 }
 
 export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }: ResumePreviewProps) => {
-  // Get template-specific styles - Four distinct minimal designs
-  const getTemplateStyles = () => {
-    switch (template) {
-      case "minimal-professional":
-        return {
-          container: "font-sans bg-white text-gray-900 leading-relaxed",
-          header: "text-left mb-6 pb-3 border-b border-gray-300",
-          headerName: "text-2xl font-bold text-gray-900 mb-2 tracking-tight",
-          headerDetails: "text-sm text-gray-600 leading-relaxed",
-          section: "mb-6",
-          sectionTitle: "text-base font-semibold text-gray-900 mb-3 pb-1 border-b border-gray-200 uppercase tracking-wide",
-          experienceItem: "mb-5",
-          experienceHeader: "flex justify-between items-start mb-2",
-          experienceTitle: "font-semibold text-gray-900 text-sm",
-          experienceCompany: "text-gray-700 font-medium text-sm",
-          experienceDuration: "text-xs text-gray-500 italic",
-          experienceDescription: "text-xs text-gray-700 mt-2 leading-relaxed",
-          educationItem: "mb-3",
-          educationHeader: "flex justify-between items-start",
-          educationDegree: "font-semibold text-gray-900 text-sm",
-          educationSchool: "text-gray-700 text-sm",
-          educationYear: "text-xs text-gray-500 italic",
-          skillsContainer: "text-xs text-gray-700",
-          skill: "inline-block mr-4 mb-1"
-        };
-      
-      case "modern-executive":
-        return {
-          container: "font-serif bg-white text-gray-900 leading-relaxed",
-          header: "text-center mb-8 pb-4 border-b-2 border-gray-900",
-          headerName: "text-3xl font-bold text-gray-900 mb-3 tracking-wide",
-          headerDetails: "text-sm text-gray-600 leading-relaxed max-w-md mx-auto",
-          section: "mb-8",
-          sectionTitle: "text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-900 text-center uppercase tracking-widest",
-          experienceItem: "mb-6",
-          experienceHeader: "text-center mb-3",
-          experienceTitle: "text-base font-bold text-gray-900 block",
-          experienceCompany: "text-gray-700 font-medium text-sm block mt-1",
-          experienceDuration: "text-xs text-gray-500 italic block mt-1",
-          experienceDescription: "text-sm text-gray-700 mt-3 leading-relaxed text-center max-w-3xl mx-auto",
-          educationItem: "mb-5 text-center",
-          educationHeader: "block",
-          educationDegree: "font-bold text-gray-900 text-sm block",
-          educationSchool: "text-gray-700 font-medium block mt-1 text-sm",
-          educationYear: "text-xs text-gray-500 italic block mt-1",
-          skillsContainer: "text-center",
-          skill: "inline-block mx-2 mb-1 text-xs text-gray-700"
-        };
-
-      case "technical-clean":
-        return {
-          container: "font-mono bg-white text-gray-900 text-xs leading-normal",
-          header: "mb-6 pb-3 border-b-2 border-gray-900",
-          headerName: "text-xl font-bold text-gray-900 mb-2 tracking-wider uppercase",
-          headerDetails: "text-xs text-gray-600 font-mono leading-relaxed",
-          section: "mb-6",
-          sectionTitle: "text-xs font-bold text-gray-900 uppercase tracking-widest mb-3 pb-1 border-b border-gray-400",
-          experienceItem: "mb-4",
-          experienceHeader: "flex justify-between items-start mb-1",
-          experienceTitle: "font-bold text-gray-900 text-xs uppercase tracking-wide",
-          experienceCompany: "text-gray-700 text-xs",
-          experienceDuration: "text-xs text-gray-500 font-mono",
-          experienceDescription: "text-xs text-gray-700 mt-2 leading-relaxed font-mono",
-          educationItem: "mb-3",
-          educationHeader: "flex justify-between items-start",
-          educationDegree: "font-bold text-gray-900 text-xs uppercase tracking-wide",
-          educationSchool: "text-gray-700 text-xs",
-          educationYear: "text-xs text-gray-500 font-mono",
-          skillsContainer: "grid grid-cols-3 gap-1",
-          skill: "text-xs text-gray-700 bg-gray-100 px-2 py-1 rounded font-mono text-center"
-        };
-
-      case "academic-simple":
-        return {
-          container: "font-serif bg-white text-gray-900 leading-relaxed",
-          header: "text-center mb-6 pb-3 border-b border-gray-400",
-          headerName: "text-xl font-bold text-gray-900 mb-2 tracking-wide",
-          headerDetails: "text-sm text-gray-600 leading-relaxed",
-          section: "mb-6",
-          sectionTitle: "text-sm font-bold text-gray-900 mb-3 pb-1 border-b border-gray-300 uppercase tracking-wide",
-          experienceItem: "mb-5",
-          experienceHeader: "flex justify-between items-start mb-1",
-          experienceTitle: "font-semibold text-gray-900 text-sm",
-          experienceCompany: "text-gray-700 italic text-sm",
-          experienceDuration: "text-xs text-gray-500 italic",
-          experienceDescription: "text-xs text-gray-700 mt-2 leading-relaxed",
-          educationItem: "mb-3",
-          educationHeader: "flex justify-between items-start",
-          educationDegree: "font-semibold text-gray-900 text-sm",
-          educationSchool: "text-gray-700 italic text-sm",
-          educationYear: "text-xs text-gray-500 italic",
-          skillsContainer: "text-xs text-gray-700",
-          skill: "inline-block mr-3 mb-1"
-        };
-
-      default:
-        // Default to minimal-professional template
-        return {
-          container: "font-sans bg-white text-gray-900 leading-relaxed",
-          header: "text-left mb-6 pb-3 border-b border-gray-300",
-          headerName: "text-2xl font-bold text-gray-900 mb-2 tracking-tight",
-          headerDetails: "text-sm text-gray-600 leading-relaxed",
-          section: "mb-6",
-          sectionTitle: "text-base font-semibold text-gray-900 mb-3 pb-1 border-b border-gray-200 uppercase tracking-wide",
-          experienceItem: "mb-5",
-          experienceHeader: "flex justify-between items-start mb-2",
-          experienceTitle: "font-semibold text-gray-900 text-sm",
-          experienceCompany: "text-gray-700 font-medium text-sm",
-          experienceDuration: "text-xs text-gray-500 italic",
-          experienceDescription: "text-xs text-gray-700 mt-2 leading-relaxed",
-          educationItem: "mb-3",
-          educationHeader: "flex justify-between items-start",
-          educationDegree: "font-semibold text-gray-900 text-sm",
-          educationSchool: "text-gray-700 text-sm",
-          educationYear: "text-xs text-gray-500 italic",
-          skillsContainer: "text-xs text-gray-700",
-          skill: "inline-block mr-4 mb-1"
-        };
-    }
-  };
-
-  const styles = getTemplateStyles();
-
   // Helper function to render contact links with custom text
   const renderContactLink = (href: string, text: string, type: string) => {
     return (
@@ -218,11 +95,12 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
     );
   }
 
-  // Styled resume based on template
+  // Software Engineer Template
   return (
-    <div className="w-full">
+    <div className="w-full max-w-4xl">
       <div 
-        className={cn(styles.container, "min-h-[11in] w-full")} 
+        id="resume-content" 
+        className="bg-white text-black p-8 shadow-lg min-h-[11in] font-serif text-xs"
         style={{ 
           transform: `scale(${scale})`, 
           transformOrigin: 'top left',
@@ -232,199 +110,115 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
           margin: '0',
           boxSizing: 'border-box'
         }}
-        id="resume-content"
       >
         {/* Header */}
-        <header className={styles.header}>
-          <h1 className={styles.headerName}>
-            {data.personalInfo.name || "Your Name"}
-          </h1>
-          <div className={styles.headerDetails}>
-            {template === "academic-simple" || template === "modern-executive" ? (
-              <div className="space-y-1 text-center">
-                {data.personalInfo.email && (
-                  <div>
-                    {renderContactLink(`mailto:${data.personalInfo.email}`, data.personalInfo.email, 'email')}
-                  </div>
-                )}
-                {data.personalInfo.phone && (
-                  <div>
-                    {renderContactLink(`tel:${data.personalInfo.phone}`, data.personalInfo.phone, 'phone')}
-                  </div>
-                )}
-                {data.personalInfo.location && <div>{data.personalInfo.location}</div>}
-                {data.personalInfo.website && (
-                  <div>
-                    {renderContactLink(
-                      data.personalInfo.website.startsWith('http') ? data.personalInfo.website : `https://${data.personalInfo.website}`,
-                      data.personalInfo.website,
-                      'website'
-                    )}
-                  </div>
-                )}
-                {data.personalInfo.linkedin && (
-                  <div>
-                    {renderContactLink(
-                      data.personalInfo.linkedin.startsWith('http') ? data.personalInfo.linkedin : `https://linkedin.com/in/${data.personalInfo.linkedin}`,
-                      'LinkedIn Profile',
-                      'linkedin'
-                    )}
-                  </div>
-                )}
-                {data.personalInfo.github && (
-                  <div>
-                    {renderContactLink(
-                      data.personalInfo.github.startsWith('http') ? data.personalInfo.github : `https://github.com/${data.personalInfo.github}`,
-                      'GitHub Profile',
-                      'github'
-                    )}
-                  </div>
-                )}
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h1 className="text-xl font-bold mb-2">{data.personalInfo.name || 'Your Name'}</h1>
+            <div className="space-y-1 text-xs">
+              {data.personalInfo.website && (
+                <div>
+                  <strong>Portfolio:</strong>{' '}
+                  <a href={data.personalInfo.website.startsWith('http') ? data.personalInfo.website : `https://${data.personalInfo.website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    {data.personalInfo.website}
+                  </a>
+                </div>
+              )}
+              {data.personalInfo.github && (
+                <div>
+                  <strong>Github:</strong>{' '}
+                  <a href={data.personalInfo.github.startsWith('http') ? data.personalInfo.github : `https://github.com/${data.personalInfo.github}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    {data.personalInfo.github}
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="text-right text-xs space-y-1">
+            {data.personalInfo.email && (
+              <div>
+                <strong>Email:</strong>{' '}
+                <a href={`mailto:${data.personalInfo.email}`} className="text-blue-600 underline">
+                  {data.personalInfo.email}
+                </a>
               </div>
-            ) : (
-              <div className="flex flex-wrap gap-3 text-sm items-center">
-                {data.personalInfo.email && (
-                  <span className="flex items-center">
-                    {renderContactLink(`mailto:${data.personalInfo.email}`, data.personalInfo.email, 'email')}
-                  </span>
-                )}
-                {data.personalInfo.phone && (
-                  <span className="flex items-center">
-                    {renderContactLink(`tel:${data.personalInfo.phone}`, data.personalInfo.phone, 'phone')}
-                  </span>
-                )}
-                {data.personalInfo.location && (
-                  <span className="flex items-center">{data.personalInfo.location}</span>
-                )}
-                {data.personalInfo.website && (
-                  <span className="flex items-center">
-                    {renderContactLink(
-                      data.personalInfo.website.startsWith('http') ? data.personalInfo.website : `https://${data.personalInfo.website}`,
-                      data.personalInfo.website,
-                      'website'
-                    )}
-                  </span>
-                )}
-                {data.personalInfo.linkedin && (
-                  <span className="flex items-center">
-                    {renderContactLink(
-                      data.personalInfo.linkedin.startsWith('http') ? data.personalInfo.linkedin : `https://linkedin.com/in/${data.personalInfo.linkedin}`,
-                      'LinkedIn',
-                      'linkedin'
-                    )}
-                  </span>
-                )}
-                {data.personalInfo.github && (
-                  <span className="flex items-center">
-                    {renderContactLink(
-                      data.personalInfo.github.startsWith('http') ? data.personalInfo.github : `https://github.com/${data.personalInfo.github}`,
-                      'GitHub',
-                      'github'
-                    )}
-                  </span>
-                )}
+            )}
+            {data.personalInfo.phone && (
+              <div><strong>Mobile:</strong> {data.personalInfo.phone}</div>
+            )}
+            {data.personalInfo.linkedin && (
+              <div>
+                <strong>Linkedin:</strong>{' '}
+                <a href={data.personalInfo.linkedin.startsWith('http') ? data.personalInfo.linkedin : `https://linkedin.com/in/${data.personalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                  {data.personalInfo.linkedin}
+                </a>
               </div>
             )}
           </div>
-        </header>
-
-        {/* Professional Summary */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Professional Summary</h2>
-          <p className="text-xs leading-relaxed">
-            {data.summary || "Add a professional summary to highlight your key skills and experience that align with your target role."}
-          </p>
-        </section>
-
-        {/* Experience */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Experience</h2>
-          {data.experience && data.experience.length > 0 ? (
-            data.experience.map((exp, index) => (
-              <div key={index} className={styles.experienceItem}>
-                <div className={styles.experienceHeader}>
-                  <div>
-                    <div className={styles.experienceTitle}>{exp.jobTitle || "Job Title"}</div>
-                    <div className={styles.experienceCompany}>{exp.company || "Company Name"}</div>
-                  </div>
-                  <div className={styles.experienceDuration}>{exp.duration || "Duration"}</div>
-                </div>
-                {exp.description ? (
-                  <div className={styles.experienceDescription}>
-                    {exp.description.split('\n').map((item, i) => (
-                      <div key={i} className="flex items-start mb-1">
-                        {item.trim().startsWith('•') ? (
-                          <>
-                            <span className="mr-2">{item.trim().substring(0, 1)}</span>
-                            <span>{item.trim().substring(1).trim()}</span>
-                          </>
-                        ) : (
-                          <span>{item}</span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className={styles.experienceDescription}>
-                    Describe your key responsibilities, achievements, and impact in this role.
-                  </p>
-                )}
-              </div>
-            ))
-          ) : (
-            <p className="text-xs text-gray-500 italic leading-relaxed">
-              Add your work experience to showcase your professional background and achievements.
-            </p>
-          )}
-        </section>
+        </div>
 
         {/* Education */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Education</h2>
-          {data.education && data.education.length > 0 ? (
-            data.education.map((edu, index) => (
-              <div key={index} className={styles.educationItem}>
-                <div className={styles.educationHeader}>
-                  <div>
-                    <div className={styles.educationDegree}>{edu.degree || "Degree"}</div>
-                    <div className={styles.educationSchool}>{edu.school || "Institution Name"}</div>
-                  </div>
-                  <div className={styles.educationYear}>{edu.year || "Year"}</div>
+        {data.education && data.education.length > 0 && (
+          <div className="mb-4">
+            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">EDUCATION</h2>
+            {data.education.map((edu, index) => (
+              <div key={index} className="flex justify-between items-start mb-2">
+                <div>
+                  <div className="font-bold text-xs">{edu.school}</div>
+                  <div className="italic text-xs">{edu.degree}</div>
+                </div>
+                <div className="text-right text-xs">
+                  <div>{edu.year}</div>
                 </div>
               </div>
-            ))
-          ) : (
-            <p className="text-xs text-gray-500 italic leading-relaxed">
-              Add your educational background to highlight your qualifications and academic achievements.
-            </p>
-          )}
-        </section>
+            ))}
+          </div>
+        )}
 
-        {/* Skills */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Skills</h2>
-          {data.skills && data.skills.length > 0 ? (
-            <div className={styles.skillsContainer}>
-              {template === "academic-simple" ? (
-                data.skills.map((skill, index) => (
-                  <span key={index} className={styles.skill}>
-                    • {skill}
-                  </span>
-                ))
-              ) : (
-                data.skills.map((skill, index) => (
-                  <span key={index} className={styles.skill}>
-                    {skill}
-                  </span>
-                ))
-              )}
+        {/* Skills Summary */}
+        {data.skills && data.skills.length > 0 && (
+          <div className="mb-4">
+            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">SKILLS SUMMARY</h2>
+            <div className="space-y-1 text-xs">
+              <div>
+                <strong>Skills:</strong> {data.skills.join(', ')}
+              </div>
             </div>
-          ) : (
-            <p className="text-xs text-gray-500 italic leading-relaxed">
-              Add your key skills and competencies to demonstrate your expertise and capabilities.
-            </p>
-          )}
-        </section>
+          </div>
+        )}
+
+        {/* Experience */}
+        {data.experience && data.experience.length > 0 && (
+          <div className="mb-4">
+            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">EXPERIENCE</h2>
+            {data.experience.map((exp, index) => (
+              <div key={index} className="mb-3">
+                <div className="flex justify-between items-start mb-1">
+                  <div>
+                    <div className="font-bold text-xs">{exp.company}</div>
+                    <div className="italic text-xs">{exp.jobTitle}</div>
+                  </div>
+                  <div className="text-right text-xs">
+                    <div>{exp.duration}</div>
+                  </div>
+                </div>
+                {exp.description && (
+                  <div className="ml-3 mb-1">
+                    <div className="text-xs">{exp.description}</div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Professional Summary */}
+        {data.summary && (
+          <div className="mb-4">
+            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">PROFESSIONAL SUMMARY</h2>
+            <div className="text-xs">{data.summary}</div>
+          </div>
+        )}
       </div>
     </div>
   );

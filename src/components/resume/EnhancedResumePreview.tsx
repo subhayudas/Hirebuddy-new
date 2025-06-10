@@ -148,64 +148,17 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
 }) => {
   const colors = colorSchemes[settings.colorScheme as keyof typeof colorSchemes] || colorSchemes.blue;
   
-  // Get template-specific styles - Four distinct minimal designs with smaller text
+  // Software Engineer template styles
   const getTemplateStyles = () => {
-    switch (settings.template) {
-              case "minimal-professional":
-        return {
-          container: "font-sans bg-white text-gray-900 leading-relaxed",
-          header: "text-left mb-6 pb-4 border-b border-gray-300",
-          headerName: "text-2xl font-bold text-gray-900 mb-3 tracking-tight",
-          headerDetails: "text-xs text-gray-600 space-y-1 mt-2",
-          section: "mb-6",
-          sectionTitle: "text-sm font-semibold text-gray-900 mb-3 pb-1 border-b border-gray-200 uppercase tracking-wide",
-          layout: "single-column"
-        };
-      
-              case "modern-executive":
-        return {
-          container: "font-serif bg-white text-gray-900 leading-relaxed",
-          header: "text-center mb-8 pb-5 border-b-2 border-gray-900",
-          headerName: "text-3xl font-bold text-gray-900 mb-4 tracking-wide",
-          headerDetails: "text-xs text-gray-600 space-y-2 max-w-md mx-auto mt-3",
-          section: "mb-8",
-          sectionTitle: "text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-900 text-center uppercase tracking-widest",
-          layout: "center-aligned"
-        };
-
-              case "technical-clean":
-        return {
-          container: "font-mono bg-white text-gray-900 text-xs leading-normal",
-          header: "mb-6 pb-4 border-b-2 border-gray-900",
-          headerName: "text-xl font-bold text-gray-900 mb-3 tracking-wider uppercase",
-          headerDetails: "text-xs text-gray-600 space-y-1 font-mono mt-2",
-          section: "mb-6",
-          sectionTitle: "text-xs font-bold text-gray-900 uppercase tracking-widest mb-3 pb-1 border-b border-gray-400",
-          layout: "compact"
-        };
-
-              case "academic-simple":
-        return {
-          container: "font-serif bg-white text-gray-900 leading-relaxed",
-          header: "text-center mb-6 pb-4 border-b border-gray-400",
-          headerName: "text-xl font-bold text-gray-900 mb-3 tracking-wide",
-          headerDetails: "text-xs text-gray-600 space-y-2 mt-2",
-          section: "mb-6",
-          sectionTitle: "text-sm font-bold text-gray-900 mb-3 pb-1 border-b border-gray-300 uppercase tracking-wide",
-          layout: "traditional"
-        };
-
-      default:
-        return {
-          container: "font-sans bg-white text-gray-900 leading-relaxed",
-          header: "text-left mb-6 pb-4 border-b border-gray-300",
-          headerName: "text-2xl font-bold text-gray-900 mb-3 tracking-tight",
-          headerDetails: "text-xs text-gray-600 space-y-1 mt-2",
-          section: "mb-6",
-          sectionTitle: "text-sm font-semibold text-gray-900 mb-3 pb-1 border-b border-gray-200 uppercase tracking-wide",
-          layout: "single-column"
-        };
-    }
+    return {
+      container: "font-serif bg-white text-black leading-relaxed",
+      header: "flex justify-between items-start mb-4",
+      headerName: "text-xl font-bold mb-2",
+      headerDetails: "text-xs space-y-1",
+      section: "mb-4",
+      sectionTitle: "text-sm font-bold border-b border-black mb-2 pb-1 uppercase tracking-wide",
+      layout: "perfect-fit"
+    };
   };
 
   const templateStyles = getTemplateStyles();
@@ -216,14 +169,11 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
   
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
-    try {
-      return new Date(dateString).toLocaleDateString('en-US', { 
-        month: 'short', 
-        year: 'numeric' 
-      });
-    } catch {
-      return dateString;
-    }
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short' 
+    });
   };
 
   const formatDateRange = (startDate: string, endDate: string, current: boolean = false) => {
@@ -672,84 +622,203 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
     );
   };
 
+  // Software Engineer Template Render
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className={`w-full bg-white ${templateStyles.container}`}
-      style={{ 
-        fontFamily: settings.fontFamily,
-        fontSize: `${Math.max(settings.fontSize * 0.8, 10)}px`,
-        lineHeight: 1.3,
-        width: '210mm',
-        minHeight: '297mm',
-        padding: '12mm',
-        margin: '0',
-        boxSizing: 'border-box'
-      }}
-      data-pdf-optimized="true"
-      id="resume-content"
-    >
-      {/* Header */}
-      <header className={templateStyles.header}>
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className={templateStyles.headerName}
-        >
-          {data.personalInfo.name || 'Your Name'}
-        </motion.h1>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className={templateStyles.headerDetails}
-        >
-          {renderContactInfo()}
-        </motion.div>
-      </header>
+    <div className="w-full max-w-4xl">
+      <div id="resume-content" className="bg-white text-black p-8 shadow-lg min-h-[11in] font-serif text-xs"
+           style={{ 
+             width: '210mm',
+             minHeight: '297mm',
+             padding: '15mm',
+             margin: '0',
+             boxSizing: 'border-box'
+           }}>
+        {/* Header */}
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h1 className="text-xl font-bold mb-2">{data.personalInfo.name || 'Your Name'}</h1>
+            <div className="space-y-1 text-xs">
+              {data.personalInfo.website && (
+                <div>
+                  <strong>Portfolio:</strong>{' '}
+                  <a href={data.personalInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    {data.personalInfo.website}
+                  </a>
+                </div>
+              )}
+              {data.personalInfo.github && (
+                <div>
+                  <strong>Github:</strong>{' '}
+                  <a href={data.personalInfo.github} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    {data.personalInfo.github}
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="text-right text-xs space-y-1">
+            {data.personalInfo.email && (
+              <div>
+                <strong>Email:</strong>{' '}
+                <a href={`mailto:${data.personalInfo.email}`} className="text-blue-600 underline">
+                  {data.personalInfo.email}
+                </a>
+              </div>
+            )}
+            {data.personalInfo.phone && (
+              <div><strong>Mobile:</strong> {data.personalInfo.phone}</div>
+            )}
+            {data.personalInfo.linkedin && (
+              <div>
+                <strong>Linkedin:</strong>{' '}
+                <a href={data.personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                  {data.personalInfo.linkedin}
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
 
-      {/* Content */}
-      <div className="space-y-6">
-        {/* Summary */}
-        {data.summary && renderSection(
-          'Professional Summary',
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="text-xs text-gray-700 leading-relaxed"
-          >
-            {data.summary}
-          </motion.p>
+        {/* Education */}
+        {data.education.length > 0 && (
+          <div className="mb-4">
+            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">EDUCATION</h2>
+            {data.education.map((edu, index) => (
+              <div key={edu.id || index} className="flex justify-between items-start mb-2">
+                <div>
+                  <div className="font-bold text-xs">{edu.school}</div>
+                  <div className="italic text-xs">
+                    {edu.degree}
+                    {edu.gpa && (
+                      <>; GPA: {edu.gpa}</>
+                    )}
+                  </div>
+                  {edu.coursework && edu.coursework.length > 0 && (
+                    <div className="text-xs mt-1">
+                      <strong>Courses:</strong> {edu.coursework.join(', ')}
+                    </div>
+                  )}
+                </div>
+                <div className="text-right text-xs">
+                  <div>{edu.location}</div>
+                  <div>{formatDateRange(edu.startDate, edu.endDate)}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
-        {/* Dynamic sections based on settings */}
-        {settings.sectionOrder.map((sectionId) => {
-          if (!settings.enabledSections[sectionId]) return null;
-          
-          switch (sectionId) {
-            case 'experience':
-              return <div key={sectionId}>{renderExperience()}</div>;
-            case 'education':
-              return <div key={sectionId}>{renderEducation()}</div>;
-            case 'skills':
-              return <div key={sectionId}>{renderSkills()}</div>;
-            case 'projects':
-              return <div key={sectionId}>{renderProjects()}</div>;
-            case 'certifications':
-              return <div key={sectionId}>{renderCertifications()}</div>;
-            case 'languages':
-              return <div key={sectionId}>{renderLanguages()}</div>;
-            case 'volunteer':
-              return <div key={sectionId}>{renderVolunteer()}</div>;
-            default:
-              return null;
-          }
-        })}
+        {/* Skills Summary */}
+        {(data.skills.languages?.length > 0 || data.skills.frameworks?.length > 0 || data.skills.technical?.length > 0 || data.skills.soft?.length > 0) && (
+          <div className="mb-4">
+            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">SKILLS SUMMARY</h2>
+            <div className="space-y-1 text-xs">
+              {data.skills.languages?.length > 0 && (
+                <div>
+                  <strong>Languages:</strong> {data.skills.languages.join(', ')}
+                </div>
+              )}
+              {data.skills.frameworks?.length > 0 && (
+                <div>
+                  <strong>Frameworks:</strong> {data.skills.frameworks.join(', ')}
+                </div>
+              )}
+              {data.skills.technical?.length > 0 && (
+                <div>
+                  <strong>Tools:</strong> {data.skills.technical.join(', ')}
+                </div>
+              )}
+              {data.skills.soft?.length > 0 && (
+                <div>
+                  <strong>Soft Skills:</strong> {data.skills.soft.join(', ')}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Experience */}
+        {data.experience.length > 0 && (
+          <div className="mb-4">
+            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">EXPERIENCE</h2>
+            {data.experience.map((exp) => (
+              <div key={exp.id} className="mb-3">
+                <div className="flex justify-between items-start mb-1">
+                  <div>
+                    <div className="font-bold text-xs">{exp.company}</div>
+                    <div className="italic text-xs">{exp.jobTitle}</div>
+                  </div>
+                  <div className="text-right text-xs">
+                    <div>{exp.location}</div>
+                    <div>{formatDateRange(exp.startDate, exp.endDate, exp.current)}</div>
+                  </div>
+                </div>
+                {exp.description && (
+                  <div className="ml-3 mb-1">
+                    <div className="text-xs">{exp.description}</div>
+                  </div>
+                )}
+                {exp.achievements && exp.achievements.length > 0 && (
+                  <div className="ml-3">
+                    {exp.achievements.map((achievement, idx) => (
+                      <div key={idx} className="text-xs mb-1">• {achievement}</div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Projects */}
+        {data.projects.length > 0 && (
+          <div className="mb-4">
+            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">PROJECTS</h2>
+            {data.projects.map((project) => (
+              <div key={project.id} className="mb-2">
+                <div className="text-xs">
+                  <strong>{project.name}:</strong> {project.description}
+                  {project.technologies && project.technologies.length > 0 && (
+                    <> Tech: {project.technologies.join(', ')}</>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Certifications as Honors and Awards */}
+        {data.certifications.length > 0 && (
+          <div className="mb-4">
+            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">HONORS AND AWARDS</h2>
+            {data.certifications.map((cert) => (
+              <div key={cert.id} className="mb-1">
+                <div className="text-xs">• {cert.name} - {cert.issuer}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Volunteer Experience */}
+        {data.volunteer.length > 0 && (
+          <div className="mb-4">
+            <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">VOLUNTEER EXPERIENCE</h2>
+            {data.volunteer.map((vol) => (
+              <div key={vol.id} className="mb-3">
+                <div className="flex justify-between items-start mb-1">
+                  <div>
+                    <div className="font-bold text-xs">{vol.role} at {vol.organization}</div>
+                    <div className="italic text-xs">{vol.description}</div>
+                  </div>
+                  <div className="text-right text-xs">
+                    <div>{formatDateRange(vol.startDate, vol.endDate)}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </motion.div>
+    </div>
   );
 };

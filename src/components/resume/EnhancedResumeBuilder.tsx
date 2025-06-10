@@ -196,7 +196,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   });
 
   const [settings, setSettings] = useState<Settings>({
-    template,
+    template: 'perfect-fit',
     fontSize: 11,
     fontFamily: 'Inter',
     colorScheme: 'blue',
@@ -850,10 +850,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="minimal-professional">Minimal Professional</SelectItem>
-                    <SelectItem value="modern-executive">Modern Executive</SelectItem>
-                    <SelectItem value="technical-clean">Technical Clean</SelectItem>
-                    <SelectItem value="academic-simple">Academic Simple</SelectItem>
+                    <SelectItem value="perfect-fit">Software Engineer</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

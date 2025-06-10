@@ -18,36 +18,12 @@ import {
 
 const templates = [
   {
-    id: "minimal-professional",
-    name: "Minimal Professional",
-    description: "Clean, structured layout with clear hierarchy and maximum readability",
-    category: "Professional",
-    atsScore: 98,
-    features: ["Single Column", "Clean Typography", "ATS-Optimized"]
-  },
-  {
-    id: "modern-executive",
-    name: "Modern Executive",
-    description: "Sophisticated two-column design for senior professionals and executives",
-    category: "Executive", 
-    atsScore: 96,
-    features: ["Two Column", "Executive Focus", "Achievement-Oriented"]
-  },
-  {
-    id: "technical-clean",
-    name: "Technical Clean",
-    description: "Skills-focused layout optimized for technical and engineering roles",
-    category: "Technical",
-    atsScore: 97,
-    features: ["Skills Highlight", "Project Focus", "Tech-Optimized"]
-  },
-  {
-    id: "academic-simple",
-    name: "Academic Simple",
-    description: "Research-focused design with emphasis on publications and achievements",
-    category: "Academic",
-    atsScore: 95,
-    features: ["Publication Ready", "Research Focus", "Academic Standard"]
+    id: "perfect-fit",
+    name: "Software Engineer",
+    description: "Academic-style template with clean typography and structured layout",
+    category: "Software Engineering",
+    atsScore: 99,
+    features: ["Academic Style", "Clean Layout", "Perfect Typography"]
   }
 ];
 

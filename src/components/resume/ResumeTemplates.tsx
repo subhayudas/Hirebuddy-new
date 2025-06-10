@@ -5,8 +5,8 @@ interface ResumeTemplatesProps {
 }
 
 export const ResumeTemplates = ({ onSelectTemplate }: ResumeTemplatesProps) => {
-  // Default template ID - using the first template (minimal-professional)
-  const defaultTemplateId = "minimal-professional";
+  // Default template ID - using the Software Engineer template
+  const defaultTemplateId = "perfect-fit";
   
   // Automatically select the default template when component mounts
   useEffect(() => {
