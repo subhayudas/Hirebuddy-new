@@ -56,6 +56,9 @@ import { EnhancedCertificationsSection } from "./enhanced-sections/EnhancedCerti
 import { EnhancedLanguagesSection } from "./enhanced-sections/EnhancedLanguagesSection";
 import { EnhancedVolunteerSection } from "./enhanced-sections/EnhancedVolunteerSection";
 
+// AI Components
+import { AIDashboard } from "./ai/AIDashboard";
+
 // Enhanced preview component
 import { EnhancedResumePreview } from "./EnhancedResumePreview";
 
@@ -150,6 +153,7 @@ interface EnhancedResumeBuilderProps {
 }
 
 const SECTION_CONFIGS = [
+  { id: 'ai', label: 'AI Assistant', icon: Sparkles, color: 'purple' },
   { id: 'personal', label: 'Personal Info', icon: User, color: 'blue' },
   { id: 'summary', label: 'Summary', icon: FileText, color: 'green' },
   { id: 'experience', label: 'Experience', icon: Briefcase, color: 'purple' },
@@ -198,8 +202,9 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     colorScheme: 'blue',
     spacing: 'normal',
     showPhoto: false,
-    sectionOrder: ['personal', 'summary', 'experience', 'education', 'skills', 'projects'],
+    sectionOrder: ['ai', 'personal', 'summary', 'experience', 'education', 'skills', 'projects'],
     enabledSections: {
+      ai: true,
       personal: true,
       summary: true,
       experience: true,
@@ -212,7 +217,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     },
   });
 
-  const [activeSection, setActiveSection] = useState('personal');
+  const [activeSection, setActiveSection] = useState('ai');
   const [atsScore, setAtsScore] = useState(0);
   const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -232,6 +237,8 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     
     const completedSections = sections.filter(section => {
       switch (section.id) {
+        case 'ai':
+          return true; // AI section is always considered complete as it's a tool
         case 'personal':
           return resumeData.personalInfo.name && resumeData.personalInfo.email;
         case 'summary':
@@ -447,6 +454,13 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
 
   const renderSectionContent = () => {
     switch (activeSection) {
+      case 'ai':
+        return (
+          <AIDashboard
+            resumeData={resumeData}
+            onUpdateResumeData={updateResumeData}
+          />
+        );
       case 'personal':
         return (
           <EnhancedPersonalInfoSection
