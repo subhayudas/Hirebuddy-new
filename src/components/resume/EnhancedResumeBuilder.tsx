@@ -1015,7 +1015,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="perfect-fit">Software Engineer</SelectItem>
+                    <SelectItem value="perfect-fit">Software Engineer (Recommended)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1037,6 +1037,8 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     <span>16pt</span>
                   </div>
                 </div>
+
+               
                 
                 {/* Font Preview */}
                 <div className="p-4 border rounded-lg bg-gray-50">
@@ -1069,7 +1071,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="compact">Compact (1.3)</SelectItem>
-                    <SelectItem value="normal">Normal (1.4)</SelectItem>
+                    <SelectItem value="normal">Normal (1.4) (Recommended)</SelectItem>
                     <SelectItem value="relaxed">Relaxed (1.6)</SelectItem>
                   </SelectContent>
                 </Select>
@@ -1087,7 +1089,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       onClick={() => updateSettings({ colorScheme: color })}
                       className={`capitalize ${settings.colorScheme === color ? `bg-${color}-600` : ''}`}
                     >
-                      {color}
+                      {color}{color === 'pink' && " (Recommended)"}
                     </Button>
                   ))}
                 </div>
@@ -1106,7 +1108,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="narrow">Narrow (0.5 inch)</SelectItem>
-                      <SelectItem value="normal">Normal (0.75 inch)</SelectItem>
+                      <SelectItem value="normal">Normal (0.75 inch) (Recommended)</SelectItem>
                       <SelectItem value="wide">Wide (1 inch)</SelectItem>
                     </SelectContent>
                   </Select>
@@ -1115,14 +1117,14 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                 {/* Header Style */}
                 <div className="space-y-3">
                   <label className="text-sm font-medium">Header Style</label>
-                  <Select value={settings.headerStyle || 'classic'} onValueChange={(value) => updateSettings({ headerStyle: value })}>
+                  <Select value={settings.headerStyle || 'modern'} onValueChange={(value) => updateSettings({ headerStyle: value })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="classic">Classic (Left-aligned)</SelectItem>
                       <SelectItem value="centered">Centered</SelectItem>
-                      <SelectItem value="modern">Modern (Split layout)</SelectItem>
+                      <SelectItem value="modern">Modern (Split layout) (Recommended)</SelectItem>
                       <SelectItem value="split-balanced">Split Balanced (Equal columns)</SelectItem>
                       <SelectItem value="split-contact-right">Split Contact (Contact info right)</SelectItem>
                       <SelectItem value="split-contact-left">Split Contact (Contact info left)</SelectItem>
@@ -1165,7 +1167,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="bullet">• Bullet</SelectItem>
+                      <SelectItem value="bullet">• Bullet (Recommended)</SelectItem>
                       <SelectItem value="dash">- Dash</SelectItem>
                       <SelectItem value="arrow">→ Arrow</SelectItem>
                       <SelectItem value="chevron">› Chevron</SelectItem>
@@ -1181,7 +1183,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="left">Left Aligned</SelectItem>
+                      <SelectItem value="left">Left Aligned (Recommended)</SelectItem>
                       <SelectItem value="justify">Justified</SelectItem>
                     </SelectContent>
                   </Select>
@@ -1214,11 +1216,12 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       fontSize: 10,
                       spacing: 'compact',
                       colorScheme: 'indigo',
-                      margins: 'narrow'
+                      margins: 'narrow',
+                      headerStyle: 'modern'
                     })}
                     className="justify-start"
                   >
-                    🚀 Modern
+                    🚀 Modern (Recommended)
                   </Button>
                   <Button
                     variant="outline"
