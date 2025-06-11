@@ -67,8 +67,8 @@ export const ResumeImport = ({
           clearInterval(stepInterval);
           setTimeout(() => {
             setIsProcessing(false);
-            // Navigate to resume builder after processing
-            navigate('/resume-builder');
+            // Navigate to resume builder form after processing
+            navigate('/resume-builder-form');
           }, 1000);
           return prev;
         }
@@ -80,7 +80,7 @@ export const ResumeImport = ({
   const handleCreateFromScratch = () => {
     // Clear any existing parsed data
     localStorage.removeItem('parsedResumeData');
-    navigate('/resume-builder');
+    navigate('/resume-builder-form');
   };
 
   const handleTryAgain = () => {
@@ -394,7 +394,7 @@ export const ResumeImport = ({
                       Try Another Resume
                     </Button>
                     <Button 
-                      onClick={() => navigate('/resume-builder')}
+                      onClick={() => navigate('/resume-builder-form')}
                       className="flex-1 bg-green-600 hover:bg-green-700"
                     >
                       Continue Building
