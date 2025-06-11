@@ -1,0 +1,170 @@
+import type { Resume } from "../types/resume";
+
+// Convert parsed resume data to resume builder format
+export const convertParsedResumeToBuilderFormat = (parsedResume: Resume) => {
+  return {
+    name: parsedResume.profile.name || "",
+    email: parsedResume.profile.email || "",
+    phone: parsedResume.profile.phone || "",
+    location: parsedResume.profile.location || "",
+    website: parsedResume.profile.url || "",
+    linkedin: extractLinkedInFromUrl(parsedResume.profile.url) || "",
+    github: extractGitHubFromUrl(parsedResume.profile.url) || "",
+    summary: parsedResume.profile.summary || "",
+    experience: parsedResume.workExperiences.map(exp => ({
+      company: exp.company,
+      position: exp.jobTitle,
+      startDate: extractStartDate(exp.date),
+      endDate: extractEndDate(exp.date),
+      description: exp.descriptions.join('\n'),
+      current: exp.date.toLowerCase().includes('present') || exp.date.toLowerCase().includes('current')
+    })),
+    education: parsedResume.educations.map(edu => ({
+      school: edu.school,
+      degree: edu.degree,
+      field: extractFieldFromDegree(edu.degree),
+      startDate: extractStartDate(edu.date),
+      endDate: extractEndDate(edu.date),
+      gpa: edu.gpa,
+      description: edu.descriptions.join('\n')
+    })),
+    skills: parsedResume.skills.descriptions || []
+  };
+};
+
+// Convert parsed resume data to enhanced resume builder format
+export const convertParsedResumeToEnhancedFormat = (parsedResume: Resume) => {
+  return {
+    personalInfo: {
+      name: parsedResume.profile.name || "",
+      email: parsedResume.profile.email || "",
+      phone: parsedResume.profile.phone || "",
+      location: parsedResume.profile.location || "",
+      website: parsedResume.profile.url || "",
+      linkedin: extractLinkedInFromUrl(parsedResume.profile.url) || "",
+      github: extractGitHubFromUrl(parsedResume.profile.url) || "",
+    },
+    summary: parsedResume.profile.summary || "",
+    experience: parsedResume.workExperiences.map((exp, index) => ({
+      id: `exp-${index}`,
+      jobTitle: exp.jobTitle || "",
+      company: exp.company || "",
+      location: "", // Not typically extracted from PDF
+      startDate: extractStartDate(exp.date),
+      endDate: extractEndDate(exp.date),
+      current: exp.date.toLowerCase().includes('present') || exp.date.toLowerCase().includes('current'),
+      description: exp.descriptions.join('\n'),
+      achievements: exp.descriptions || []
+    })),
+    education: parsedResume.educations.map((edu, index) => ({
+      id: `edu-${index}`,
+      degree: edu.degree || "",
+      school: edu.school || "",
+      location: "", // Not typically extracted from PDF
+      startDate: extractStartDate(edu.date),
+      endDate: extractEndDate(edu.date),
+      gpa: edu.gpa || "",
+      honors: "", // Not typically extracted from PDF
+      coursework: edu.descriptions || []
+    })),
+    skills: {
+      technical: parsedResume.skills.descriptions || [],
+      soft: [], // Not typically extracted from PDF
+      languages: [], // Will be handled separately if language section exists
+      frameworks: [] // Not typically extracted from PDF
+    },
+    projects: parsedResume.projects.map((proj, index) => ({
+      id: `proj-${index}`,
+      name: proj.project || "",
+      description: proj.descriptions.join('\n'),
+      technologies: [], // Not typically extracted from PDF
+      link: "",
+      github: "",
+      startDate: extractStartDate(proj.date),
+      endDate: extractEndDate(proj.date)
+    })),
+    certifications: [], // Not typically extracted from PDF
+    languages: [], // Not typically extracted from PDF
+    volunteer: [] // Not typically extracted from PDF
+  };
+};
+
+// Helper functions to extract specific information
+const extractLinkedInFromUrl = (url: string): string => {
+  if (!url) return "";
+  const linkedinMatch = url.match(/linkedin\.com\/in\/([^\/\s]+)/i);
+  return linkedinMatch ? `linkedin.com/in/${linkedinMatch[1]}` : "";
+};
+
+const extractGitHubFromUrl = (url: string): string => {
+  if (!url) return "";
+  const githubMatch = url.match(/github\.com\/([^\/\s]+)/i);
+  return githubMatch ? `github.com/${githubMatch[1]}` : "";
+};
+
+const extractStartDate = (dateString: string): string => {
+  if (!dateString) return "";
+  
+  // Handle various date formats
+  const datePatterns = [
+    /(\w+\s+\d{4})\s*[-–—]\s*(\w+\s+\d{4}|\w+)/i, // "Jan 2020 - Dec 2022"
+    /(\d{4})\s*[-–—]\s*(\d{4}|\w+)/i, // "2020 - 2022"
+    /(\d{1,2}\/\d{4})\s*[-–—]\s*(\d{1,2}\/\d{4}|\w+)/i // "01/2020 - 12/2022"
+  ];
+  
+  for (const pattern of datePatterns) {
+    const match = dateString.match(pattern);
+    if (match) {
+      return match[1];
+    }
+  }
+  
+  return dateString.split(/[-–—]/)[0]?.trim() || "";
+};
+
+const extractEndDate = (dateString: string): string => {
+  if (!dateString) return "";
+  
+  if (dateString.toLowerCase().includes('present') || 
+      dateString.toLowerCase().includes('current') ||
+      dateString.toLowerCase().includes('now')) {
+    return "Present";
+  }
+  
+  // Handle various date formats
+  const datePatterns = [
+    /(\w+\s+\d{4})\s*[-–—]\s*(\w+\s+\d{4})/i, // "Jan 2020 - Dec 2022"
+    /(\d{4})\s*[-–—]\s*(\d{4})/i, // "2020 - 2022"
+    /(\d{1,2}\/\d{4})\s*[-–—]\s*(\d{1,2}\/\d{4})/i // "01/2020 - 12/2022"
+  ];
+  
+  for (const pattern of datePatterns) {
+    const match = dateString.match(pattern);
+    if (match) {
+      return match[2];
+    }
+  }
+  
+  const parts = dateString.split(/[-–—]/);
+  return parts.length > 1 ? parts[1].trim() : "";
+};
+
+const extractFieldFromDegree = (degree: string): string => {
+  if (!degree) return "";
+  
+  // Common field patterns
+  const fieldPatterns = [
+    /in\s+([^,\n]+)/i,
+    /of\s+([^,\n]+)/i,
+    /(Computer Science|Engineering|Business|Mathematics|Physics|Chemistry|Biology|Psychology|Economics|Marketing|Finance)/i
+  ];
+  
+  for (const pattern of fieldPatterns) {
+    const match = degree.match(pattern);
+    if (match) {
+      return match[1].trim();
+    }
+  }
+  
+  return "";
+}; 

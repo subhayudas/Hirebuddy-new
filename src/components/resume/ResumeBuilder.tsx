@@ -20,6 +20,8 @@ import {
   Zap,
   Target
 } from "lucide-react";
+import { convertParsedResumeToBuilderFormat } from "../../lib/resume-data-converter";
+import type { Resume } from "../../types/resume";
 import { ResumePreview } from "./ResumePreview";
 import { PersonalInfoSection } from "./sections/PersonalInfoSection";
 import { SummarySection } from "./sections/SummarySection";
@@ -129,6 +131,32 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
   useEffect(() => {
     updateAtsScore();
   }, [resumeData]);
+
+  // Initialize with parsed resume data if available
+  useEffect(() => {
+    const parsedResumeData = localStorage.getItem('parsedResumeData');
+    if (parsedResumeData) {
+      try {
+        const parsedResume: Resume = JSON.parse(parsedResumeData);
+        const convertedData = convertParsedResumeToBuilderFormat(parsedResume);
+        setResumeData(convertedData);
+        // Clear the parsed data after using it
+        localStorage.removeItem('parsedResumeData');
+      } catch (error) {
+        console.error('Error loading parsed resume data:', error);
+      }
+    } else {
+      // Load draft if no parsed data
+      const draftData = localStorage.getItem('resume_draft');
+      if (draftData) {
+        try {
+          setResumeData(JSON.parse(draftData));
+        } catch (error) {
+          console.error('Error loading draft data:', error);
+        }
+      }
+    }
+  }, []);
 
   // Auto-save functionality
   useEffect(() => {

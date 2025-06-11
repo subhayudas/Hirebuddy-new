@@ -12,7 +12,8 @@ import {
   Calendar,
   MessageSquare,
   Briefcase,
-  Target
+  Target,
+  Upload
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -35,6 +36,7 @@ const mainItems = [
   { title: "Find Jobs", url: "/jobs", icon: Search },
   { title: "Applications", url: "/applications", icon: Briefcase },
   { title: "Resume Builder", url: "/resume-editor", icon: FileText },
+  { title: "Import Resume", url: "/resume-import", icon: Upload },
   { title: "Interview Prep", url: "/interview-prep", icon: MessageSquare },
   { title: "Skill Assessment", url: "/skills", icon: Target },
 ];

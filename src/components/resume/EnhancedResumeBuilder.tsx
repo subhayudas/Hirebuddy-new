@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { convertParsedResumeToEnhancedFormat } from "@/lib/resume-data-converter";
+import type { Resume } from "@/types/resume";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -343,6 +345,22 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
 
   // Load saved data on mount
   useEffect(() => {
+    // First check for parsed resume data (from import)
+    const parsedResumeData = localStorage.getItem('parsedResumeData');
+    if (parsedResumeData) {
+      try {
+        const parsedResume: Resume = JSON.parse(parsedResumeData);
+        const convertedData = convertParsedResumeToEnhancedFormat(parsedResume);
+        setResumeData(convertedData);
+        // Clear the parsed data after using it
+        localStorage.removeItem('parsedResumeData');
+        return; // Don't load saved data if we have parsed data
+      } catch (error) {
+        console.error('Error loading parsed resume data:', error);
+      }
+    }
+    
+    // Load previously saved data if no parsed data
     const savedData = localStorage.getItem('enhanced_resume_data');
     const savedSettings = localStorage.getItem('enhanced_resume_settings');
     

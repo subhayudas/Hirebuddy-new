@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import ResumeEditor from "./pages/ResumeEditor";
+import { ResumeImportPage } from "./pages/ResumeImportPage";
 import Jobs from "./pages/Jobs";
 import Applications from "./pages/Applications";
 import InterviewPrep from "./pages/InterviewPrep";
@@ -61,6 +62,7 @@ const App = () => (
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
             <Route path="/resume-editor" element={<ProtectedRoute><ResumeEditor /></ProtectedRoute>} />
+            <Route path="/resume-import" element={<ProtectedRoute><ResumeImportPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
