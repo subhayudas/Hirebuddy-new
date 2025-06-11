@@ -45,7 +45,7 @@ export const convertParsedResumeToEnhancedFormat = (parsedResume: Resume) => {
       github: extractGitHubFromUrl(parsedResume.profile.url) || "",
     },
     summary: parsedResume.profile.summary || "",
-    experience: parsedResume.workExperiences.map((exp, index) => ({
+    experience: (parsedResume.workExperiences || []).map((exp, index) => ({
       id: `exp-${index}`,
       jobTitle: exp.jobTitle || "",
       company: exp.company || "",
@@ -53,10 +53,10 @@ export const convertParsedResumeToEnhancedFormat = (parsedResume: Resume) => {
       startDate: extractStartDate(exp.date),
       endDate: extractEndDate(exp.date),
       current: exp.date.toLowerCase().includes('present') || exp.date.toLowerCase().includes('current'),
-      description: exp.descriptions.join('\n'),
+      description: (exp.descriptions || []).join('\n'),
       achievements: exp.descriptions || []
     })),
-    education: parsedResume.educations.map((edu, index) => ({
+    education: (parsedResume.educations || []).map((edu, index) => ({
       id: `edu-${index}`,
       degree: edu.degree || "",
       school: edu.school || "",
@@ -73,19 +73,45 @@ export const convertParsedResumeToEnhancedFormat = (parsedResume: Resume) => {
       languages: [], // Will be handled separately if language section exists
       frameworks: [] // Not typically extracted from PDF
     },
-    projects: parsedResume.projects.map((proj, index) => ({
+    projects: (parsedResume.projects || []).map((proj, index) => ({
       id: `proj-${index}`,
       name: proj.project || "",
-      description: proj.descriptions.join('\n'),
+      description: (proj.descriptions || []).join('\n'),
       technologies: [], // Not typically extracted from PDF
       link: "",
       github: "",
       startDate: extractStartDate(proj.date),
       endDate: extractEndDate(proj.date)
     })),
-    certifications: [], // Not typically extracted from PDF
-    languages: [], // Not typically extracted from PDF
-    volunteer: [] // Not typically extracted from PDF
+    certifications: (parsedResume.certifications || []).map((cert, index) => ({
+      id: `cert-${index}`,
+      name: cert.name || "",
+      issuer: cert.issuer || "",
+      date: cert.date || "",
+      expiryDate: cert.expiryDate || "",
+      credentialId: cert.credentialId || "",
+      link: ""
+    })),
+    languages: (parsedResume.languages || []).map((lang, index) => ({
+      id: `lang-${index}`,
+      language: lang.language || "",
+      proficiency: lang.proficiency || "Intermediate"
+    })),
+    volunteer: (parsedResume.volunteers || []).map((vol, index) => ({
+      id: `vol-${index}`,
+      organization: vol.organization || "",
+      role: vol.role || "",
+      startDate: extractStartDate(vol.date),
+      endDate: extractEndDate(vol.date),
+      description: (vol.descriptions || []).join('\n')
+    })),
+    awards: (parsedResume.awards || []).map((award, index) => ({
+      id: `award-${index}`,
+      title: award.title || "",
+      issuer: award.issuer || "",
+      date: award.date || "",
+      description: award.description || ""
+    }))
   };
 };
 

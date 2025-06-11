@@ -59,6 +59,7 @@ import { EnhancedProjectsSection } from "./enhanced-sections/EnhancedProjectsSec
 import { EnhancedCertificationsSection } from "./enhanced-sections/EnhancedCertificationsSection";
 import { EnhancedLanguagesSection } from "./enhanced-sections/EnhancedLanguagesSection";
 import { EnhancedVolunteerSection } from "./enhanced-sections/EnhancedVolunteerSection";
+import { EnhancedAwardsSection } from "./enhanced-sections/EnhancedAwardsSection";
 
 // AI Components
 import { AIDashboard } from "./ai/AIDashboard";
@@ -138,6 +139,13 @@ interface ResumeData {
     endDate: string;
     description: string;
   }>;
+  awards: Array<{
+    id: string;
+    title: string;
+    issuer: string;
+    date: string;
+    description: string;
+  }>;
 }
 
 interface Settings {
@@ -173,6 +181,7 @@ const SECTION_CONFIGS = [
   { id: 'certifications', label: 'Certifications', icon: Award, color: 'orange' },
   { id: 'languages', label: 'Languages', icon: Languages, color: 'indigo' },
   { id: 'volunteer', label: 'Volunteer', icon: Heart, color: 'red' },
+  { id: 'awards', label: 'Awards', icon: Award, color: 'yellow' },
 ];
 
 export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({ 
@@ -203,6 +212,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     certifications: [],
     languages: [],
     volunteer: [],
+    awards: [],
   });
 
   const [settings, setSettings] = useState<Settings>({
@@ -224,6 +234,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
       certifications: false,
       languages: false,
       volunteer: false,
+      awards: false,
     },
   });
 
@@ -269,6 +280,8 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
           return resumeData.languages.length > 0;
         case 'volunteer':
           return resumeData.volunteer.length > 0;
+        case 'awards':
+          return resumeData.awards.length > 0;
         default:
           return false;
       }
@@ -367,7 +380,34 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     
     if (savedData) {
       try {
-        setResumeData(JSON.parse(savedData));
+        const loadedData = JSON.parse(savedData);
+        // Ensure all required fields exist for backward compatibility
+        const migratedData = {
+          personalInfo: loadedData.personalInfo || {
+            name: "",
+            email: "",
+            phone: "",
+            location: "",
+            website: "",
+            linkedin: "",
+            github: "",
+          },
+          summary: loadedData.summary || "",
+          experience: loadedData.experience || [],
+          education: loadedData.education || [],
+          skills: loadedData.skills || {
+            technical: [],
+            soft: [],
+            languages: [],
+            frameworks: [],
+          },
+          projects: loadedData.projects || [],
+          certifications: loadedData.certifications || [],
+          languages: loadedData.languages || [],
+          volunteer: loadedData.volunteer || [],
+          awards: loadedData.awards || [],
+        };
+        setResumeData(migratedData);
       } catch (error) {
         console.error('Error loading saved resume data:', error);
       }
@@ -457,6 +497,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
       certifications: [],
       languages: [],
       volunteer: [],
+      awards: [],
     });
     setActiveSection('personal');
   };
@@ -579,6 +620,13 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
           <EnhancedVolunteerSection
             data={resumeData.volunteer}
             onUpdate={(data) => updateResumeData('volunteer', data)}
+          />
+        );
+      case 'awards':
+        return (
+          <EnhancedAwardsSection
+            data={resumeData.awards}
+            onUpdate={(data) => updateResumeData('awards', data)}
           />
         );
       default:

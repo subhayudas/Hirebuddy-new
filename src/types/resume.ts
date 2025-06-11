@@ -38,6 +38,33 @@ export interface ResumeSkills {
   descriptions: string[];
 }
 
+export interface ResumeAward {
+  title: string;
+  issuer: string;
+  date: string;
+  description: string;
+}
+
+export interface ResumeVolunteer {
+  organization: string;
+  role: string;
+  date: string;
+  descriptions: string[];
+}
+
+export interface ResumeCertification {
+  name: string;
+  issuer: string;
+  date: string;
+  expiryDate: string;
+  credentialId: string;
+}
+
+export interface ResumeLanguage {
+  language: string;
+  proficiency: string;
+}
+
 export interface ResumeCustom {
   descriptions: string[];
 }
@@ -48,6 +75,10 @@ export interface Resume {
   educations: ResumeEducation[];
   projects: ResumeProject[];
   skills: ResumeSkills;
+  awards: ResumeAward[];
+  volunteers: ResumeVolunteer[];
+  certifications: ResumeCertification[];
+  languages: ResumeLanguage[];
   custom: ResumeCustom;
 }
 

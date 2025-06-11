@@ -73,6 +73,13 @@ interface ResumeData {
     endDate: string;
     description: string;
   }>;
+  awards: Array<{
+    id: string;
+    title: string;
+    issuer: string;
+    date: string;
+    description: string;
+  }>;
 }
 
 interface Settings {
@@ -391,7 +398,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
   };
 
   const renderExperience = () => {
-    if (!data.experience.length) return null;
+    if (!data.experience || !data.experience.length) return null;
 
     return renderSection(
       'Experience',
@@ -423,7 +430,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             {exp.description && (
               <p className="text-xs text-gray-700 mb-2 leading-relaxed">{exp.description}</p>
             )}
-            {exp.achievements && exp.achievements.length > 0 && (
+            {exp.achievements && Array.isArray(exp.achievements) && exp.achievements.length > 0 && (
               <ul className="space-y-1">
                 {exp.achievements.map((achievement, i) => (
                   <li key={i} className="text-xs text-gray-700 flex items-start gap-2">
@@ -444,7 +451,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
   };
 
   const renderEducation = () => {
-    if (!data.education.length) return null;
+    if (!data.education || !data.education.length) return null;
 
     return renderSection(
       'Education',
@@ -475,7 +482,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
                 {formatDateRange(edu.startDate, edu.endDate)}
               </div>
             </div>
-            {edu.coursework && edu.coursework.length > 0 && (
+            {edu.coursework && Array.isArray(edu.coursework) && edu.coursework.length > 0 && (
               <div className="mt-2">
                 <p className="text-xs font-medium text-gray-700 mb-1">Relevant Coursework:</p>
                 <div className="flex flex-wrap gap-1">
@@ -498,14 +505,14 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
   };
 
   const renderSkills = () => {
-    const hasSkills = Object.values(data.skills).some(skillArray => skillArray.length > 0);
+    const hasSkills = data.skills && Object.values(data.skills).some(skillArray => Array.isArray(skillArray) && skillArray.length > 0);
     if (!hasSkills) return null;
 
     const skillCategories = [
-      { label: 'Technical Skills', skills: data.skills.technical },
-      { label: 'Frameworks & Libraries', skills: data.skills.frameworks },
-      { label: 'Soft Skills', skills: data.skills.soft },
-    ].filter(category => category.skills.length > 0);
+      { label: 'Technical Skills', skills: data.skills.technical || [] },
+      { label: 'Frameworks & Libraries', skills: data.skills.frameworks || [] },
+      { label: 'Soft Skills', skills: data.skills.soft || [] },
+    ].filter(category => Array.isArray(category.skills) && category.skills.length > 0);
 
     return renderSection(
       'Skills',
@@ -541,7 +548,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
   };
 
   const renderProjects = () => {
-    if (!settings.enabledSections.projects || !data.projects.length) return null;
+    if (!settings.enabledSections.projects || !data.projects || !data.projects.length) return null;
 
     return renderSection(
       'Projects',
@@ -593,7 +600,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
           {project.description && (
             <p className="text-xs text-gray-700 mb-2 leading-relaxed">{project.description}</p>
           )}
-            {project.technologies && project.technologies.length > 0 && (
+            {project.technologies && Array.isArray(project.technologies) && project.technologies.length > 0 && (
               <div className="flex flex-wrap gap-1">
                 {project.technologies.map((tech, i) => (
                   <span
@@ -613,7 +620,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
   };
 
   const renderCertifications = () => {
-    if (!settings.enabledSections.certifications || !data.certifications.length) return null;
+    if (!settings.enabledSections.certifications || !data.certifications || !data.certifications.length) return null;
 
     return renderSection(
       'Certifications',
@@ -658,7 +665,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
   };
 
   const renderLanguages = () => {
-    if (!settings.enabledSections.languages || !data.languages.length) return null;
+    if (!settings.enabledSections.languages || !data.languages || !data.languages.length) return null;
 
     return renderSection(
       'Languages',
@@ -685,7 +692,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
   };
 
   const renderVolunteer = () => {
-    if (!settings.enabledSections.volunteer || !data.volunteer.length) return null;
+    if (!settings.enabledSections.volunteer || !data.volunteer || !data.volunteer.length) return null;
 
     return renderSection(
       'Volunteer Experience',
@@ -1018,7 +1025,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
         {renderSummary()}
 
         {/* Education */}
-        {data.education.length > 0 && (
+        {data.education && data.education.length > 0 && (
           <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
             <h2 
               className="font-bold mb-2 pb-1" 
@@ -1092,7 +1099,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
         )}
 
         {/* Experience */}
-        {data.experience.length > 0 && (
+        {data.experience && data.experience.length > 0 && (
           <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
             <h2 
               className="font-bold mb-2 pb-1" 
@@ -1120,7 +1127,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
                     <div style={{ fontSize: fontSizes.body }}>{exp.description}</div>
                   </div>
                 )}
-                {exp.achievements && exp.achievements.length > 0 && (
+                {exp.achievements && Array.isArray(exp.achievements) && exp.achievements.length > 0 && (
                   <div className="ml-3">
                     {exp.achievements.map((achievement, idx) => (
                       <div key={idx} className="mb-1" style={{ fontSize: fontSizes.body }}>
@@ -1137,7 +1144,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
         )}
 
         {/* Projects */}
-        {data.projects.length > 0 && (
+        {data.projects && data.projects.length > 0 && (
           <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
             <h2 
               className="font-bold mb-2 pb-1" 
@@ -1152,7 +1159,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
               <div key={project.id} className="mb-2">
                 <div style={{ fontSize: fontSizes.body }}>
                   <strong>{project.name}:</strong> {project.description}
-                  {project.technologies && project.technologies.length > 0 && (
+                  {project.technologies && Array.isArray(project.technologies) && project.technologies.length > 0 && (
                     <> Tech: {project.technologies.join(', ')}</>
                   )}
                 </div>
@@ -1162,7 +1169,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
         )}
 
         {/* Certifications as Honors and Awards */}
-        {data.certifications.length > 0 && (
+        {data.certifications && data.certifications.length > 0 && (
           <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
             <h2 
               className="font-bold mb-2 pb-1" 
@@ -1186,7 +1193,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
         )}
 
         {/* Volunteer Experience */}
-        {data.volunteer.length > 0 && (
+        {data.volunteer && data.volunteer.length > 0 && (
           <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
             <h2 
               className="font-bold mb-2 pb-1" 
@@ -1207,6 +1214,41 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
                   <div className="text-right" style={{ fontSize: fontSizes.small }}>
                     <div>{formatDateRange(vol.startDate, vol.endDate)}</div>
                   </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Awards and Honors */}
+        {data.awards && data.awards.length > 0 && (
+          <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
+            <h2 
+              className="font-bold mb-2 pb-1" 
+              style={{ 
+                fontSize: fontSizes.sectionTitle,
+                borderBottom: settings.showDividers !== false ? '1px solid black' : 'none'
+              }}
+            >
+              AWARDS AND HONORS
+            </h2>
+            {data.awards.map((award) => (
+              <div key={award.id} className="mb-2">
+                <div className="flex justify-between items-start mb-1">
+                  <div>
+                    <div className="font-bold" style={{ fontSize: fontSizes.body }}>{award.title}</div>
+                    {award.issuer && (
+                      <div className="italic" style={{ fontSize: fontSizes.body }}>{award.issuer}</div>
+                    )}
+                    {award.description && (
+                      <div style={{ fontSize: fontSizes.body }}>{award.description}</div>
+                    )}
+                  </div>
+                  {award.date && (
+                    <div className="text-right" style={{ fontSize: fontSizes.small }}>
+                      <div>{award.date}</div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

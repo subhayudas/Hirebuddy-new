@@ -4,6 +4,10 @@ import { extractEducation } from "./extract-education";
 import { extractWorkExperience } from "./extract-work-experience";
 import { extractProject } from "./extract-project";
 import { extractSkills } from "./extract-skills";
+import { extractAwards } from "./extract-awards";
+import { extractVolunteer } from "./extract-volunteer";
+import { extractCertifications } from "./extract-certifications";
+import { extractLanguages } from "./extract-languages";
 
 /**
  * Step 4. Extract resume from sections.
@@ -27,6 +31,10 @@ export const extractResumeFromSections = (
   const { workExperiences } = extractWorkExperience(sections);
   const { projects } = extractProject(sections);
   const { skills } = extractSkills(sections);
+  const { awards } = extractAwards(sections);
+  const { volunteers } = extractVolunteer(sections);
+  const { certifications } = extractCertifications(sections);
+  const { languages } = extractLanguages(sections);
 
   return {
     profile,
@@ -34,6 +42,10 @@ export const extractResumeFromSections = (
     workExperiences,
     projects,
     skills,
+    awards,
+    volunteers,
+    certifications,
+    languages,
     custom: {
       descriptions: [],
     },

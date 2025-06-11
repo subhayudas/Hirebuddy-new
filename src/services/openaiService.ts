@@ -344,6 +344,40 @@ Important: Ensure the response is valid JSON. Do not include any text before or 
       });
     }
     
+    // Certifications
+    if (resumeData.certifications?.length > 0) {
+      sections.push('\nCERTIFICATIONS:');
+      resumeData.certifications.forEach((cert: any) => {
+        sections.push(`${cert.name} - ${cert.issuer} (${cert.date})`);
+      });
+    }
+    
+    // Languages
+    if (resumeData.languages?.length > 0) {
+      sections.push('\nLANGUAGES:');
+      resumeData.languages.forEach((lang: any) => {
+        sections.push(`${lang.language} (${lang.proficiency})`);
+      });
+    }
+    
+    // Volunteer Experience
+    if (resumeData.volunteer?.length > 0) {
+      sections.push('\nVOLUNTEER EXPERIENCE:');
+      resumeData.volunteer.forEach((vol: any) => {
+        sections.push(`${vol.role} at ${vol.organization} (${vol.startDate} - ${vol.endDate})`);
+        if (vol.description) sections.push(`   Description: ${vol.description}`);
+      });
+    }
+    
+    // Awards
+    if (resumeData.awards?.length > 0) {
+      sections.push('\nAWARDS AND HONORS:');
+      resumeData.awards.forEach((award: any) => {
+        sections.push(`${award.title} - ${award.issuer} (${award.date})`);
+        if (award.description) sections.push(`   Description: ${award.description}`);
+      });
+    }
+    
     return sections.join('\n');
   }
 }
