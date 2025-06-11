@@ -206,7 +206,7 @@ export const MainDashboard = () => {
                 </div>
               
                 <Button className="w-full bg-indigo-600 hover:bg-indigo-700" asChild>
-                  <Link to="/resume-editor">
+                  <Link to="/resume-builder">
                     Optimize Resume
                   </Link>
                 </Button>

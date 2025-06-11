@@ -37,7 +37,8 @@ import {
   Layout,
   Type,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Upload
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -645,6 +646,23 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
 
                 {/* Action buttons */}
                 <div className="flex items-center gap-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.location.href = '/resume-import'}
+                        className="flex items-center gap-2"
+                      >
+                        <Upload className="w-4 h-4" />
+                        Import Resume
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Import an existing resume to auto-fill this form</p>
+                    </TooltipContent>
+                  </Tooltip>
+
                   <Button
                     variant="outline"
                     size="sm"

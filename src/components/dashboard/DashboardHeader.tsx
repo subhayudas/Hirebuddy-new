@@ -56,7 +56,7 @@ export function DashboardHeader({ userName, isNewSession = false }: DashboardHea
           </div>
           <div className="flex flex-wrap gap-2">
             <Button asChild variant="outline" size="sm" className="bg-white/80 border-pink-200 hover:bg-pink-100 hover:text-primary">
-              <Link to="/resume-editor">
+              <Link to="/resume-builder">
                 <FileText className="mr-2 h-4 w-4" />
                 Update Resume
               </Link>

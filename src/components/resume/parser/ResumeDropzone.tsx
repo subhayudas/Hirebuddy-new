@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Upload, X, FileText, Lock } from "lucide-react";
+import { Upload, X, FileText, Lock, Zap } from "lucide-react";
 import { parseResumeFromPdf } from "../../../lib/parse-resume-from-pdf";
 import { Button } from "../../ui/button";
 import { cn } from "../../../lib/utils";
@@ -110,9 +110,10 @@ export const ResumeDropzone = ({
   return (
     <div
       className={cn(
-        "flex justify-center rounded-lg border-2 border-dashed border-gray-300 px-6 py-12 transition-colors",
-        isHoveredOnDropzone && !disabled && "border-blue-400 bg-blue-50",
+        "flex justify-center rounded-xl border-2 border-dashed border-gray-300 px-6 py-12 transition-all duration-200",
+        isHoveredOnDropzone && !disabled && "border-blue-400 bg-blue-50 scale-[1.02]",
         disabled && "opacity-50 cursor-not-allowed",
+        !hasFile && "hover:border-gray-400 hover:bg-gray-50",
         className
       )}
       onDragOver={(event) => {
@@ -171,7 +172,7 @@ export const ResumeDropzone = ({
             <Button
               onClick={onParseClick}
               disabled={disabled || isProcessing}
-              className="w-full"
+              className="w-full h-12 text-base bg-blue-600 hover:bg-blue-700"
             >
               {isProcessing ? (
                 <>
@@ -179,7 +180,10 @@ export const ResumeDropzone = ({
                   Parsing Resume...
                 </>
               ) : (
-                "Parse Resume & Auto-fill"
+                <>
+                  <Zap className="w-4 h-4 mr-2" />
+                  Parse Resume & Auto-fill
+                </>
               )}
             </Button>
             
@@ -191,7 +195,8 @@ export const ResumeDropzone = ({
 
         {!hasFile && (
           <div>
-            <label className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <label className="cursor-pointer inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+              <Upload className="w-4 h-4 mr-2" />
               Browse Files
               <input
                 type="file"

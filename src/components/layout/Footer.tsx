@@ -40,7 +40,7 @@ const footerSections = [
     links: [
       { label: "Dashboard", href: "/dashboard", icon: BarChart3 },
       { label: "Find Jobs", href: "/jobs", icon: Search },
-      { label: "Resume Builder", href: "/resume-editor", icon: FileText },
+      { label: "Resume Builder", href: "/resume-builder", icon: FileText },
       { label: "Interview Prep", href: "/interview-prep", icon: MessageSquare },
       { label: "Analytics", href: "/analytics", icon: TrendingUp },
       { label: "Calendar", href: "/calendar", icon: Calendar }

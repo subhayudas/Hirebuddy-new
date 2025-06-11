@@ -38,7 +38,7 @@ const BentoGrid = () => {
                 <span className="text-xs opacity-90">Browse 1,234 openings</span>
               </Button>
             </Link>
-            <Link to="/resume-editor">
+                          <Link to="/resume-builder">
               <Button variant="outline" className="w-full h-16 flex flex-col gap-1 border-pink-200 hover:bg-pink-50">
                 <span className="font-medium">Build Resume</span>
                 <span className="text-xs text-muted-foreground">AI-powered editor</span>

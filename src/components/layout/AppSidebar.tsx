@@ -35,7 +35,7 @@ const mainItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Find Jobs", url: "/jobs", icon: Search },
   { title: "Applications", url: "/applications", icon: Briefcase },
-  { title: "Resume Builder", url: "/resume-editor", icon: FileText },
+      { title: "Resume Builder", url: "/resume-builder", icon: FileText },
   { title: "Import Resume", url: "/resume-import", icon: Upload },
   { title: "Interview Prep", url: "/interview-prep", icon: MessageSquare },
   { title: "Skill Assessment", url: "/skills", icon: Target },

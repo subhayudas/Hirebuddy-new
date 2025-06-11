@@ -18,7 +18,8 @@ import {
   HelpCircle,
   Lightbulb,
   Zap,
-  Target
+  Target,
+  Upload
 } from "lucide-react";
 import { convertParsedResumeToBuilderFormat } from "../../lib/resume-data-converter";
 import type { Resume } from "../../types/resume";
@@ -64,6 +65,7 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const resumeRef = useRef<HTMLDivElement>(null);
   const modalResumeRef = useRef<HTMLDivElement>(null);
+  const [showImportDialog, setShowImportDialog] = useState(false);
   
   // Format data for ResumePreview component
   const formattedData = {
@@ -257,6 +259,11 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
     );
   };
 
+  const handleImportResume = () => {
+    // Navigate to import page or show import dialog
+    window.location.href = '/resume-import';
+  };
+
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-gray-50">
@@ -285,7 +292,24 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={handleImportResume}
+                      className="flex items-center gap-2"
+                    >
+                      <Upload className="w-4 h-4" />
+                      Import Resume
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Import an existing resume to auto-fill this form</p>
+                  </TooltipContent>
+                </Tooltip>
+
                 {/* Auto-save indicator */}
                 {lastSaved && (
                   <div className="text-xs text-gray-500">

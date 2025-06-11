@@ -46,7 +46,7 @@ const navigationItems = [
     items: [
       {
         title: "AI Resume Builder",
-        href: "/resume-editor",
+        href: "/resume-builder",
         description: "Create ATS-optimized resumes with AI assistance",
         icon: FileText,
         badge: "Popular",
@@ -87,7 +87,7 @@ const navigationItems = [
 const mobileNavItems = [
   { title: "Dashboard", href: "/dashboard", icon: BarChart3 },
   { title: "Find Jobs", href: "/jobs", icon: Search },
-  { title: "Resume Builder", href: "/resume-editor", icon: FileText },
+        { title: "Resume Builder", href: "/resume-builder", icon: FileText },
   { title: "Applications", href: "/applications", icon: Users },
   { title: "Interview Prep", href: "/interview-prep", icon: MessageSquare },
   { title: "Calendar", href: "/calendar", icon: Calendar },
