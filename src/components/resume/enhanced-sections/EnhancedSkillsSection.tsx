@@ -57,7 +57,7 @@ export const EnhancedSkillsSection: React.FC<EnhancedSkillsSectionProps> = ({
   const sampleSkills = {
     technical: ['JavaScript', 'Python', 'React', 'Node.js', 'SQL', 'Git', 'AWS', 'Docker'],
     soft: ['Leadership', 'Communication', 'Problem Solving', 'Team Collaboration', 'Time Management'],
-    languages: ['English', 'Spanish', 'French', 'Mandarin', 'German'],
+    languages: ['Java', 'Python', 'C#', 'C++', 'C', 'Ruby', 'Go', 'JavaScript', 'TypeScript', 'Swift'],
     frameworks: ['React', 'Vue.js', 'Angular', 'Express.js', 'Django', 'Spring Boot', 'Laravel']
   };
 
@@ -213,4 +213,4 @@ export const EnhancedSkillsSection: React.FC<EnhancedSkillsSectionProps> = ({
       )}
     </div>
   );
-}; 
+};
