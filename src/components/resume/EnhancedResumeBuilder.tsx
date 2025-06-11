@@ -222,6 +222,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     colorScheme: 'pink',
     spacing: 'normal',
     showPhoto: false,
+    headerStyle: 'modern',
     sectionOrder: ['ai', 'personal', 'summary', 'experience', 'education', 'skills', 'projects'],
     enabledSections: {
       ai: true,
@@ -1202,7 +1203,8 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       fontSize: 11,
                       spacing: 'normal',
                       colorScheme: 'blue',
-                      margins: 'normal'
+                      margins: 'normal',
+                      headerStyle: 'classic'
                     })}
                     className="justify-start"
                   >
@@ -1231,7 +1233,8 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       fontSize: 12,
                       spacing: 'relaxed',
                       colorScheme: 'green',
-                      margins: 'wide'
+                      margins: 'wide',
+                      headerStyle: 'centered'
                     })}
                     className="justify-start"
                   >
@@ -1245,11 +1248,12 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       fontSize: 9,
                       spacing: 'compact',
                       colorScheme: 'purple',
-                      margins: 'narrow'
+                      margins: 'narrow',
+                      headerStyle: 'minimalist'
                     })}
                     className="justify-start"
                   >
-                    📊 Executive
+                    💼 Executive
                   </Button>
                 </div>
               </div>
