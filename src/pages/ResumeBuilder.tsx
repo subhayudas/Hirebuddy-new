@@ -11,11 +11,11 @@ const ResumeBuilder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-pink-100">
       <Header />
       <EnhancedResumeBuilder template="perfect-fit" onBack={handleBack} />
     </div>
   );
 };
 
-export default ResumeBuilder; 
+export default ResumeBuilder;

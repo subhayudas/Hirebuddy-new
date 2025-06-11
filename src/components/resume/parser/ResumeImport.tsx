@@ -95,9 +95,9 @@ export const ResumeImport = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-100">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-pink-200 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -105,7 +105,7 @@ export const ResumeImport = ({
                 variant="ghost" 
                 size="sm"
                 onClick={handleGoBack}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 hover:bg-pink-100"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Builder
@@ -113,7 +113,7 @@ export const ResumeImport = ({
               <Separator orientation="vertical" className="h-6" />
               <div>
                 <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-blue-600" />
+                  <Sparkles className="w-5 h-5 text-primary" />
                   Smart Resume Import
                 </h1>
                 <p className="text-sm text-gray-600">
@@ -121,7 +121,7 @@ export const ResumeImport = ({
                 </p>
               </div>
             </div>
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+            <Badge variant="outline" className="bg-pink-50 text-pink-700 border-pink-200">
               <Shield className="w-3 h-3 mr-1" />
               100% Secure & Private
             </Badge>
@@ -141,12 +141,12 @@ export const ResumeImport = ({
             >
               <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-sm">
                 <CardHeader className="text-center pb-6">
-                  <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                  <div className="mx-auto w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mb-4">
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                     >
-                      <Brain className="w-8 h-8 text-blue-600" />
+                      <Brain className="w-8 h-8 text-pink-600" />
                     </motion.div>
                   </div>
                   <CardTitle className="text-2xl">Processing Your Resume</CardTitle>
@@ -168,12 +168,12 @@ export const ResumeImport = ({
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.1 }}
                           className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
-                            isActive ? 'bg-blue-50 border border-blue-200' : 
+                            isActive ? 'bg-pink-50 border border-pink-200' : 
                             isCompleted ? 'bg-green-50' : 'bg-gray-50'
                           }`}
                         >
                           <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            isActive ? 'bg-blue-600 text-white' :
+                            isActive ? 'bg-pink-600 text-white' :
                             isCompleted ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-600'
                           }`}>
                             {isCompleted ? (
@@ -183,7 +183,7 @@ export const ResumeImport = ({
                             )}
                           </div>
                           <span className={`font-medium ${
-                            isActive ? 'text-blue-900' : 
+                            isActive ? 'text-pink-900' : 
                             isCompleted ? 'text-green-900' : 'text-gray-600'
                           }`}>
                             {step.label}
@@ -194,7 +194,7 @@ export const ResumeImport = ({
                               transition={{ duration: 1.5, repeat: Infinity }}
                               className="ml-auto"
                             >
-                              <div className="w-2 h-2 bg-blue-600 rounded-full" />
+                              <div className="w-2 h-2 bg-pink-600 rounded-full" />
                             </motion.div>
                           )}
                         </motion.div>
@@ -247,8 +247,8 @@ export const ResumeImport = ({
                   className="grid md:grid-cols-3 gap-6 mt-12"
                 >
                   <div className="flex flex-col items-center text-center p-6 bg-white/60 rounded-xl border border-gray-200">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                      <Zap className="w-6 h-6 text-blue-600" />
+                    <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-4">
+                      <Zap className="w-6 h-6 text-pink-600" />
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-2">Lightning Fast</h3>
                     <p className="text-sm text-gray-600">
@@ -288,7 +288,7 @@ export const ResumeImport = ({
                 <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-sm">
                   <CardHeader className="text-center">
                     <CardTitle className="text-2xl flex items-center justify-center gap-2">
-                      <Upload className="w-6 h-6 text-blue-600" />
+                      <Upload className="w-6 h-6 text-pink-600" />
                       Upload Your Resume
                     </CardTitle>
                     <CardDescription className="text-lg">
@@ -298,12 +298,12 @@ export const ResumeImport = ({
                   <CardContent>
                     <ResumeDropzone onResumeExtracted={handleResumeExtracted} />
                     
-                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="mt-6 p-4 bg-pink-50 rounded-lg border border-pink-200">
                       <div className="flex items-start gap-3">
-                        <Lightbulb className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <Lightbulb className="w-5 h-5 text-pink-600 mt-0.5 flex-shrink-0" />
                         <div>
-                          <h4 className="font-medium text-blue-900 mb-1">Pro Tips for Best Results</h4>
-                          <ul className="text-sm text-blue-800 space-y-1">
+                          <h4 className="font-medium text-pink-900 mb-1">Pro Tips for Best Results</h4>
+                          <ul className="text-sm text-pink-800 space-y-1">
                             <li>• Use a single-column resume format for optimal parsing</li>
                             <li>• Ensure text is selectable (not scanned images)</li>
                             <li>• Include standard section headers (Experience, Education, Skills)</li>
@@ -409,4 +409,4 @@ export const ResumeImport = ({
       </div>
     </div>
   );
-}; 
+};

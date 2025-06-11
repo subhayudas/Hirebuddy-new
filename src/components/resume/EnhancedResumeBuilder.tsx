@@ -219,7 +219,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     template: 'perfect-fit',
     fontSize: 11,
     fontFamily: 'Inter',
-    colorScheme: 'blue',
+    colorScheme: 'pink',
     spacing: 'normal',
     showPhoto: false,
     sectionOrder: ['ai', 'personal', 'summary', 'experience', 'education', 'skills', 'projects'],
@@ -636,9 +636,9 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-pink-100">
         {/* Enhanced Header */}
-        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+        <div className="bg-white/80 backdrop-blur-sm border-b border-pink-200 sticky top-0 z-50">
           <div className="max-w-full px-6">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center gap-4">
@@ -646,7 +646,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                   variant="ghost" 
                   size="sm"
                   onClick={onBack}
-                  className="flex items-center gap-2 hover:bg-gray-100"
+                  className="flex items-center gap-2 hover:bg-pink-100"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Back
@@ -654,7 +654,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                 <Separator orientation="vertical" className="h-6" />
                 <div>
                   <h1 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-blue-600" />
+                    <Sparkles className="w-5 h-5 text-primary" />
                     Enhanced Resume Builder
                   </h1>
                   
@@ -748,7 +748,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                   <Button 
                     onClick={generatePDF}
                     disabled={isGeneratingPdf}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-primary hover:bg-primary/90"
                   >
                     {isGeneratingPdf ? (
                       <>
@@ -786,7 +786,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                         <CardHeader className="pb-4">
                           <div className="flex items-center justify-between">
                             <CardTitle className="text-lg flex items-center gap-2">
-                              <Target className="w-5 h-5 text-blue-600" />
+                              <Target className="w-5 h-5 text-primary" />
                               Resume Progress
                             </CardTitle>
                             <Badge variant="outline" className="text-sm font-medium">
@@ -814,7 +814,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                                     disabled={!isEnabled && section.id !== 'ai'} // Never disable Resume Copilot
                                     className={`justify-start h-auto p-3 w-full ${
                                       activeSection === section.id 
-                                        ? 'bg-blue-50 border border-blue-200 text-blue-700' 
+                                        ? 'bg-pink-50 border border-pink-200 text-primary' 
                                         : 'hover:bg-gray-50'
                                     } ${!isEnabled && section.id !== 'ai' ? 'opacity-50' : ''}`}
                                   >
@@ -870,7 +870,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                             {(() => {
                               const config = SECTION_CONFIGS.find(s => s.id === activeSection);
                               const IconComponent = config?.icon || FileText;
-                              return <IconComponent className="w-5 h-5 text-blue-600" />;
+                              return <IconComponent className="w-5 h-5 text-primary" />;
                             })()}
                             {SECTION_CONFIGS.find(s => s.id === activeSection)?.label || 'Section'}
                           </CardTitle>
@@ -1324,6 +1324,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     size="sm"
                     onClick={generatePDF}
                     disabled={isGeneratingPdf}
+                    className="bg-primary hover:bg-primary/90"
                   >
                     {isGeneratingPdf ? (
                       <>

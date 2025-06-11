@@ -34,11 +34,11 @@ const ResumeChoice = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-100">
       <Header />
       
       {/* Header Section */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-pink-200">
         <div className="max-w-6xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -46,15 +46,15 @@ const ResumeChoice = () => {
                 variant="ghost" 
                 size="sm"
                 onClick={handleBack}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 hover:bg-pink-100"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Dashboard
               </Button>
-              <div className="h-6 w-px bg-gray-300"></div>
+              <div className="h-6 w-px bg-pink-300"></div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                  <Sparkles className="w-6 h-6 text-blue-600" />
+                  <Sparkles className="w-6 h-6 text-primary" />
                   Resume Builder
                 </h1>
                 <p className="text-gray-600">
@@ -62,7 +62,7 @@ const ResumeChoice = () => {
                 </p>
               </div>
             </div>
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+            <Badge variant="outline" className="bg-pink-50 text-pink-700 border-pink-200">
               AI-Powered
             </Badge>
           </div>
@@ -118,7 +118,7 @@ const ResumeChoice = () => {
                 
                 <div className="pt-4">
                   <Button 
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                    className="w-full bg-gradient-to-r from-pink-600 to-primary hover:from-pink-700 hover:to-primary/90 text-white"
                     onClick={handleImportResume}
                   >
                     Upload Resume
@@ -195,8 +195,8 @@ const ResumeChoice = () => {
           </h3>
           <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto">
             <div className="flex flex-col items-center text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-                <Brain className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-3">
+                <Brain className="w-6 h-6 text-pink-600" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">AI-Powered</h4>
               <p className="text-sm text-gray-600">
@@ -204,8 +204,8 @@ const ResumeChoice = () => {
               </p>
             </div>
             <div className="flex flex-col items-center text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                <Target className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-3">
+                <Target className="w-6 h-6 text-pink-600" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">ATS-Optimized</h4>
               <p className="text-sm text-gray-600">
@@ -213,8 +213,8 @@ const ResumeChoice = () => {
               </p>
             </div>
             <div className="flex flex-col items-center text-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-3">
-                <Zap className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-3">
+                <Zap className="w-6 h-6 text-pink-600" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">Fast & Easy</h4>
               <p className="text-sm text-gray-600">
@@ -228,4 +228,4 @@ const ResumeChoice = () => {
   );
 };
 
-export default ResumeChoice; 
+export default ResumeChoice;
