@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Upload, X, FileText, Lock, Zap } from "lucide-react";
-import { parseResumeFromPdf } from "../../../lib/parse-resume-from-pdf";
+import { parseResumeFromPdf } from "../../../services/openaiResumeParser";
 import { Button } from "../../ui/button";
 import { cn } from "../../../lib/utils";
 import type { Resume } from "../../../types/resume";
@@ -188,7 +188,7 @@ export const ResumeDropzone = ({
             </Button>
             
             <p className="text-xs text-gray-500">
-              Note: Parser works best on single column resumes in English
+              Powered by AI - Works with any resume format and layout
             </p>
           </div>
         )}

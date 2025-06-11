@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "../../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
-import { parseResumeFromPdf } from "../../../lib/parse-resume-from-pdf";
+import { parseResumeFromPdf } from "../../../services/openaiResumeParser";
 import type { Resume } from "../../../types/resume";
 
 export const TestPdfParsing = () => {
