@@ -911,7 +911,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                             
                             <div className="text-xs text-gray-500 space-y-1">
                               <div className="flex items-center justify-center gap-4">
-                                <span>⌨️ 1-9: Quick section jump</span>
+                                
                                 <span>← → : Navigate sections</span>
                               </div>
                               
