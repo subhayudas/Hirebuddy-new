@@ -1057,7 +1057,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     </div>
                   </CardHeader>
                   <CardContent className="flex-1 p-0">
-                    <ScrollArea className="h-[calc(100vh-12rem)]">
+                    <ScrollArea >
                       <div className="p-6">
                         <motion.div
                           ref={previewRef}
