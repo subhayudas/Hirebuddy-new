@@ -23,7 +23,6 @@ import {
   Calendar,
   FileText,
   Search,
-  MessageSquare,
   User,
   Settings,
   LogOut,
@@ -59,12 +58,6 @@ const navigationItems = [
         badge: "New",
       },
       {
-        title: "Interview Preparation",
-        href: "/interview-prep",
-        description: "Practice with AI-powered mock interviews",
-        icon: MessageSquare,
-      },
-      {
         title: "Application Tracking",
         href: "/applications",
         description: "Monitor your job application progress",
@@ -87,9 +80,8 @@ const navigationItems = [
 const mobileNavItems = [
   { title: "Dashboard", href: "/dashboard", icon: BarChart3 },
   { title: "Find Jobs", href: "/jobs", icon: Search },
-        { title: "Resume Builder", href: "/resume-builder", icon: FileText },
+  { title: "Resume Builder", href: "/resume-builder", icon: FileText },
   { title: "Applications", href: "/applications", icon: Users },
-  { title: "Interview Prep", href: "/interview-prep", icon: MessageSquare },
   { title: "Calendar", href: "/calendar", icon: Calendar },
   { title: "Analytics", href: "/analytics", icon: BarChart3 },
 ];
