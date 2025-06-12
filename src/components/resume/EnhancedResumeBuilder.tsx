@@ -983,8 +983,8 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                           setLastSaved(new Date());
                         }}
                       >
-                        <Save className="w-4 h-4 mr-2" />
-                        Save Draft
+                        
+                        💾 Save Draft
                       </ShinyButton>
                     </div>
                   </div>
