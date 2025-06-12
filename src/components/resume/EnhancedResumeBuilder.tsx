@@ -763,7 +763,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                 <div>
                   <h1 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-primary" />
-                    Enhanced Resume Builder
+                    AI Resume Builder
                   </h1>
                   
                 </div>
