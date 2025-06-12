@@ -51,6 +51,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { ResumeSectionDock } from "@/components/ui/resume-dock";
 
 
 // Enhanced form sections
@@ -227,7 +228,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     spacing: 'normal',
     showPhoto: false,
     headerStyle: 'modern',
-    sectionOrder: ['ai', 'personal', 'summary', 'experience', 'education', 'skills', 'projects'],
+    sectionOrder: ['ai', 'personal', 'summary', 'experience', 'education', 'skills', 'projects', 'certifications', 'languages', 'volunteer', 'awards'],
     enabledSections: {
       ai: true,
       personal: true,
@@ -235,11 +236,11 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
       experience: true,
       education: true,
       skills: true,
-      projects: false,
-      certifications: false,
-      languages: false,
-      volunteer: false,
-      awards: false,
+      projects: true,
+      certifications: true,
+      languages: true,
+      volunteer: true,
+      awards: true,
     },
   });
 
@@ -430,28 +431,65 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Ctrl/Cmd + E to toggle expand preview
-      if ((event.ctrlKey || event.metaKey) && event.key === 'e') {
-        event.preventDefault();
-        setIsPreviewExpanded(!isPreviewExpanded);
+      // Only handle shortcuts when not typing in an input
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        return;
       }
-      // Ctrl/Cmd + S to save
-      if ((event.ctrlKey || event.metaKey) && event.key === 's') {
-        event.preventDefault();
-        localStorage.setItem('enhanced_resume_data', JSON.stringify(resumeData));
-        localStorage.setItem('enhanced_resume_settings', JSON.stringify(settings));
-        setLastSaved(new Date());
+
+      // Ctrl/Cmd shortcuts
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case 'e':
+            event.preventDefault();
+            setIsPreviewExpanded(!isPreviewExpanded);
+            break;
+          case 's':
+            event.preventDefault();
+            localStorage.setItem('enhanced_resume_data', JSON.stringify(resumeData));
+            localStorage.setItem('enhanced_resume_settings', JSON.stringify(settings));
+            setLastSaved(new Date());
+            break;
+          case 'f':
+            event.preventDefault();
+            setIsFullscreenPreview(!isFullscreenPreview);
+            break;
+        }
+        return;
       }
-      // Ctrl/Cmd + F to toggle fullscreen
-      if ((event.ctrlKey || event.metaKey) && event.key === 'f') {
-        event.preventDefault();
-        setIsFullscreenPreview(!isFullscreenPreview);
+
+      // Section navigation shortcuts (1-9 for first 9 sections)
+      if (event.key >= '1' && event.key <= '9') {
+        const sectionIndex = parseInt(event.key) - 1;
+        const enabledSections = SECTION_CONFIGS.filter(section => 
+          settings.enabledSections[section.id]
+        );
+        if (sectionIndex < enabledSections.length) {
+          event.preventDefault();
+          setActiveSection(enabledSections[sectionIndex].id);
+        }
+      }
+
+      // Arrow key navigation
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        const enabledSections = SECTION_CONFIGS.filter(section => 
+          settings.enabledSections[section.id]
+        );
+        const currentIndex = enabledSections.findIndex(section => section.id === activeSection);
+        
+        if (currentIndex !== -1) {
+          event.preventDefault();
+          if (event.key === 'ArrowLeft' && currentIndex > 0) {
+            setActiveSection(enabledSections[currentIndex - 1].id);
+          } else if (event.key === 'ArrowRight' && currentIndex < enabledSections.length - 1) {
+            setActiveSection(enabledSections[currentIndex + 1].id);
+          }
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPreviewExpanded, isFullscreenPreview, resumeData, settings]);
+  }, [isPreviewExpanded, isFullscreenPreview, resumeData, settings, activeSection]);
 
   // Update functions
   const updateResumeData = (section: keyof ResumeData, data: any) => {
@@ -553,6 +591,71 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     ) : (
       <IconComponent className="w-4 h-4 text-gray-400" />
     );
+  };
+
+  const getCompletedSections = (): string[] => {
+    const completed: string[] = [];
+    
+    // Personal info - check if basic fields are filled
+    if (resumeData.personalInfo.name && resumeData.personalInfo.email) {
+      completed.push('personal');
+    }
+    
+    // Summary - check if summary exists and has content
+    if (resumeData.summary && resumeData.summary.trim().length > 0) {
+      completed.push('summary');
+    }
+    
+    // Experience - check if at least one experience entry exists
+    if (resumeData.experience && resumeData.experience.length > 0) {
+      completed.push('experience');
+    }
+    
+    // Education - check if at least one education entry exists
+    if (resumeData.education && resumeData.education.length > 0) {
+      completed.push('education');
+    }
+    
+    // Skills - check if any skills are added
+    const allSkills = [
+      ...resumeData.skills.technical,
+      ...resumeData.skills.soft,
+      ...resumeData.skills.languages,
+      ...resumeData.skills.frameworks
+    ];
+    if (allSkills.length > 0) {
+      completed.push('skills');
+    }
+    
+    // Projects - check if at least one project exists
+    if (resumeData.projects && resumeData.projects.length > 0) {
+      completed.push('projects');
+    }
+    
+    // Certifications - check if at least one certification exists
+    if (resumeData.certifications && resumeData.certifications.length > 0) {
+      completed.push('certifications');
+    }
+    
+    // Languages - check if at least one language exists
+    if (resumeData.languages && resumeData.languages.length > 0) {
+      completed.push('languages');
+    }
+    
+    // Volunteer - check if at least one volunteer entry exists
+    if (resumeData.volunteer && resumeData.volunteer.length > 0) {
+      completed.push('volunteer');
+    }
+    
+    // Awards - check if at least one award exists
+    if (resumeData.awards && resumeData.awards.length > 0) {
+      completed.push('awards');
+    }
+    
+    // AI section is always considered "completed" since it's a tool
+    completed.push('ai');
+    
+    return completed;
   };
 
   const renderSectionContent = () => {
@@ -780,8 +883,8 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
             <ResizablePanel defaultSize={isPreviewExpanded ? 30 : 50} minSize={25}>
               <div className="h-full pr-3">
                 <ScrollArea className="h-full">
-                  <div className="space-y-6">
-                    {/* Progress Card */}
+                  <div className="space-y-6 pb-24">
+                    {/* Progress Card - Simplified since we have the dock */}
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -801,41 +904,28 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                           <Progress value={progress.percentage} className="h-3" />
                         </CardHeader>
                         <CardContent>
-                          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                            {SECTION_CONFIGS.map((section) => {
-                              const isEnabled = settings.enabledSections[section.id];
-                              const isCompleted = progress.percentage > 0; // Simplified for demo
-                              
-                              return (
-                                <motion.div
-                                  key={section.id}
-                                  whileHover={{ scale: 1.02 }}
-                                  whileTap={{ scale: 0.98 }}
-                                >
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setActiveSection(section.id)}
-                                    disabled={!isEnabled && section.id !== 'ai'} // Never disable Resume Copilot
-                                    className={`justify-start h-auto p-3 w-full ${
-                                      activeSection === section.id 
-                                        ? 'bg-pink-50 border border-pink-200 text-primary' 
-                                        : 'hover:bg-gray-50'
-                                    } ${!isEnabled && section.id !== 'ai' ? 'opacity-50' : ''}`}
-                                  >
-                                    <div className="flex items-center gap-2 w-full">
-                                      {getSectionIcon(section.id, isCompleted)}
-                                      <span className="text-sm font-medium">{section.label}</span>
-                                      {!isEnabled && section.id !== 'ai' && (
-                                        <Badge variant="secondary" className="ml-auto text-xs">
-                                          Disabled
-                                        </Badge>
-                                      )}
-                                    </div>
-                                  </Button>
-                                </motion.div>
-                              );
-                            })}
+                          <div className="text-center py-4">
+                            <p className="text-sm text-gray-600 mb-3">
+                              Use the enhanced dock at the bottom to navigate between sections
+                            </p>
+                            <div className="flex items-center justify-center gap-2 text-xs text-gray-500 mb-3">
+                              <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                              <span>Completed</span>
+                              <div className="w-2 h-2 bg-blue-500 rounded-full ml-3"></div>
+                              <span>Active</span>
+                              <div className="w-2 h-2 bg-slate-400 rounded-full ml-3"></div>
+                              <span>Pending</span>
+                            </div>
+                            <div className="text-xs text-gray-500 space-y-1">
+                              <div className="flex items-center justify-center gap-4">
+                                <span>⌨️ 1-9: Quick section jump</span>
+                                <span>← → : Navigate sections</span>
+                              </div>
+                              <div className="flex items-center justify-center gap-4">
+                                <span>⌘/Ctrl+S: Save</span>
+                                <span>⌘/Ctrl+F: Fullscreen</span>
+                              </div>
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
@@ -1373,6 +1463,15 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Resume Section Dock */}
+        <ResumeSectionDock
+          sections={SECTION_CONFIGS}
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+          completedSections={getCompletedSections()}
+          enabledSections={settings.enabledSections}
+        />
       </div>
     </TooltipProvider>
   );
