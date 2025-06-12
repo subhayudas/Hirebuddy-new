@@ -15,6 +15,9 @@ import {
   Info
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
+import { ShinyButton } from "@/components/ui/shiny-button";
+import { RainbowButton } from "@/components/ui/rainbow-button";
 
 interface TemplatePreviewPanelProps {
   selectedTemplate: string;
@@ -178,14 +181,14 @@ export const TemplatePreviewPanel = ({
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900">Live Preview</h3>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
+          <InteractiveHoverButton>
             <RotateCcw className="w-4 h-4 mr-2" />
             Reset Layout
-          </Button>
-          <Button size="sm" className="bg-gray-900 hover:bg-gray-800 text-white">
+          </InteractiveHoverButton>
+          <RainbowButton>
             <Download className="w-4 h-4 mr-2" />
             Export PDF
-          </Button>
+          </RainbowButton>
         </div>
       </div>
 
@@ -247,12 +250,10 @@ export const TemplatePreviewPanel = ({
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Template Style</h4>
               <div className="grid grid-cols-2 gap-3">
                 {Object.entries(templateStyles).map(([templateId, style]) => (
-                  <Button
+                  <ShinyButton
                     key={templateId}
-                    variant={selectedTemplate === templateId ? "default" : "outline"}
-                    size="sm"
                     onClick={() => onTemplateSwitch?.(templateId)}
-                    className="justify-start"
+                    className={`justify-start ${selectedTemplate === templateId ? 'ring-2 ring-blue-500' : ''}`}
                   >
                     <div className="flex items-center gap-2">
                       <div 
@@ -263,7 +264,7 @@ export const TemplatePreviewPanel = ({
                         {templateId.replace('-', ' ')}
                       </span>
                     </div>
-                  </Button>
+                  </ShinyButton>
                 ))}
               </div>
             </div>

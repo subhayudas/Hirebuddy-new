@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { ShinyButton } from "@/components/ui/shiny-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
@@ -123,23 +123,23 @@ export const TemplateToggle = ({
         ))}
       </div>
 
-      {/* Content Preservation Notice */}
-      {preserveContent && (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <div className="flex items-start gap-3">
-            <ToggleLeft className="w-5 h-5 text-blue-600 mt-0.5" />
-            <div>
-              <h6 className="font-medium text-gray-900 mb-1">
-                Seamless Template Switching
-              </h6>
-              <p className="text-sm text-gray-600">
-                Your content, formatting, and section order will be preserved when 
-                switching between templates. Only the visual design will change.
-              </p>
-            </div>
-          </div>
+      {/* Quick Switch Actions */}
+      <div className="pt-4 border-t">
+        <div className="flex gap-2">
+          <ShinyButton
+            onClick={() => {
+              // Switch to next template in the list
+              const currentIndex = availableTemplates.findIndex(t => t.id === currentTemplate);
+              const nextIndex = (currentIndex + 1) % availableTemplates.length;
+              handleTemplateSwitch(availableTemplates[nextIndex].id);
+            }}
+            className="flex-1"
+          >
+            <ToggleRight className="w-4 h-4 mr-2" />
+            Next Template
+          </ShinyButton>
         </div>
-      )}
+      </div>
     </div>
   );
 }; 

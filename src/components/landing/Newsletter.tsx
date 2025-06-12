@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
@@ -64,10 +64,11 @@ export const Newsletter = () => {
                 className="h-14 text-xl text-[#b88c8e] border-transparent text-center placeholder:text-[#B88C8E] placeholder:text-lg flex-1"
                 disabled={isSubmitting}
               />
-              <Button
+              <ShimmerButton
                 onClick={handleSubscribe}
                 disabled={isSubmitting}
-                className="h-14 px-8 text-lg font-normal rounded-xl bg-gradient-to-t from-[#b24e55] to-[#E3405F] hover:opacity-90 text-white w-full sm:w-auto"
+                className="h-14 px-8 text-lg font-normal rounded-xl w-full sm:w-auto"
+                background="linear-gradient(to top, #b24e55, #E3405F)"
               >
                 {isSubmitting ? "Subscribing..." : "Subscribe Now"}
                 <svg
@@ -86,7 +87,7 @@ export const Newsletter = () => {
                     strokeLinejoin="round"
                   />
                 </svg>
-              </Button>
+              </ShimmerButton>
             </div>
             {error && (
               <p className="text-white font-medium text-center lg:text-left sm:w-3/4 mx-auto lg:mx-0">

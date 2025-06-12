@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { RainbowButton } from "@/components/ui/rainbow-button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { 
@@ -116,14 +116,14 @@ export const CTA = () => {
                 required
               />
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button 
+                <RainbowButton 
                   type="submit"
                   size="lg"
-                  className="bg-pink-500 hover:bg-pink-600 text-white border-0 h-12 px-8 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl whitespace-nowrap"
+                  className="h-12 px-8 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl whitespace-nowrap"
                 >
                   Get started free
                   <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                </RainbowButton>
               </motion.div>
             </div>
           </motion.form>

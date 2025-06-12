@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { convertParsedResumeToEnhancedFormat } from "@/lib/resume-data-converter";
 import type { Resume } from "@/types/resume";
 import { Button } from "@/components/ui/button";
+import { RainbowButton } from "@/components/ui/rainbow-button";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
+import { ShinyButton } from "@/components/ui/shiny-button";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -697,15 +701,15 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                 <div className="flex items-center gap-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
+                      <ShimmerButton
                         onClick={() => window.location.href = '/resume-import'}
-                        className="flex items-center gap-2"
+                        className="h-8 px-3 text-sm flex items-center gap-2"
+                        background="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                        borderRadius="6px"
                       >
                         <Upload className="w-4 h-4" />
                         Import Resume
-                      </Button>
+                      </ShimmerButton>
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>Import an existing resume to auto-fill this form</p>
@@ -746,10 +750,10 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     </TooltipContent>
                   </Tooltip>
 
-                  <Button 
+                  <RainbowButton 
                     onClick={generatePDF}
                     disabled={isGeneratingPdf}
-                    className="bg-primary hover:bg-primary/90"
+                    className="h-9"
                   >
                     {isGeneratingPdf ? (
                       <>
@@ -762,7 +766,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                         Download PDF
                       </>
                     )}
-                  </Button>
+                  </RainbowButton>
                 </div>
               </div>
             </div>
@@ -884,16 +888,14 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
 
                     {/* Action Buttons */}
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Button 
-                        variant="outline" 
+                      <InteractiveHoverButton 
                         onClick={resetForm}
                         className="flex-1"
                       >
                         <RotateCcw className="w-4 h-4 mr-2" />
                         Reset Form
-                      </Button>
-                      <Button 
-                        variant="outline"
+                      </InteractiveHoverButton>
+                      <ShinyButton 
                         className="flex-1"
                         onClick={() => {
                           localStorage.setItem('enhanced_resume_data', JSON.stringify(resumeData));
@@ -903,7 +905,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       >
                         <Save className="w-4 h-4 mr-2" />
                         Save Draft
-                      </Button>
+                      </ShinyButton>
                     </div>
                   </div>
                 </ScrollArea>

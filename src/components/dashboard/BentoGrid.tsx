@@ -1,6 +1,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { RainbowButton } from "@/components/ui/rainbow-button";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
+import { ShinyButton } from "@/components/ui/shiny-button";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -33,28 +37,32 @@ const BentoGrid = () => {
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
             <Link to="/jobs">
-              <Button className="w-full h-16 flex flex-col gap-1 bg-primary hover:bg-primary/90">
+              <RainbowButton className="w-full h-16 flex flex-col gap-1">
                 <span className="font-medium">Find Jobs</span>
                 <span className="text-xs opacity-90">Browse 1,234 openings</span>
-              </Button>
+              </RainbowButton>
             </Link>
                           <Link to="/resume-builder">
-              <Button variant="outline" className="w-full h-16 flex flex-col gap-1 border-pink-200 hover:bg-pink-50">
+              <ShimmerButton 
+                className="w-full h-16 flex flex-col gap-1"
+                background="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                borderRadius="8px"
+              >
                 <span className="font-medium">Build Resume</span>
-                <span className="text-xs text-muted-foreground">AI-powered editor</span>
-              </Button>
+                <span className="text-xs opacity-90">AI-powered editor</span>
+              </ShimmerButton>
             </Link>
             <Link to="/interview-prep">
-              <Button variant="outline" className="w-full h-16 flex flex-col gap-1 border-pink-200 hover:bg-pink-50">
+              <ShinyButton className="w-full h-16 flex flex-col gap-1">
                 <span className="font-medium">Interview Prep</span>
-                <span className="text-xs text-muted-foreground">Practice sessions</span>
-              </Button>
+                <span className="text-xs opacity-90">Practice sessions</span>
+              </ShinyButton>
             </Link>
             <Link to="/skills">
-              <Button variant="outline" className="w-full h-16 flex flex-col gap-1 border-pink-200 hover:bg-pink-50">
+              <InteractiveHoverButton className="w-full h-16 flex flex-col gap-1">
                 <span className="font-medium">Skill Test</span>
-                <span className="text-xs text-muted-foreground">Assess abilities</span>
-              </Button>
+                <span className="text-xs opacity-90">Assess abilities</span>
+              </InteractiveHoverButton>
             </Link>
           </div>
         </CardContent>
@@ -151,9 +159,9 @@ const BentoGrid = () => {
             <div className="text-xs text-muted-foreground">30% complete</div>
           </div>
           <Link to="/learning">
-            <Button variant="outline" size="sm" className="w-full border-pink-200 hover:bg-pink-50 hover:text-primary">
+            <InteractiveHoverButton className="w-full h-8 text-sm">
               Browse Courses
-            </Button>
+            </InteractiveHoverButton>
           </Link>
         </CardContent>
       </Card>
@@ -187,9 +195,9 @@ const BentoGrid = () => {
               <div className="text-xs text-muted-foreground truncate">New job matches found...</div>
             </div>
           </div>
-          <Button variant="outline" size="sm" className="w-full border-pink-200 hover:bg-pink-50 hover:text-primary">
+          <ShinyButton className="w-full h-8 text-sm">
             View All Messages
-          </Button>
+          </ShinyButton>
         </CardContent>
       </Card>
 
@@ -329,11 +337,11 @@ const BentoGrid = () => {
             </div>
           </div>
           <div className="text-center pt-2">
-            <Link to="/skills">
-              <Button variant="outline" size="sm" className="border-pink-200 hover:bg-pink-50 hover:text-primary">
-                Take Skill Assessment
-              </Button>
-            </Link>
+                      <Link to="/skills">
+            <RainbowButton variant="outline" size="sm" className="border-pink-200">
+              Take Skill Assessment
+            </RainbowButton>
+          </Link>
           </div>
         </CardContent>
       </Card>

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
-import { Button } from "@/components/ui/button";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -42,15 +43,13 @@ const ResumeChoice = () => {
         <div className="max-w-6xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button 
-                variant="ghost" 
-                size="sm"
+              <InteractiveHoverButton
                 onClick={handleBack}
                 className="flex items-center gap-2 hover:bg-pink-100"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Dashboard
-              </Button>
+              </InteractiveHoverButton>
               <div className="h-6 w-px bg-pink-300"></div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
@@ -117,13 +116,14 @@ const ResumeChoice = () => {
                 </div>
                 
                 <div className="pt-4">
-                  <Button 
-                    className="w-full bg-gradient-to-r from-pink-600 to-primary hover:from-pink-700 hover:to-primary/90 text-white"
+                  <ShimmerButton
+                    className="w-full"
+                    background="linear-gradient(110deg, #ec4899 0%, #be185d 50%, #ec4899 100%)"
                     onClick={handleImportResume}
                   >
                     Upload Resume
                     <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
+                  </ShimmerButton>
                 </div>
 
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
@@ -170,13 +170,14 @@ const ResumeChoice = () => {
                 </div>
                 
                 <div className="pt-4">
-                  <Button 
-                    className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white"
+                  <ShimmerButton
+                    className="w-full"
+                    background="linear-gradient(110deg, #059669 0%, #047857 50%, #059669 100%)"
                     onClick={handleBuildFromScratch}
                   >
                     Start Building
                     <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
+                  </ShimmerButton>
                 </div>
 
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-500">

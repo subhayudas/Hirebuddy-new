@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { ShinyButton } from "@/components/ui/shiny-button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
@@ -141,18 +141,18 @@ export const Working = () => {
                   </p>
 
                   <div className="pt-2 sm:pt-4">
-                    <Button
+                    <ShinyButton
                       onClick={
                         currentStep < steps.length - 1
                           ? () => setCurrentStep(currentStep + 1)
                           : handleClick
                       }
-                      className="h-10 sm:h-12 px-6 sm:px-8 text-base sm:text-lg font-normal rounded-md bg-gradient-to-t from-[#f9b6bc] to-[#fffcfd] text-[#8f5055] hover:bg-white/90"
+                      className="h-10 sm:h-12 px-6 sm:px-8 text-base sm:text-lg font-normal rounded-md"
                     >
                       {currentStep < steps.length - 1
                         ? "Next Step"
                         : "Try it yourself"}
-                    </Button>
+                    </ShinyButton>
                   </div>
                 </motion.div>
               </AnimatePresence>

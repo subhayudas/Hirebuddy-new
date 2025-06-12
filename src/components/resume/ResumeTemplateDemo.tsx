@@ -3,7 +3,9 @@ import { ResumeTemplates } from "./ResumeTemplates";
 import { TemplatePreviewPanel } from "./enhanced-sections/TemplatePreviewPanel";
 import { TemplateToggle } from "./TemplateToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
+import { ShinyButton } from "@/components/ui/shiny-button";
+import { RainbowButton } from "@/components/ui/rainbow-button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -71,15 +73,13 @@ export const ResumeTemplateDemo = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
+              <InteractiveHoverButton
                 onClick={() => setCurrentView('selection')}
                 className="flex items-center gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Templates
-              </Button>
+              </InteractiveHoverButton>
               <div className="h-6 w-px bg-gray-300"></div>
               <div className="flex items-center gap-2">
                 <FileText className="w-5 h-5 text-blue-600" />
@@ -91,14 +91,14 @@ export const ResumeTemplateDemo = () => {
             </div>
             
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm">
+              <ShinyButton>
                 <Eye className="w-4 h-4 mr-2" />
                 Preview
-              </Button>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+              </ShinyButton>
+              <RainbowButton>
                 <Download className="w-4 h-4 mr-2" />
                 Export PDF
-              </Button>
+              </RainbowButton>
             </div>
           </div>
         </div>
@@ -135,18 +135,18 @@ export const ResumeTemplateDemo = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="outline" size="sm" className="w-full justify-start">
+                <InteractiveHoverButton className="w-full justify-start">
                   <Settings className="w-4 h-4 mr-2" />
                   Customize Sections
-                </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
+                </InteractiveHoverButton>
+                <InteractiveHoverButton className="w-full justify-start">
                   <Eye className="w-4 h-4 mr-2" />
                   Full Screen Preview
-                </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
+                </InteractiveHoverButton>
+                <InteractiveHoverButton className="w-full justify-start">
                   <FileText className="w-4 h-4 mr-2" />
                   ATS Optimization Check
-                </Button>
+                </InteractiveHoverButton>
               </CardContent>
             </Card>
 

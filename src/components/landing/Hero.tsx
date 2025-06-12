@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { RainbowButton } from "@/components/ui/rainbow-button";
 import { Input } from "@/components/ui/input";
 
 export const Hero = () => {
@@ -36,8 +36,8 @@ export const Hero = () => {
             placeholder="Enter your email"
             className="h-14 text-xl text-[#b88c8e] border-transparent text-center placeholder:text-[#B88C8E] placeholder:text-lg"
           />
-          <Button
-            className="h-14 px-8 text-lg font-normal rounded-xl bg-gradient-to-t from-[#b24e55] to-[#E3405F] hover:opacity-90 text-white whitespace-nowrap"
+          <RainbowButton
+            className="h-14 px-8 text-lg font-normal rounded-xl whitespace-nowrap"
             onClick={() => {
               const contactSection = document.querySelector("#contact");
               if (contactSection) {
@@ -62,7 +62,7 @@ export const Hero = () => {
                 strokeLinejoin="round"
               />
             </svg>
-          </Button>
+          </RainbowButton>
         </div>
         <p className="text-sm text-center text-[#b26469]">
           Try now- first few applications free!

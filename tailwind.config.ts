@@ -203,6 +203,49 @@ export default {
 					'100%': {
 						opacity: '1'
 					}
+				},
+				'rainbow': {
+					'0%': {
+						backgroundPosition: '0% 50%'
+					},
+					'50%': {
+						backgroundPosition: '100% 50%'
+					},
+					'100%': {
+						backgroundPosition: '0% 50%'
+					}
+				},
+				'shimmer-slide': {
+					'0%': {
+						transform: 'translateX(-100%)'
+					},
+					'100%': {
+						transform: 'translateX(100%)'
+					}
+				},
+				'spin-around': {
+					'0%': {
+						transform: 'translateZ(0) rotate(0)'
+					},
+					'15%, 35%': {
+						transform: 'translateZ(0) rotate(90deg)'
+					},
+					'65%, 85%': {
+						transform: 'translateZ(0) rotate(270deg)'
+					},
+					'100%': {
+						transform: 'translateZ(0) rotate(360deg)'
+					}
+				},
+				'rippling': {
+					'0%': {
+						transform: 'scale(0)',
+						opacity: '1'
+					},
+					'100%': {
+						transform: 'scale(4)',
+						opacity: '0'
+					}
 				}
 			},
 			animation: {
@@ -218,7 +261,11 @@ export default {
 				'float': 'float 6s ease-in-out infinite',
 				'shimmer': 'shimmer 2s infinite',
 				'reveal-up': 'reveal-up 0.8s ease-out forwards',
-				'reveal-fade': 'reveal-fade 1s ease-out forwards'
+				'reveal-fade': 'reveal-fade 1s ease-out forwards',
+				'rainbow': 'rainbow 2s linear infinite',
+				'shimmer-slide': 'shimmer-slide 1s ease-in-out infinite alternate',
+				'spin-around': 'spin-around 2s linear infinite',
+				'rippling': 'rippling 0.6s ease-out'
 			}
 		}
 	},

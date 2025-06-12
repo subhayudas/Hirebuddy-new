@@ -81,6 +81,13 @@
     --accent-light-pink: 347 100% 94%;
     --accent-medium-pink: 347 90% 78%;
     --accent-dark-pink: 347 65% 36%;
+
+    /* Rainbow Button Colors */
+    --color-1: #ff6b6b;
+    --color-2: #4ecdc4;
+    --color-3: #45b7d1;
+    --color-4: #96ceb4;
+    --color-5: #feca57;
   }
 
   .dark {

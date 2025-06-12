@@ -36,6 +36,9 @@ import { RecommendedJobCard } from "./RecommendedJobCard";
 import { AnalyticsChart, BarChart, LineChart, PieChart } from "./AnalyticsChart";
 import { TaskWidget } from "./TaskWidget";
 import { MarketInsights } from "./MarketInsights";
+import { RainbowButton } from "@/components/ui/rainbow-button";
+import { ShinyButton } from "@/components/ui/shiny-button";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 
 export const MainDashboard = () => {
   return (
@@ -96,12 +99,12 @@ export const MainDashboard = () => {
                 />
               </div>
               <div className="p-4 bg-gray-50 flex justify-center">
-                <Button className="bg-blue-600 hover:bg-blue-700" asChild>
+                <RainbowButton asChild>
                   <Link to="/jobs" className="flex items-center gap-1.5">
                     <Search className="h-4 w-4" />
                     Find More Jobs
                   </Link>
-                </Button>
+                </RainbowButton>
               </div>
             </CardContent>
           </Card>
@@ -348,9 +351,11 @@ export const MainDashboard = () => {
                   <div className="text-xs text-gray-600">Rejected</div>
                 </div>
               </div>
-              <Button variant="outline" size="sm" className="w-full" asChild>
-                <Link to="/applications">View All Applications</Link>
-              </Button>
+              <Link to="/applications">
+                <InteractiveHoverButton className="w-full">
+                  View All Applications
+                </InteractiveHoverButton>
+              </Link>
             </CardContent>
           </Card>
         </div>
@@ -516,12 +521,12 @@ export const ExtendedJobCard = ({ title, company, location, salary, match, skill
         ))}
       </div>
       <div className="flex gap-2 mt-3">
-        <Button size="sm" className="flex-1">
+        <ShinyButton className="flex-1">
           Apply
-        </Button>
-        <Button size="sm" variant="outline">
+        </ShinyButton>
+        <InteractiveHoverButton>
           Save
-        </Button>
+        </InteractiveHoverButton>
       </div>
     </div>
   );

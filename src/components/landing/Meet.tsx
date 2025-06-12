@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
 
 export const Meet = () => {
   return (
@@ -138,8 +138,9 @@ export const Meet = () => {
 
         {/* CTA Button */}
         <div className="text-center mt-16 px-4 sm:px-0">
-          <Button
-            className="w-full sm:w-[280px] h-14 px-8 text-xl font-normal rounded-md bg-gradient-to-t from-[#b24e55] to-[#E3405F] hover:opacity-90 text-white flex items-center justify-center gap-2 mx-auto"
+          <ShimmerButton
+            className="w-full sm:w-[280px] h-14 px-8 text-xl font-normal rounded-md flex items-center justify-center gap-2 mx-auto"
+            background="linear-gradient(to top, #b24e55, #E3405F)"
             onClick={() => {
               const contactSection = document.querySelector("#contact");
               if (contactSection) {
@@ -163,7 +164,7 @@ export const Meet = () => {
                 strokeLinejoin="round"
               />
             </svg>
-          </Button>
+          </ShimmerButton>
         </div>
       </div>
     </section>

@@ -1,3 +1,7 @@
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
+import { ShinyButton } from "@/components/ui/shiny-button";
+import { RainbowButton } from "@/components/ui/rainbow-button";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -272,15 +276,13 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center gap-4">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
+                <InteractiveHoverButton
                   onClick={onBack}
                   className="flex items-center gap-2"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Back to Templates
-                </Button>
+                </InteractiveHoverButton>
                 <Separator orientation="vertical" className="h-6" />
                 <div>
                   <h1 className="text-lg font-semibold text-gray-900">
@@ -295,15 +297,14 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
               <div className="flex items-center gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
+                    <ShimmerButton
                       onClick={handleImportResume}
                       className="flex items-center gap-2"
+                      background="linear-gradient(110deg, #3b82f6 0%, #1d4ed8 50%, #3b82f6 100%)"
                     >
                       <Upload className="w-4 h-4" />
                       Import Resume
-                    </Button>
+                    </ShimmerButton>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Import an existing resume to auto-fill this form</p>
@@ -338,10 +339,10 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
                 <div className="flex items-center gap-2">
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button variant="outline" size="sm">
+                      <ShinyButton>
                         <Eye className="w-4 h-4 mr-2" />
                         Preview
-                      </Button>
+                      </ShinyButton>
                     </DialogTrigger>
                     <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto">
                       <DialogHeader>
@@ -358,18 +359,15 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
                         </div>
                         <div className="flex justify-between items-center mt-6 pt-4 border-t">
                           <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
+                            <InteractiveHoverButton
                               onClick={() => setShowAtsView(!showAtsView)}
                             >
                               {showAtsView ? "Styled View" : "ATS View"}
-                            </Button>
+                            </InteractiveHoverButton>
                           </div>
-                          <Button 
+                          <RainbowButton 
                             onClick={() => generatePDF(true)}
                             disabled={isGeneratingPdf}
-                            className="bg-blue-600 hover:bg-blue-700"
                           >
                             {isGeneratingPdf ? (
                               "Generating..."
@@ -379,16 +377,15 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
                                 Download PDF
                               </>
                             )}
-                          </Button>
+                          </RainbowButton>
                         </div>
                       </div>
                     </DialogContent>
                   </Dialog>
 
-                  <Button 
+                  <RainbowButton 
                     onClick={() => generatePDF(false)}
                     disabled={isGeneratingPdf}
-                    className="bg-blue-600 hover:bg-blue-700"
                   >
                     {isGeneratingPdf ? (
                       "Generating..."
@@ -398,7 +395,7 @@ export const ResumeBuilder = ({ template, onBack }: ResumeBuilderProps) => {
                         Download
                       </>
                     )}
-                  </Button>
+                  </RainbowButton>
                 </div>
               </div>
             </div>
