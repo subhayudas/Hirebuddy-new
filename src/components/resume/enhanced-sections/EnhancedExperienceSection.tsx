@@ -148,18 +148,7 @@ export const EnhancedExperienceSection: React.FC<EnhancedExperienceSectionProps>
 
   return (
     <div className="space-y-6">
-      {/* Tips Section */}
-      <div className="text-sm text-gray-600 bg-purple-50 p-4 rounded-lg border border-purple-200">
-        <p className="font-medium text-purple-900 mb-2">💡 Work Experience Tips</p>
-        <ul className="space-y-1 text-purple-800">
-          <li>• List experiences in reverse chronological order (most recent first)</li>
-          <li>• Use action verbs to start each achievement bullet point</li>
-          <li>• Quantify your impact with numbers, percentages, or dollar amounts</li>
-          <li>• Focus on achievements rather than just job responsibilities</li>
-          <li>• Tailor your descriptions to match the job you're applying for</li>
-        </ul>
-      </div>
-
+      
       {/* Experience List */}
       <div className="space-y-4">
         <AnimatePresence>

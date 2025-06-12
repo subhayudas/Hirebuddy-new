@@ -57,14 +57,7 @@ export const EnhancedEducationSection: React.FC<EnhancedEducationSectionProps> =
 
   return (
     <div className="space-y-6">
-      <div className="text-sm text-gray-600 bg-amber-50 p-4 rounded-lg border border-amber-200">
-        <p className="font-medium text-amber-900 mb-2">💡 Education Tips</p>
-        <ul className="space-y-1 text-amber-800">
-          <li>• List your highest degree first</li>
-          <li>• Include relevant coursework for your target role</li>
-          <li>• Add honors, awards, or high GPA if relevant</li>
-        </ul>
-      </div>
+      
 
       <div className="space-y-4">
         {data.map((education, index) => (

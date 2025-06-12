@@ -906,25 +906,15 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                         <CardContent>
                           <div className="text-center py-4">
                             <p className="text-sm text-gray-600 mb-3">
-                              Use the enhanced dock at the bottom to navigate between sections
+                              Use the dock at the bottom to navigate between sections
                             </p>
-                            <div className="flex items-center justify-center gap-2 text-xs text-gray-500 mb-3">
-                              <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                              <span>Completed</span>
-                              <div className="w-2 h-2 bg-blue-500 rounded-full ml-3"></div>
-                              <span>Active</span>
-                              <div className="w-2 h-2 bg-slate-400 rounded-full ml-3"></div>
-                              <span>Pending</span>
-                            </div>
+                            
                             <div className="text-xs text-gray-500 space-y-1">
                               <div className="flex items-center justify-center gap-4">
                                 <span>⌨️ 1-9: Quick section jump</span>
                                 <span>← → : Navigate sections</span>
                               </div>
-                              <div className="flex items-center justify-center gap-4">
-                                <span>⌘/Ctrl+S: Save</span>
-                                <span>⌘/Ctrl+F: Fullscreen</span>
-                              </div>
+                              
                             </div>
                           </div>
                         </CardContent>

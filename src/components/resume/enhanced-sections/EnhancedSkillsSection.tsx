@@ -70,15 +70,7 @@ export const EnhancedSkillsSection: React.FC<EnhancedSkillsSectionProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="text-sm text-gray-600 bg-cyan-50 p-4 rounded-lg border border-cyan-200">
-        <p className="font-medium text-cyan-900 mb-2">💡 Skills Tips</p>
-        <ul className="space-y-1 text-cyan-800">
-          <li>• Include both hard skills (technical) and soft skills</li>
-          <li>• Match skills to job requirements for better ATS compatibility</li>
-          <li>• Be honest about your skill level</li>
-          <li>• Include relevant programming languages and frameworks</li>
-        </ul>
-      </div>
+      
 
       <div className="space-y-6">
         {skillCategories.map((category, categoryIndex) => (

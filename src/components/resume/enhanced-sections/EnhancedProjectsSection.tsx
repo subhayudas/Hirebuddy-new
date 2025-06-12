@@ -56,14 +56,7 @@ export const EnhancedProjectsSection: React.FC<EnhancedProjectsSectionProps> = (
 
   return (
     <div className="space-y-6">
-      <div className="text-sm text-gray-600 bg-pink-50 p-4 rounded-lg border border-pink-200">
-        <p className="font-medium text-pink-900 mb-2">💡 Projects Tips</p>
-        <ul className="space-y-1 text-pink-800">
-          <li>• Showcase projects relevant to your target role</li>
-          <li>• Include live links and GitHub repositories when possible</li>
-          <li>• Highlight the technologies and skills used</li>
-        </ul>
-      </div>
+      
 
       <div className="space-y-4">
         {data.map((project, index) => (

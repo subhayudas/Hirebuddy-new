@@ -92,15 +92,7 @@ export const EnhancedPersonalInfoSection: React.FC<EnhancedPersonalInfoSectionPr
 
   return (
     <div className="space-y-6">
-      <div className="text-sm text-gray-600 bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <p className="font-medium text-blue-900 mb-2">💡 Personal Information Tips</p>
-        <ul className="space-y-1 text-blue-800">
-          <li>• Use a professional email address</li>
-          <li>• Include your full name as you want it to appear professionally</li>
-          <li>• Add relevant social profiles (LinkedIn, GitHub for tech roles)</li>
-          <li>• Keep your location general (city, state) for privacy</li>
-        </ul>
-      </div>
+      
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {inputFields.map((field, index) => (

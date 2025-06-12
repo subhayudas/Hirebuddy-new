@@ -41,8 +41,8 @@ export function Dock({
       onMouseLeave={() => mouseX.set(Infinity)}
       {...props}
       className={cn(
-        "mx-auto flex h-16 items-end gap-4 rounded-2xl border bg-white/10 backdrop-blur-md px-4 pb-3",
-        "shadow-lg border-white/20",
+        "mx-auto flex h-16 items-end gap-4 rounded-2xl border bg-white/90 backdrop-blur-md px-4 pb-3",
+        "shadow-xl border-white-200",
         {
           "items-start": direction === "top",
           "items-center": direction === "middle",
@@ -102,21 +102,22 @@ export function DockIcon({
     <motion.div
       ref={ref}
       style={{ width }}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={onClick}
+      whileHover={{ scale: isDisabled ? 1 : 1.05 }}
+      whileTap={{ scale: isDisabled ? 1 : 0.95 }}
+      onClick={isDisabled ? undefined : onClick}
       className={cn(
         "flex aspect-square cursor-pointer items-center justify-center rounded-full relative",
-        "transition-colors duration-200",
+        "transition-colors duration-300",
         {
-          // Active state
-          "bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg": isActive,
-          // Completed state
-          "bg-gradient-to-r from-green-400 to-emerald-500 text-white": isCompleted && !isActive,
-          // Default state
+          // Active state - black for active state
+          "bg-black text-white shadow-lg": isActive && !className,
+          // Completed state - dark gray for completed state
+          "bg-gray-800 text-white": isCompleted && !isActive,
+          // Default state - light gray for default state
           "bg-gray-100 hover:bg-gray-200 text-gray-700": !isActive && !isCompleted && !isDisabled,
-          // Disabled state
-          "bg-gray-50 text-gray-400 cursor-not-allowed": isDisabled,
+          // Disabled state - very light gray for disabled state
+          "bg-gray-50 text-gray-300 cursor-not-allowed opacity-50": isDisabled,
+          "cursor-pointer": !isDisabled,
         },
         className,
       )}
@@ -126,20 +127,13 @@ export function DockIcon({
       
       {/* Completion indicator */}
       {isCompleted && !isActive && (
-        <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
-      )}
-      
-      {/* Active indicator */}
-      {isActive && (
-        <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full" />
+        <div className="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-gray-900" />
       )}
       
       {/* Badge */}
       {badge && (
-        <div className="absolute -top-2 -right-2">
-          <Badge variant="secondary" className="text-xs px-1 py-0 h-5 min-w-5 flex items-center justify-center">
-            {badge}
-          </Badge>
+        <div className="absolute -top-1 -right-1 bg-black text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+          {badge}
         </div>
       )}
     </motion.div>
@@ -148,14 +142,16 @@ export function DockIcon({
   if (tooltip) {
     return (
       <TooltipProvider>
-        <Tooltip>
+        <Tooltip
+          delayDuration={0} // Instant tooltip display
+        >
           <TooltipTrigger asChild>
             {iconContent}
           </TooltipTrigger>
-          <TooltipContent side="top" className="mb-2">
+          <TooltipContent side="top" className="mb-2 bg-black text-white border-0 font-medium">
             <p className="font-medium">{tooltip}</p>
-            {isDisabled && <p className="text-xs text-gray-500">Section disabled</p>}
-            {isCompleted && <p className="text-xs text-green-600">✓ Completed</p>}
+            {isDisabled && <p className="text-xs text-gray-300">Section disabled</p>}
+            {isCompleted && <p className="text-xs text-white">✓ Completed</p>}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -190,7 +186,7 @@ export function ResumeSectionDock({
 }: ResumeSectionDockProps) {
   return (
     <div className={cn("fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50", className)}>
-      <Dock className="bg-white/90 backdrop-blur-xl border-gray-200/50 shadow-xl">
+      <Dock className="bg-white backdrop-blur-xl border-gray-100 shadow-xl">
         {sections.map((section) => {
           const IconComponent = section.icon;
           const isEnabled = enabledSections[section.id] ?? true;
@@ -198,6 +194,9 @@ export function ResumeSectionDock({
           const isActive = activeSection === section.id;
           
           const isDisabled = !isEnabled && section.id !== 'ai'; // Never disable AI section
+          
+          // Special styling for AI icon (Sparkles) - keep its color
+          const isAiSection = section.id === 'ai';
           
           return (
             <DockIcon
@@ -208,12 +207,19 @@ export function ResumeSectionDock({
               isDisabled={isDisabled}
               tooltip={section.label}
               badge={isDisabled ? "!" : undefined}
+              className={isAiSection && isActive ? "bg-gradient-to-r from-pink-500 to-purple-600 !text-white" : ""}
             >
-              <IconComponent className="w-5 h-5" />
+              <IconComponent 
+                className={cn(
+                  "w-5 h-5",
+                  // Keep the AI icon colorful, all others black and white
+                  isAiSection ? "text-purple-500" : ""
+                )} 
+              />
             </DockIcon>
           );
         })}
       </Dock>
     </div>
   );
-} 
+}
