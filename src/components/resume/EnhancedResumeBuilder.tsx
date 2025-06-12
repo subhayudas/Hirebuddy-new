@@ -972,8 +972,8 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                         onClick={resetForm}
                         className="flex-1"
                       >
-                        <RotateCcw className="w-4 h-4 mr-2" />
-                        Reset Form
+                        
+                        ↻ Reset Form
                       </InteractiveHoverButton>
                       <ShinyButton 
                         className="flex-1"

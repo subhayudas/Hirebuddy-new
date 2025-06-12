@@ -47,8 +47,7 @@ const ResumeChoice = () => {
                 onClick={handleBack}
                 className="flex items-center gap-2 hover:bg-pink-100"
               >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Dashboard
+               ← Back to Dashboard
               </InteractiveHoverButton>
               <div className="h-6 w-px bg-pink-300"></div>
               <div>
