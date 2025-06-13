@@ -675,16 +675,16 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
 
     return renderSection(
       'Languages',
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2">
         {data.languages.map((lang, index) => (
           <motion.div
             key={lang.id}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.1 }}
-            className="flex justify-between items-center"
+            className="flex items-center gap-1"
           >
-            <span className="font-medium text-xs text-gray-900">{lang.language}</span>
+            <span className="font-medium text-xs text-gray-900">{lang.language}:</span>
             <span 
               className="text-xs px-2 py-1 rounded"
               style={{ backgroundColor: colors.accent, color: colors.text }}
@@ -1162,11 +1162,6 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
                   <strong>Soft Skills:</strong> {data.skills.soft.join(', ')}
                 </div>
               )}
-              {data.skills.languages?.length > 0 && (
-                <div>
-                  <strong>Languages:</strong> {data.skills.languages.join(', ')}
-                </div>
-              )}
             </div>
           </div>
         )}
@@ -1229,19 +1224,41 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
               PROJECTS
             </h2>
             {data.projects.map((project) => (
-              <div key={project.id} className="mb-2">
-                <div style={{ fontSize: fontSizes.body }}>
-                  <strong>{project.name}:</strong> {project.description}
-                  {project.technologies && Array.isArray(project.technologies) && project.technologies.length > 0 && (
-                    <> Tech: {project.technologies.join(', ')}</>
-                  )}
+              <div key={project.id} className="mb-3">
+                <div className="flex justify-between items-start mb-1">
+                  <div>
+                    <div className="font-bold" style={{ fontSize: fontSizes.body }}>{project.name}</div>
+                    {project.description && (
+                      <div style={{ fontSize: fontSizes.body }}>{project.description}</div>
+                    )}
+                    {project.technologies && Array.isArray(project.technologies) && project.technologies.length > 0 && (
+                      <div style={{ fontSize: fontSizes.small }}>
+                        <strong>Technologies:</strong> {project.technologies.join(', ')}
+                      </div>
+                    )}
+                    {project.link && (
+                      <div style={{ fontSize: fontSizes.small }}>
+                        <strong>Live Link:</strong> <a href={project.link.startsWith('http') ? project.link : `https://${project.link}`} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'underline' }}>{project.link}</a>
+                      </div>
+                    )}
+                    {project.github && (
+                      <div style={{ fontSize: fontSizes.small }}>
+                        <strong>GitHub:</strong> <a href={project.github.startsWith('http') ? project.github : `https://${project.github}`} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'underline' }}>{project.github}</a>
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-right" style={{ fontSize: fontSizes.small }}>
+                    {(project.startDate || project.endDate) && (
+                      <div>{formatDateRange(project.startDate, project.endDate)}</div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Certifications as Honors and Awards */}
+        {/* Certifications */}
         {data.certifications && data.certifications.length > 0 && (
           <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
             <h2 
@@ -1251,14 +1268,27 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
                 borderBottom: settings.showDividers !== false ? '1px solid black' : 'none'
               }}
             >
-              HONORS AND AWARDS
+              CERTIFICATIONS
             </h2>
             {data.certifications.map((cert) => (
-              <div key={cert.id} className="mb-1">
-                <div style={{ fontSize: fontSizes.body }}>
-                  {settings.bulletStyle === 'dash' ? '-' :
-                   settings.bulletStyle === 'arrow' ? '→' :
-                   settings.bulletStyle === 'chevron' ? '›' : '•'} {cert.name} - {cert.issuer}
+              <div key={cert.id} className="mb-2">
+                <div className="flex justify-between items-start mb-1">
+                  <div>
+                    <div className="font-bold" style={{ fontSize: fontSizes.body }}>{cert.name}</div>
+                    {cert.issuer && (
+                      <div className="italic" style={{ fontSize: fontSizes.body }}>{cert.issuer}</div>
+                    )}
+                    {cert.credentialId && (
+                      <div style={{ fontSize: fontSizes.small }}>Credential ID: {cert.credentialId}</div>
+                    )}
+                    {cert.link && (
+                      <div style={{ fontSize: fontSizes.small }}>Verification: <a href={cert.link.startsWith('http') ? cert.link : `https://${cert.link}`} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'underline' }}>{cert.link}</a></div>
+                    )}
+                  </div>
+                  <div className="text-right" style={{ fontSize: fontSizes.small }}>
+                    {cert.date && <div>Issued: {cert.date}</div>}
+                    {cert.expiryDate && <div>Expires: {cert.expiryDate}</div>}
+                  </div>
                 </div>
               </div>
             ))}
@@ -1290,6 +1320,29 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Languages */}
+        {data.languages && data.languages.length > 0 && (
+          <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
+            <h2 
+              className="font-bold mb-2 pb-1" 
+              style={{ 
+                fontSize: fontSizes.sectionTitle,
+                borderBottom: settings.showDividers !== false ? '1px solid black' : 'none'
+              }}
+            >
+              LANGUAGES
+            </h2>
+            <div className="grid grid-cols-2 gap-1">
+              {data.languages.map((lang) => (
+                <div key={lang.id} className="flex items-center gap-1" style={{ fontSize: fontSizes.body }}>
+                  <span className="font-medium">{lang.language}:</span>
+                  <span style={{ fontSize: fontSizes.small }}>{lang.proficiency}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

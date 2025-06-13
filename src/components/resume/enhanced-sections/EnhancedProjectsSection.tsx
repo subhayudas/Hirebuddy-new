@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Trash2, Globe } from 'lucide-react';
+import { Plus, Trash2, Globe, Github, ExternalLink, Calendar } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -56,7 +56,15 @@ export const EnhancedProjectsSection: React.FC<EnhancedProjectsSectionProps> = (
 
   return (
     <div className="space-y-6">
-      
+      <div className="text-sm text-gray-600 bg-pink-50 p-4 rounded-lg border border-pink-200">
+        <p className="font-medium text-pink-900 mb-2">🚀 Projects Tips</p>
+        <ul className="space-y-1 text-pink-800">
+          <li>• Showcase projects that demonstrate relevant skills</li>
+          <li>• Include both personal and professional projects</li>
+          <li>• Add live links and GitHub repositories when available</li>
+          <li>• Highlight the technologies and tools you used</li>
+        </ul>
+      </div>
 
       <div className="space-y-4">
         {data.map((project, index) => (
@@ -94,11 +102,11 @@ export const EnhancedProjectsSection: React.FC<EnhancedProjectsSectionProps> = (
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Live Link</Label>
+                      <Label>Technologies (comma-separated)</Label>
                       <Input
-                        placeholder="https://myproject.com"
-                        value={project.link}
-                        onChange={(e) => updateProject(project.id, 'link', e.target.value)}
+                        placeholder="React, Node.js, MongoDB"
+                        value={project.technologies.join(', ')}
+                        onChange={(e) => updateProject(project.id, 'technologies', e.target.value.split(',').map(t => t.trim()).filter(t => t))}
                       />
                     </div>
                   </div>
@@ -115,20 +123,55 @@ export const EnhancedProjectsSection: React.FC<EnhancedProjectsSectionProps> = (
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>GitHub Repository</Label>
-                      <Input
-                        placeholder="https://github.com/username/project"
-                        value={project.github}
-                        onChange={(e) => updateProject(project.id, 'github', e.target.value)}
-                      />
+                      <Label>Live Link</Label>
+                      <div className="relative">
+                        <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          placeholder="https://myproject.com"
+                          value={project.link}
+                          onChange={(e) => updateProject(project.id, 'link', e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
-                      <Label>Technologies (comma-separated)</Label>
-                      <Input
-                        placeholder="React, Node.js, MongoDB"
-                        value={project.technologies.join(', ')}
-                        onChange={(e) => updateProject(project.id, 'technologies', e.target.value.split(',').map(t => t.trim()).filter(t => t))}
-                      />
+                      <Label>GitHub Repository</Label>
+                      <div className="relative">
+                        <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          placeholder="https://github.com/username/project"
+                          value={project.github}
+                          onChange={(e) => updateProject(project.id, 'github', e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Start Date</Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          type="month"
+                          value={project.startDate}
+                          onChange={(e) => updateProject(project.id, 'startDate', e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>End Date</Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          type="month"
+                          value={project.endDate}
+                          onChange={(e) => updateProject(project.id, 'endDate', e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -146,6 +189,14 @@ export const EnhancedProjectsSection: React.FC<EnhancedProjectsSectionProps> = (
         <Plus className="w-4 h-4 mr-2" />
         Add Project
       </Button>
+
+      {data.length === 0 && (
+        <div className="text-center py-8 text-gray-500">
+          <Globe className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+          <p className="text-lg font-medium mb-2">No projects added yet</p>
+          <p className="text-sm">Click "Add Project" to showcase your work and achievements</p>
+        </div>
+      )}
     </div>
   );
 }; 

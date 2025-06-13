@@ -130,6 +130,14 @@ export const EnhancedLanguagesSection: React.FC<EnhancedLanguagesSectionProps> =
         <Plus className="w-4 h-4 mr-2" />
         Add Language
       </Button>
+
+      {data.length === 0 && (
+        <div className="text-center py-8 text-gray-500">
+          <Languages className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+          <p className="text-lg font-medium mb-2">No languages added yet</p>
+          <p className="text-sm">Click "Add Language" to showcase your language skills</p>
+        </div>
+      )}
     </div>
   );
 }; 

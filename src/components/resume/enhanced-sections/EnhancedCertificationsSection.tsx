@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Trash2, Award } from 'lucide-react';
+import { Plus, Trash2, Award, Calendar, Building, ExternalLink, Hash } from 'lucide-react';
 
 interface Certification {
   id: string;
@@ -54,11 +54,12 @@ export const EnhancedCertificationsSection: React.FC<EnhancedCertificationsSecti
   return (
     <div className="space-y-6">
       <div className="text-sm text-gray-600 bg-orange-50 p-4 rounded-lg border border-orange-200">
-        <p className="font-medium text-orange-900 mb-2">💡 Certifications Tips</p>
+        <p className="font-medium text-orange-900 mb-2">🏆 Certifications Tips</p>
         <ul className="space-y-1 text-orange-800">
           <li>• Include relevant professional certifications</li>
           <li>• Add credential IDs and verification links when available</li>
           <li>• List most recent or relevant certifications first</li>
+          <li>• Include expiry dates to show current validity</li>
         </ul>
       </div>
 
@@ -87,54 +88,82 @@ export const EnhancedCertificationsSection: React.FC<EnhancedCertificationsSecti
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Certification Name *</Label>
-                    <Input
-                      placeholder="AWS Certified Solutions Architect"
-                      value={certification.name}
-                      onChange={(e) => updateCertification(certification.id, 'name', e.target.value)}
-                    />
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Certification Name *</Label>
+                      <Input
+                        placeholder="AWS Certified Solutions Architect"
+                        value={certification.name}
+                        onChange={(e) => updateCertification(certification.id, 'name', e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Issuing Organization *</Label>
+                      <div className="relative">
+                        <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          placeholder="Amazon Web Services"
+                          value={certification.issuer}
+                          onChange={(e) => updateCertification(certification.id, 'issuer', e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Issuing Organization *</Label>
-                    <Input
-                      placeholder="Amazon Web Services"
-                      value={certification.issuer}
-                      onChange={(e) => updateCertification(certification.id, 'issuer', e.target.value)}
-                    />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Issue Date</Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          type="month"
+                          value={certification.date}
+                          onChange={(e) => updateCertification(certification.id, 'date', e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Expiry Date</Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          type="month"
+                          value={certification.expiryDate}
+                          onChange={(e) => updateCertification(certification.id, 'expiryDate', e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Issue Date</Label>
-                    <Input
-                      type="month"
-                      value={certification.date}
-                      onChange={(e) => updateCertification(certification.id, 'date', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Expiry Date</Label>
-                    <Input
-                      type="month"
-                      value={certification.expiryDate}
-                      onChange={(e) => updateCertification(certification.id, 'expiryDate', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Credential ID</Label>
-                    <Input
-                      placeholder="ABC123456789"
-                      value={certification.credentialId}
-                      onChange={(e) => updateCertification(certification.id, 'credentialId', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Verification Link</Label>
-                    <Input
-                      placeholder="https://verify.example.com"
-                      value={certification.link}
-                      onChange={(e) => updateCertification(certification.id, 'link', e.target.value)}
-                    />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Credential ID</Label>
+                      <div className="relative">
+                        <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          placeholder="ABC123456789"
+                          value={certification.credentialId}
+                          onChange={(e) => updateCertification(certification.id, 'credentialId', e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Verification Link</Label>
+                      <div className="relative">
+                        <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          placeholder="https://verify.example.com"
+                          value={certification.link}
+                          onChange={(e) => updateCertification(certification.id, 'link', e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -151,6 +180,14 @@ export const EnhancedCertificationsSection: React.FC<EnhancedCertificationsSecti
         <Plus className="w-4 h-4 mr-2" />
         Add Certification
       </Button>
+
+      {data.length === 0 && (
+        <div className="text-center py-8 text-gray-500">
+          <Award className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+          <p className="text-lg font-medium mb-2">No certifications added yet</p>
+          <p className="text-sm">Click "Add Certification" to showcase your professional credentials</p>
+        </div>
+      )}
     </div>
   );
 }; 
