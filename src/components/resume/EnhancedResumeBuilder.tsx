@@ -849,7 +849,18 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                         onClick={() => setShowCoverLetterPopup(true)}
                         className="h-9 px-3 text-sm"
                       >
-                        <FileText className="w-4 h-4 mr-2" />
+                        <motion.div
+                          initial={{ scale: 1 }}
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ 
+                            repeat: Infinity, 
+                            repeatType: "reverse", 
+                            duration: 1.5 
+                          }}
+                          className="mr-2 flex items-center"
+                        >
+                          <Sparkles className="w-4 h-4 text-blue-500" />
+                        </motion.div>
                         Cover Letter
                       </Button>
                     </TooltipTrigger>
