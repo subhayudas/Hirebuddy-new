@@ -69,6 +69,9 @@ import { EnhancedAwardsSection } from "./enhanced-sections/EnhancedAwardsSection
 // AI Components
 import { AIDashboard } from "./ai/AIDashboard";
 
+// Cover Letter Generator
+import { CoverLetterGenerator } from "./CoverLetterGenerator";
+
 // Enhanced preview component
 import { EnhancedResumePreview } from "./EnhancedResumePreview";
 
@@ -253,6 +256,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   const [showSettings, setShowSettings] = useState(false);
   const [showManageSections, setShowManageSections] = useState(false);
   const [previewScale, setPreviewScale] = useState(0.8);
+  const [showCoverLetterPopup, setShowCoverLetterPopup] = useState(false);
 
   // Refs
   const previewRef = useRef<HTMLDivElement>(null);
@@ -431,17 +435,18 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Only handle shortcuts when not typing in an input
-      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+      // Escape key to close cover letter popup
+      if (event.key === 'Escape' && showCoverLetterPopup) {
+        setShowCoverLetterPopup(false);
         return;
       }
 
-      // Ctrl/Cmd shortcuts
+      // Existing keyboard shortcuts
       if (event.ctrlKey || event.metaKey) {
         switch (event.key) {
-          case 'e':
+          case 'f':
             event.preventDefault();
-            setIsPreviewExpanded(!isPreviewExpanded);
+            setIsFullscreenPreview(true);
             break;
           case 's':
             event.preventDefault();
@@ -449,47 +454,27 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
             localStorage.setItem('enhanced_resume_settings', JSON.stringify(settings));
             setLastSaved(new Date());
             break;
-          case 'f':
-            event.preventDefault();
-            setIsFullscreenPreview(!isFullscreenPreview);
-            break;
-        }
-        return;
-      }
-
-      // Section navigation shortcuts (1-9 for first 9 sections)
-      if (event.key >= '1' && event.key <= '9') {
-        const sectionIndex = parseInt(event.key) - 1;
-        const enabledSections = SECTION_CONFIGS.filter(section => 
-          settings.enabledSections[section.id]
-        );
-        if (sectionIndex < enabledSections.length) {
-          event.preventDefault();
-          setActiveSection(enabledSections[sectionIndex].id);
         }
       }
 
-      // Arrow key navigation
-      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      // Arrow keys for section navigation (only if cover letter popup is not open)
+      if (!showCoverLetterPopup) {
         const enabledSections = SECTION_CONFIGS.filter(section => 
           settings.enabledSections[section.id]
         );
         const currentIndex = enabledSections.findIndex(section => section.id === activeSection);
         
-        if (currentIndex !== -1) {
-          event.preventDefault();
-          if (event.key === 'ArrowLeft' && currentIndex > 0) {
-            setActiveSection(enabledSections[currentIndex - 1].id);
-          } else if (event.key === 'ArrowRight' && currentIndex < enabledSections.length - 1) {
-            setActiveSection(enabledSections[currentIndex + 1].id);
-          }
+        if (event.key === 'ArrowLeft' && currentIndex > 0) {
+          setActiveSection(enabledSections[currentIndex - 1].id);
+        } else if (event.key === 'ArrowRight' && currentIndex < enabledSections.length - 1) {
+          setActiveSection(enabledSections[currentIndex + 1].id);
         }
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPreviewExpanded, isFullscreenPreview, resumeData, settings, activeSection]);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [activeSection, settings.enabledSections, resumeData, settings, showCoverLetterPopup]);
 
   // Update functions
   const updateResumeData = (section: keyof ResumeData, data: any) => {
@@ -662,7 +647,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     switch (activeSection) {
       case 'ai':
         return (
-          <AIDashboard
+          <AIDashboard 
             resumeData={resumeData}
             onUpdateResumeData={updateResumeData}
           />
@@ -806,7 +791,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     <TooltipTrigger asChild>
                       <ShimmerButton
                         onClick={() => window.location.href = '/resume-import'}
-                        className="h-8 px-3 text-sm flex items-center gap-2"
+                        className="h-9 px-3 text-sm flex items-center gap-2"
                         background="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
                         borderRadius="6px"
                       >
@@ -823,6 +808,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={() => setShowSettings(true)}
+                    className="h-9 px-3 text-sm"
                   >
                     <Settings className="w-4 h-4 mr-2" />
                     Settings
@@ -832,9 +818,10 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={() => setShowManageSections(true)}
+                    className="h-9 px-3 text-sm"
                   >
                     <Layout className="w-4 h-4 mr-2" />
-                    Manage Sections
+                    Sections
                   </Button>
 
                   <Tooltip>
@@ -843,9 +830,10 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                         variant="outline"
                         size="sm"
                         onClick={() => setIsFullscreenPreview(true)}
+                        className="h-9 px-3 text-sm"
                       >
                         <Eye className="w-4 h-4 mr-2" />
-                        Fullscreen
+                        Preview
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -853,10 +841,27 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     </TooltipContent>
                   </Tooltip>
 
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowCoverLetterPopup(true)}
+                        className="h-9 px-3 text-sm"
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        Cover Letter
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Generate AI-powered cover letters</p>
+                    </TooltipContent>
+                  </Tooltip>
+
                   <RainbowButton 
                     onClick={generatePDF}
                     disabled={isGeneratingPdf}
-                    className="h-9"
+                    className="h-9 px-3 text-sm"
                   >
                     {isGeneratingPdf ? (
                       <>
@@ -1454,14 +1459,35 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
           </DialogContent>
         </Dialog>
 
+        {/* Cover Letter Generator Popup */}
+        {showCoverLetterPopup && (
+          <div 
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setShowCoverLetterPopup(false);
+              }
+            }}
+          >
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl h-[90vh] flex flex-col">
+              <CoverLetterGenerator
+                resumeData={resumeData}
+                onClose={() => setShowCoverLetterPopup(false)}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Resume Section Dock */}
-        <ResumeSectionDock
-          sections={SECTION_CONFIGS}
-          activeSection={activeSection}
-          onSectionChange={setActiveSection}
-          completedSections={getCompletedSections()}
-          enabledSections={settings.enabledSections}
-        />
+        {!showCoverLetterPopup && (
+          <ResumeSectionDock
+            sections={SECTION_CONFIGS}
+            activeSection={activeSection}
+            onSectionChange={setActiveSection}
+            completedSections={getCompletedSections()}
+            enabledSections={settings.enabledSections}
+          />
+        )}
       </div>
     </TooltipProvider>
   );
