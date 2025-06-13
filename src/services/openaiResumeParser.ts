@@ -12,24 +12,32 @@ interface OpenAIResumeParseResponse {
     phone: string;
     location: string;
     url: string;
+    linkedin: string;
+    github: string;
     summary: string;
   };
   workExperiences: Array<{
     company: string;
     jobTitle: string;
     date: string;
-    descriptions: string[];
+    jobDescription: string;
+    achievements: string[];
   }>;
   educations: Array<{
     school: string;
     degree: string;
     date: string;
     gpa: string;
-    descriptions: string[];
+    coursework: string[];
+    honors: string[];
+    activities: string[];
   }>;
   skills: {
-    featuredSkills: Array<{ skill: string; rating: number }>;
-    descriptions: string[];
+    programmingLanguages: string[];
+    frameworks: string[];
+    technicalSkills: string[];
+    softSkills: string[];
+    tools: string[];
   };
   projects: Array<{
     project: string;
@@ -117,7 +125,9 @@ Please extract ALL available information and structure it into the following JSO
     "email": "Email address",
     "phone": "Phone number",
     "location": "City, State or full address",
-    "url": "Website, portfolio, or LinkedIn URL",
+    "url": "Primary website/portfolio URL (extract the main one, not LinkedIn/GitHub)",
+    "linkedin": "LinkedIn profile URL or username (separate from main URL)",
+    "github": "GitHub profile URL or username (separate from main URL)",
     "summary": "Professional summary or objective statement"
   },
   "workExperiences": [
@@ -125,7 +135,8 @@ Please extract ALL available information and structure it into the following JSO
       "company": "Company name",
       "jobTitle": "Job title/position",
       "date": "Employment dates (e.g., 'Jan 2020 - Present' or '2020-2022')",
-      "descriptions": ["Bullet point 1", "Bullet point 2", "Achievement or responsibility"]
+      "jobDescription": "Brief overview of the role and main responsibilities (2-3 sentences max)",
+      "achievements": ["Specific achievement with quantifiable results", "Another measurable accomplishment", "Key contribution or impact"]
     }
   ],
   "educations": [
@@ -134,12 +145,17 @@ Please extract ALL available information and structure it into the following JSO
       "degree": "Degree type and field of study",
       "date": "Graduation date or date range",
       "gpa": "GPA if mentioned",
-      "descriptions": ["Relevant coursework", "Honors", "Activities"]
+      "coursework": ["Relevant coursework item 1", "Relevant coursework item 2"],
+      "honors": ["Academic honors", "Dean's List", "Magna Cum Laude"],
+      "activities": ["Student organizations", "Academic projects", "Leadership roles"]
     }
   ],
   "skills": {
-    "featuredSkills": [],
-    "descriptions": ["Skill 1", "Skill 2", "Programming language", "Tool", "Technology"]
+    "programmingLanguages": ["JavaScript", "Python", "Java", "C++", "TypeScript", "Go", "Rust", "Swift", "Kotlin"],
+    "frameworks": ["React", "Angular", "Vue", "Node.js", "Express", "Django", "Spring", "Laravel", "Flutter"],
+    "technicalSkills": ["AWS", "Docker", "Kubernetes", "Git", "SQL", "MongoDB", "Redis", "GraphQL", "REST APIs"],
+    "softSkills": ["Leadership", "Communication", "Problem Solving", "Team Collaboration", "Project Management"],
+    "tools": ["VS Code", "IntelliJ", "Figma", "Photoshop", "Jira", "Slack", "Trello"]
   },
   "projects": [
     {
@@ -181,18 +197,42 @@ Please extract ALL available information and structure it into the following JSO
   ]
 }
 
-IMPORTANT INSTRUCTIONS:
-1. Extract ALL information present in the resume, even if it seems minor
-2. For work experience, include ALL job positions mentioned
-3. For education, include ALL degrees, certifications, and educational experiences
-4. For skills, extract both technical and soft skills mentioned anywhere in the resume
-5. Look for projects in dedicated sections or mentioned within work experience
-6. Extract contact information carefully (email, phone, location, websites)
-7. If dates are in various formats, standardize them but keep the original meaning
-8. For descriptions, break down long paragraphs into individual bullet points
-9. If information is unclear or ambiguous, make reasonable inferences based on context
-10. Ensure the JSON is valid and properly formatted
-11. Do not add information that is not present in the resume text
+CRITICAL PARSING INSTRUCTIONS:
+
+1. CONTACT INFORMATION:
+   - Extract email, phone, and location from header/contact section
+   - For URLs: Separate LinkedIn, GitHub, and main website/portfolio URLs
+   - LinkedIn: Look for linkedin.com/in/ patterns
+   - GitHub: Look for github.com/ patterns  
+   - Main URL: Portfolio, personal website, or other professional URLs
+
+2. WORK EXPERIENCE - SEPARATE JOB DESCRIPTION FROM ACHIEVEMENTS:
+   - jobDescription: Brief role overview and main responsibilities (avoid bullet points)
+   - achievements: Specific accomplishments with numbers, metrics, or measurable impact
+   - DO NOT duplicate content between jobDescription and achievements
+   - achievements should be quantifiable results, not general responsibilities
+
+3. EDUCATION - CATEGORIZE DESCRIPTIONS PROPERLY:
+   - coursework: Only actual course names or academic subjects
+   - honors: Academic achievements like "Dean's List", "Magna Cum Laude", "Summa Cum Laude"
+   - activities: Student organizations, clubs, leadership roles, academic projects
+   - DO NOT put everything in one array - categorize appropriately
+
+4. SKILLS - INTELLIGENT CATEGORIZATION:
+   - programmingLanguages: Only actual programming languages
+   - frameworks: Libraries, frameworks, and development platforms
+   - technicalSkills: Tools, databases, cloud services, methodologies
+   - softSkills: Interpersonal and management skills
+   - tools: Software applications and development tools
+   - DO NOT put all skills in one category
+
+5. GENERAL RULES:
+   - Extract ALL information present in the resume
+   - Break down long paragraphs into individual bullet points
+   - Standardize date formats but keep original meaning
+   - Make reasonable inferences based on context
+   - Ensure JSON is valid and properly formatted
+   - Do not add information not present in the resume
 
 Return ONLY the JSON object, no additional text or explanation.
 `;
@@ -244,6 +284,8 @@ Return ONLY the JSON object, no additional text or explanation.
         email: aiResponse.profile.email || '',
         phone: aiResponse.profile.phone || '',
         url: aiResponse.profile.url || '',
+        linkedin: aiResponse.profile.linkedin || '',
+        github: aiResponse.profile.github || '',
         summary: aiResponse.profile.summary || '',
         location: aiResponse.profile.location || ''
       },
@@ -251,14 +293,19 @@ Return ONLY the JSON object, no additional text or explanation.
         company: exp.company || '',
         jobTitle: exp.jobTitle || '',
         date: exp.date || '',
-        descriptions: exp.descriptions || []
+        jobDescription: exp.jobDescription || '',
+        achievements: exp.achievements || [],
+        descriptions: exp.achievements || [] // Backward compatibility
       })),
       educations: aiResponse.educations.map(edu => ({
         school: edu.school || '',
         degree: edu.degree || '',
         date: edu.date || '',
         gpa: edu.gpa || '',
-        descriptions: edu.descriptions || []
+        coursework: edu.coursework || [],
+        honors: edu.honors || [],
+        activities: edu.activities || [],
+        descriptions: [...(edu.coursework || []), ...(edu.honors || []), ...(edu.activities || [])] // Backward compatibility
       })),
       projects: aiResponse.projects.map(proj => ({
         project: proj.project || '',
@@ -266,8 +313,19 @@ Return ONLY the JSON object, no additional text or explanation.
         descriptions: proj.descriptions || []
       })),
       skills: {
-        featuredSkills: aiResponse.skills.featuredSkills || [],
-        descriptions: aiResponse.skills.descriptions || []
+        programmingLanguages: aiResponse.skills.programmingLanguages || [],
+        frameworks: aiResponse.skills.frameworks || [],
+        technicalSkills: aiResponse.skills.technicalSkills || [],
+        softSkills: aiResponse.skills.softSkills || [],
+        tools: aiResponse.skills.tools || [],
+        featuredSkills: [], // Backward compatibility
+        descriptions: [
+          ...(aiResponse.skills.programmingLanguages || []),
+          ...(aiResponse.skills.frameworks || []),
+          ...(aiResponse.skills.technicalSkills || []),
+          ...(aiResponse.skills.softSkills || []),
+          ...(aiResponse.skills.tools || [])
+        ] // Backward compatibility
       },
       awards: aiResponse.awards.map(award => ({
         title: award.title || '',

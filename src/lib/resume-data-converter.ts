@@ -41,8 +41,8 @@ export const convertParsedResumeToEnhancedFormat = (parsedResume: Resume) => {
       phone: parsedResume.profile.phone || "",
       location: parsedResume.profile.location || "",
       website: parsedResume.profile.url || "",
-      linkedin: extractLinkedInFromUrl(parsedResume.profile.url) || "",
-      github: extractGitHubFromUrl(parsedResume.profile.url) || "",
+      linkedin: parsedResume.profile.linkedin || extractLinkedInFromUrl(parsedResume.profile.url) || "",
+      github: parsedResume.profile.github || extractGitHubFromUrl(parsedResume.profile.url) || "",
     },
     summary: parsedResume.profile.summary || "",
     experience: (parsedResume.workExperiences || []).map((exp, index) => ({
@@ -53,8 +53,8 @@ export const convertParsedResumeToEnhancedFormat = (parsedResume: Resume) => {
       startDate: extractStartDate(exp.date),
       endDate: extractEndDate(exp.date),
       current: exp.date.toLowerCase().includes('present') || exp.date.toLowerCase().includes('current'),
-      description: (exp.descriptions || []).join('\n'),
-      achievements: exp.descriptions || []
+      description: exp.jobDescription || (exp.descriptions || []).join('\n'),
+      achievements: exp.achievements || exp.descriptions || []
     })),
     education: (parsedResume.educations || []).map((edu, index) => ({
       id: `edu-${index}`,
@@ -64,14 +64,18 @@ export const convertParsedResumeToEnhancedFormat = (parsedResume: Resume) => {
       startDate: extractStartDate(edu.date),
       endDate: extractEndDate(edu.date),
       gpa: edu.gpa || "",
-      honors: "", // Not typically extracted from PDF
-      coursework: edu.descriptions || []
+      honors: (edu.honors || []).join(', '), // Convert array to string for compatibility
+      coursework: edu.coursework || edu.descriptions || []
     })),
     skills: {
-      technical: parsedResume.skills.descriptions || [],
-      soft: [], // Not typically extracted from PDF
+      technical: [
+        ...(parsedResume.skills.programmingLanguages || []),
+        ...(parsedResume.skills.technicalSkills || []),
+        ...(parsedResume.skills.tools || [])
+      ],
+      soft: parsedResume.skills.softSkills || [],
       languages: [], // Will be handled separately if language section exists
-      frameworks: [] // Not typically extracted from PDF
+      frameworks: parsedResume.skills.frameworks || []
     },
     projects: (parsedResume.projects || []).map((proj, index) => ({
       id: `proj-${index}`,

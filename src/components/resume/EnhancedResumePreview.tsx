@@ -458,7 +458,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
       <div className="space-y-4">
         {data.education.map((edu, index) => (
           <motion.div
-            key={edu.id}
+            key={edu.id || index}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
@@ -470,34 +470,25 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
               style={{ backgroundColor: colors.primary }}
             />
             <div className="flex justify-between items-start mb-2">
-              <div>
-                <h3 className="font-semibold text-sm text-gray-900">{edu.degree}</h3>
-                <p className="text-xs text-gray-700 font-medium">{edu.school}</p>
-                {edu.location && <p className="text-xs text-gray-600">{edu.location}</p>}
-                {edu.gpa && <p className="text-xs text-gray-600">GPA: {edu.gpa}</p>}
-                {edu.honors && <p className="text-xs text-gray-600">{edu.honors}</p>}
+              <div className="flex-1 pr-4">
+                <div className="font-bold" style={{ fontSize: fontSizes.body }}>{edu.school}</div>
+                <div className="italic" style={{ fontSize: fontSizes.body }}>
+                  {edu.degree}
+                  {edu.gpa && (
+                    <>; GPA: {edu.gpa}</>
+                  )}
+                </div>
+                {edu.coursework && edu.coursework.length > 0 && (
+                  <div className="mt-1" style={{ fontSize: fontSizes.small }}>
+                    <strong>Courses:</strong> {edu.coursework.join(', ')}
+                  </div>
+                )}
               </div>
-              <div className="text-xs text-gray-600 flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                {formatDateRange(edu.startDate, edu.endDate)}
+              <div className="text-right flex-shrink-0" style={{ fontSize: fontSizes.small }}>
+                {edu.location && <div>{edu.location}</div>}
+                <div>{formatDateRange(edu.startDate, edu.endDate)}</div>
               </div>
             </div>
-            {edu.coursework && Array.isArray(edu.coursework) && edu.coursework.length > 0 && (
-              <div className="mt-2">
-                <p className="text-xs font-medium text-gray-700 mb-1">Relevant Coursework:</p>
-                <div className="flex flex-wrap gap-1">
-                  {edu.coursework.map((course, i) => (
-                    <span
-                      key={i}
-                      className="text-xs px-2 py-1 rounded"
-                      style={{ backgroundColor: colors.accent, color: colors.text }}
-                    >
-                      {course}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
           </motion.div>
         ))}
       </div>
@@ -509,8 +500,23 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
     if (!hasSkills) return null;
 
     const skillCategories = [
-      { label: 'Technical Skills', skills: data.skills.technical || [] },
+      { 
+        label: 'Programming Languages', 
+        skills: data.skills.technical?.filter(skill => 
+          ['javascript', 'python', 'java', 'c++', 'typescript', 'go', 'rust', 'swift', 'kotlin', 'c#', 'php', 'ruby'].some(lang => 
+            skill.toLowerCase().includes(lang)
+          )
+        ) || []
+      },
       { label: 'Frameworks & Libraries', skills: data.skills.frameworks || [] },
+      { 
+        label: 'Technical Skills', 
+        skills: data.skills.technical?.filter(skill => 
+          !['javascript', 'python', 'java', 'c++', 'typescript', 'go', 'rust', 'swift', 'kotlin', 'c#', 'php', 'ruby'].some(lang => 
+            skill.toLowerCase().includes(lang)
+          )
+        ) || []
+      },
       { label: 'Soft Skills', skills: data.skills.soft || [] },
     ].filter(category => Array.isArray(category.skills) && category.skills.length > 0);
 
@@ -741,6 +747,60 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
       >
         <p className="text-gray-700 leading-relaxed" style={{ fontSize: fontSizes.body }}>{data.summary}</p>
       </motion.div>
+    );
+  };
+
+  // Skills Summary
+  const renderSkillsSummary = () => {
+    if (!settings.enabledSections.skills || !data.skills || !data.skills.languages || !data.skills.frameworks || !data.skills.technical || !data.skills.soft) return null;
+
+    return (
+      <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
+        <h2 
+          className="font-bold mb-2 pb-1" 
+          style={{ 
+            fontSize: fontSizes.sectionTitle,
+            borderBottom: settings.showDividers !== false ? '1px solid black' : 'none'
+          }}
+        >
+          SKILLS SUMMARY
+        </h2>
+        <div className="space-y-1" style={{ fontSize: fontSizes.body }}>
+          {data.skills.technical?.length > 0 && (
+            <div>
+              <strong>Programming Languages:</strong> {data.skills.technical.filter(skill => 
+                ['javascript', 'python', 'java', 'c++', 'typescript', 'go', 'rust', 'swift', 'kotlin', 'c#', 'php', 'ruby'].some(lang => 
+                  skill.toLowerCase().includes(lang)
+                )
+              ).join(', ')}
+            </div>
+          )}
+          {data.skills.frameworks?.length > 0 && (
+            <div>
+              <strong>Frameworks & Libraries:</strong> {data.skills.frameworks.join(', ')}
+            </div>
+          )}
+          {data.skills.technical?.length > 0 && (
+            <div>
+              <strong>Technical Skills:</strong> {data.skills.technical.filter(skill => 
+                !['javascript', 'python', 'java', 'c++', 'typescript', 'go', 'rust', 'swift', 'kotlin', 'c#', 'php', 'ruby'].some(lang => 
+                  skill.toLowerCase().includes(lang)
+                )
+              ).join(', ')}
+            </div>
+          )}
+          {data.skills.soft?.length > 0 && (
+            <div>
+              <strong>Soft Skills:</strong> {data.skills.soft.join(', ')}
+            </div>
+          )}
+          {data.skills.languages?.length > 0 && (
+            <div>
+              <strong>Languages:</strong> {data.skills.languages.join(', ')}
+            </div>
+          )}
+        </div>
+      </div>
     );
   };
 
@@ -1038,7 +1098,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             </h2>
             {data.education.map((edu, index) => (
               <div key={edu.id || index} className="flex justify-between items-start mb-2">
-                <div>
+                <div className="flex-1 pr-4">
                   <div className="font-bold" style={{ fontSize: fontSizes.body }}>{edu.school}</div>
                   <div className="italic" style={{ fontSize: fontSizes.body }}>
                     {edu.degree}
@@ -1052,8 +1112,8 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
                     </div>
                   )}
                 </div>
-                <div className="text-right" style={{ fontSize: fontSizes.small }}>
-                  <div>{edu.location}</div>
+                <div className="text-right flex-shrink-0" style={{ fontSize: fontSizes.small }}>
+                  {edu.location && <div>{edu.location}</div>}
                   <div>{formatDateRange(edu.startDate, edu.endDate)}</div>
                 </div>
               </div>
@@ -1074,24 +1134,37 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
               SKILLS SUMMARY
             </h2>
             <div className="space-y-1" style={{ fontSize: fontSizes.body }}>
-              {data.skills.languages?.length > 0 && (
+              {data.skills.technical?.length > 0 && (
                 <div>
-                  <strong>Languages:</strong> {data.skills.languages.join(', ')}
+                  <strong>Programming Languages:</strong> {data.skills.technical.filter(skill => 
+                    ['javascript', 'python', 'java', 'c++', 'typescript', 'go', 'rust', 'swift', 'kotlin', 'c#', 'php', 'ruby'].some(lang => 
+                      skill.toLowerCase().includes(lang)
+                    )
+                  ).join(', ')}
                 </div>
               )}
               {data.skills.frameworks?.length > 0 && (
                 <div>
-                  <strong>Frameworks:</strong> {data.skills.frameworks.join(', ')}
+                  <strong>Frameworks & Libraries:</strong> {data.skills.frameworks.join(', ')}
                 </div>
               )}
               {data.skills.technical?.length > 0 && (
                 <div>
-                  <strong>Tools:</strong> {data.skills.technical.join(', ')}
+                  <strong>Technical Skills:</strong> {data.skills.technical.filter(skill => 
+                    !['javascript', 'python', 'java', 'c++', 'typescript', 'go', 'rust', 'swift', 'kotlin', 'c#', 'php', 'ruby'].some(lang => 
+                      skill.toLowerCase().includes(lang)
+                    )
+                  ).join(', ')}
                 </div>
               )}
               {data.skills.soft?.length > 0 && (
                 <div>
                   <strong>Soft Skills:</strong> {data.skills.soft.join(', ')}
+                </div>
+              )}
+              {data.skills.languages?.length > 0 && (
+                <div>
+                  <strong>Languages:</strong> {data.skills.languages.join(', ')}
                 </div>
               )}
             </div>
