@@ -88,8 +88,8 @@ const ResumeChoice = () => {
             <Card className="h-full border-0 shadow-xl bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 group cursor-pointer"
                   onClick={handleImportResume}>
               <CardHeader className="text-center pb-6">
-                <div className="mx-auto w-16 h-16 bg-pink-200 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <Upload className="w-8 h-8 text-pink-600" />
+                <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Upload className="w-8 h-8 text-white" />
                 </div>
                 <CardTitle className="text-xl font-bold text-gray-900">
                   Import Existing Resume
@@ -101,15 +101,15 @@ const ResumeChoice = () => {
               <CardContent className="space-y-6">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <span className="text-gray-700">AI-powered content extraction</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <span className="text-gray-700">Automatic formatting optimization</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <span className="text-gray-700">ATS compatibility improvements</span>
                   </div>
                 </div>
@@ -117,7 +117,7 @@ const ResumeChoice = () => {
                 <div className="pt-4">
                   <ShimmerButton
                     className="w-full"
-                    background="linear-gradient(110deg,rgb(241, 168, 214) 0%,rgb(237, 106, 165) 50%,rgb(230, 171, 203) 100%)"
+                    background="linear-gradient(110deg, #ec4899 0%, #be185d 50%, #ec4899 100%)"
                     onClick={handleImportResume}
                   >
                     Upload Resume
@@ -142,7 +142,7 @@ const ResumeChoice = () => {
             <Card className="h-full border-0 shadow-xl bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 group cursor-pointer"
                   onClick={handleBuildFromScratch}>
               <CardHeader className="text-center pb-6">
-                <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="mx-auto w-16 h-16 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <FileText className="w-8 h-8 text-white" />
                 </div>
                 <CardTitle className="text-xl font-bold text-gray-900">
@@ -155,15 +155,15 @@ const ResumeChoice = () => {
               <CardContent className="space-y-6">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <span className="text-gray-700">Step-by-step guided process</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <span className="text-gray-700">AI-generated content suggestions</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <span className="text-gray-700">Professional templates</span>
                   </div>
                 </div>
@@ -171,7 +171,7 @@ const ResumeChoice = () => {
                 <div className="pt-4">
                   <ShimmerButton
                     className="w-full"
-                    background="linear-gradient(110deg, #f472b6 0%, #ec4899 50%, #db2777 100%)"
+                    background="linear-gradient(110deg, #059669 0%, #047857 50%, #059669 100%)"
                     onClick={handleBuildFromScratch}
                   >
                     Start Building
@@ -186,7 +186,6 @@ const ResumeChoice = () => {
               </CardContent>
             </Card>
           </motion.div>
-
         </div>
 
         {/* Additional Features Section */}
@@ -197,7 +196,7 @@ const ResumeChoice = () => {
           <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto">
             <div className="flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-3">
-                <Brain className="w-6 h-6 text-primary" />
+                <Brain className="w-6 h-6 text-pink-600" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">AI-Powered</h4>
               <p className="text-sm text-gray-600">
@@ -206,7 +205,7 @@ const ResumeChoice = () => {
             </div>
             <div className="flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-3">
-                <Target className="w-6 h-6 text-primary" />
+                <Target className="w-6 h-6 text-pink-600" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">ATS-Optimized</h4>
               <p className="text-sm text-gray-600">
@@ -215,7 +214,7 @@ const ResumeChoice = () => {
             </div>
             <div className="flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-3">
-                <Zap className="w-6 h-6 text-primary" />
+                <Zap className="w-6 h-6 text-pink-600" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">Fast & Easy</h4>
               <p className="text-sm text-gray-600">

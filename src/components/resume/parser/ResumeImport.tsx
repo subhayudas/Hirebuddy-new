@@ -146,7 +146,7 @@ export const ResumeImport = ({
                       animate={{ rotate: 360 }}
                       transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                     >
-                      <Brain className="w-8 h-8 text-primary" />
+                      <Brain className="w-8 h-8 text-pink-600" />
                     </motion.div>
                   </div>
                   <CardTitle className="text-2xl">Processing Your Resume</CardTitle>
@@ -169,12 +169,12 @@ export const ResumeImport = ({
                           transition={{ delay: index * 0.1 }}
                           className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
                             isActive ? 'bg-pink-50 border border-pink-200' : 
-                            isCompleted ? 'bg-pink-50' : 'bg-gray-50'
+                            isCompleted ? 'bg-green-50' : 'bg-gray-50'
                           }`}
                         >
                           <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            isActive ? 'bg-primary text-white' :
-                            isCompleted ? 'bg-pink-600 text-white' : 'bg-gray-300 text-gray-600'
+                            isActive ? 'bg-pink-600 text-white' :
+                            isCompleted ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-600'
                           }`}>
                             {isCompleted ? (
                               <CheckCircle className="w-4 h-4" />
@@ -184,7 +184,7 @@ export const ResumeImport = ({
                           </div>
                           <span className={`font-medium ${
                             isActive ? 'text-pink-900' : 
-                            isCompleted ? 'text-pink-900' : 'text-gray-600'
+                            isCompleted ? 'text-green-900' : 'text-gray-600'
                           }`}>
                             {step.label}
                           </span>
@@ -194,7 +194,7 @@ export const ResumeImport = ({
                               transition={{ duration: 1.5, repeat: Infinity }}
                               className="ml-auto"
                             >
-                              <div className="w-2 h-2 bg-primary rounded-full" />
+                              <div className="w-2 h-2 bg-pink-600 rounded-full" />
                             </motion.div>
                           )}
                         </motion.div>
@@ -248,7 +248,7 @@ export const ResumeImport = ({
                 >
                   <div className="flex flex-col items-center text-center p-6 bg-white/60 rounded-xl border border-gray-200">
                     <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-4">
-                      <Zap className="w-6 h-6 text-primary" />
+                      <Zap className="w-6 h-6 text-pink-600" />
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-2">Lightning Fast</h3>
                     <p className="text-sm text-gray-600">
@@ -257,8 +257,8 @@ export const ResumeImport = ({
                   </div>
                   
                   <div className="flex flex-col items-center text-center p-6 bg-white/60 rounded-xl border border-gray-200">
-                    <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-4">
-                      <Shield className="w-6 h-6 text-primary" />
+                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                      <Shield className="w-6 h-6 text-green-600" />
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-2">100% Private</h3>
                     <p className="text-sm text-gray-600">
@@ -267,8 +267,8 @@ export const ResumeImport = ({
                   </div>
                   
                   <div className="flex flex-col items-center text-center p-6 bg-white/60 rounded-xl border border-gray-200">
-                    <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-4">
-                      <Target className="w-6 h-6 text-primary" />
+                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                      <Target className="w-6 h-6 text-purple-600" />
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-2">ATS Optimized</h3>
                     <p className="text-sm text-gray-600">
@@ -288,7 +288,7 @@ export const ResumeImport = ({
                 <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-sm">
                   <CardHeader className="text-center">
                     <CardTitle className="text-2xl flex items-center justify-center gap-2">
-                      <Upload className="w-6 h-6 text-primary" />
+                      <Upload className="w-6 h-6 text-pink-600" />
                       Upload Your Resume
                     </CardTitle>
                     <CardDescription className="text-lg">
@@ -300,10 +300,10 @@ export const ResumeImport = ({
                     
                     <div className="mt-6 p-4 bg-pink-50 rounded-lg border border-pink-200">
                       <div className="flex items-start gap-3">
-                        <Lightbulb className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <Lightbulb className="w-5 h-5 text-pink-600 mt-0.5 flex-shrink-0" />
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-1">Pro Tips for Best Results</h4>
-                          <ul className="text-sm text-gray-700 space-y-1">
+                          <h4 className="font-medium text-pink-900 mb-1">Pro Tips for Best Results</h4>
+                          <ul className="text-sm text-pink-800 space-y-1">
                             <li>• Use a single-column resume format for optimal parsing</li>
                             <li>• Ensure text is selectable (not scanned images)</li>
                             <li>• Include standard section headers (Experience, Education, Skills)</li>
@@ -336,7 +336,7 @@ export const ResumeImport = ({
                   <Card className="mt-6 border border-gray-200 hover:border-gray-300 transition-colors">
                     <CardHeader className="text-center">
                       <CardTitle className="text-lg flex items-center justify-center gap-2">
-                        <FileText className="w-5 h-5 text-gray-900" />
+                        <FileText className="w-5 h-5 text-green-600" />
                         Start from Scratch
                       </CardTitle>
                       <CardDescription>
@@ -347,7 +347,7 @@ export const ResumeImport = ({
                       <Button 
                         onClick={handleCreateFromScratch}
                         variant="outline" 
-                        className="w-full h-12 text-base hover:bg-pink-50 hover:border-pink-300 border-gray-300 text-gray-900"
+                        className="w-full h-12 text-base hover:bg-green-50 hover:border-green-300"
                       >
                         <FileText className="w-4 h-4 mr-2" />
                         Create New Resume
@@ -368,18 +368,18 @@ export const ResumeImport = ({
             >
               <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-sm">
                 <CardHeader className="text-center pb-6">
-                  <div className="mx-auto w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mb-4">
-                    <CheckCircle className="w-8 h-8 text-primary" />
+                  <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                    <CheckCircle className="w-8 h-8 text-green-600" />
                   </div>
-                  <CardTitle className="text-2xl text-pink-900">Resume Successfully Imported!</CardTitle>
+                  <CardTitle className="text-2xl text-green-900">Resume Successfully Imported!</CardTitle>
                   <CardDescription className="text-lg">
                     Your resume has been parsed and is ready for enhancement
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <Alert className="border-pink-200 bg-pink-50">
-                    <CheckCircle className="h-4 w-4 text-primary" />
-                    <AlertDescription className="text-pink-800">
+                  <Alert className="border-green-200 bg-green-50">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <AlertDescription className="text-green-800">
                       <strong>Great!</strong> We've extracted your information and you'll be redirected to the resume builder shortly.
                     </AlertDescription>
                   </Alert>
@@ -388,14 +388,14 @@ export const ResumeImport = ({
                     <Button 
                       onClick={handleTryAgain}
                       variant="outline"
-                      className="flex-1 border-pink-200 text-gray-900 hover:bg-pink-50"
+                      className="flex-1"
                     >
                       <RefreshCw className="w-4 h-4 mr-2" />
                       Try Another Resume
                     </Button>
                     <Button 
                       onClick={() => navigate('/resume-builder-form')}
-                      className="flex-1 bg-primary hover:bg-pink-700 text-white"
+                      className="flex-1 bg-green-600 hover:bg-green-700"
                     >
                       Continue Building
                       <ArrowRight className="w-4 h-4 ml-2" />
