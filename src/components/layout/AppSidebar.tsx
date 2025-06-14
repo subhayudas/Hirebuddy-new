@@ -9,7 +9,8 @@ import {
   Bell,
   Calendar,
   Briefcase,
-  TrendingUp
+  TrendingUp,
+  Mail
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -35,6 +36,7 @@ const mainItems = [
 ];
 
 const toolsItems = [
+  { title: "Email Outreach", url: "/email-outreach", icon: Mail },
   { title: "Analytics", url: "/analytics", icon: TrendingUp },
   { title: "Calendar", url: "/calendar", icon: Calendar },
   { title: "Notifications", url: "/notifications", icon: Bell },
