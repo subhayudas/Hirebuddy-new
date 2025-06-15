@@ -108,9 +108,94 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
           minHeight: '297mm',
           padding: '15mm',
           margin: '0',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          // Add page break styles for better PDF generation
+          pageBreakInside: 'auto',
+          orphans: 3,
+          widows: 3
         }}
       >
+        
+        {/* Add CSS for better page break handling */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            @media print {
+              .resume-section {
+                page-break-inside: avoid;
+                break-inside: avoid;
+              }
+              
+              .experience-item,
+              .education-item {
+                page-break-inside: avoid;
+                break-inside: avoid;
+                margin-bottom: 16px;
+              }
+              
+              h1, h2, h3, h4, h5, h6 {
+                page-break-after: avoid;
+                break-after: avoid;
+                page-break-inside: avoid;
+                break-inside: avoid;
+              }
+              
+                             /* Ensure second page content starts with proper margin */
+               @page:first {
+                 margin-top: 15mm;
+               }
+               
+               @page {
+                 margin-top: 15mm;
+                 margin-bottom: 15mm;
+                 margin-left: 15mm;
+                 margin-right: 15mm;
+               }
+               
+               /* Add top border line for subsequent pages */
+               @page:not(:first) {
+                 border-top: 0.5pt solid black;
+                 margin-top: 17mm; /* Slightly more margin to accommodate border */
+               }
+             }
+            
+                         /* For PDF generation - ensure proper spacing */
+             .page-break-before {
+               page-break-before: always;
+               break-before: page;
+             }
+             
+             .avoid-page-break {
+               page-break-inside: avoid;
+               break-inside: avoid;
+             }
+             
+             /* Simulate page break with top border for preview */
+             .page-break-with-border {
+               page-break-before: always;
+               break-before: page;
+               border-top: 1px solid #000;
+               padding-top: 15mm;
+               margin-top: 15mm;
+             }
+             
+             /* Visual indicator for second page content in preview */
+             .second-page-content {
+               position: relative;
+             }
+             
+             .second-page-content::before {
+               content: '';
+               position: absolute;
+               top: -17mm;
+               left: 0;
+               right: 0;
+               height: 1px;
+               background-color: #000;
+               opacity: 0.3;
+             }
+          `
+        }} />
+        
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -159,10 +244,10 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
 
         {/* Education */}
         {data.education && data.education.length > 0 && (
-          <div className="mb-4">
+          <div className="resume-section avoid-page-break mb-4">
             <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">EDUCATION</h2>
             {data.education.map((edu, index) => (
-              <div key={index} className="flex justify-between items-start mb-2">
+              <div key={index} className="education-item flex justify-between items-start mb-2">
                 <div>
                   <div className="font-bold text-xs">{edu.school}</div>
                   <div className="italic text-xs">{edu.degree}</div>
@@ -177,7 +262,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
 
         {/* Skills Summary */}
         {data.skills && data.skills.length > 0 && (
-          <div className="mb-4">
+          <div className="resume-section avoid-page-break mb-4">
             <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">SKILLS SUMMARY</h2>
             <div className="space-y-1 text-xs">
               <div>
@@ -189,10 +274,10 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
 
         {/* Experience */}
         {data.experience && data.experience.length > 0 && (
-          <div className="mb-4">
+          <div className="resume-section avoid-page-break mb-4">
             <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">EXPERIENCE</h2>
             {data.experience.map((exp, index) => (
-              <div key={index} className="mb-3">
+              <div key={index} className="experience-item mb-3">
                 <div className="flex justify-between items-start mb-1">
                   <div>
                     <div className="font-bold text-xs">{exp.company}</div>
@@ -214,7 +299,7 @@ export const ResumePreview = ({ data, template, scale = 1, showAtsView = false }
 
         {/* Professional Summary */}
         {data.summary && (
-          <div className="mb-4">
+          <div className="resume-section avoid-page-break mb-4">
             <h2 className="text-sm font-bold border-b border-black mb-2 pb-1">PROFESSIONAL SUMMARY</h2>
             <div className="text-xs">{data.summary}</div>
           </div>

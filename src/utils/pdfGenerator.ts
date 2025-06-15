@@ -289,6 +289,7 @@ export class EnhancedPDFGenerator {
     // A4 dimensions in mm
     const pdfWidth = 210;
     const pdfHeight = 297;
+    const topMarginSecondPage = 17; // 17mm top margin for second page and beyond (includes space for border line)
     
     // Calculate the actual content dimensions
     const canvasWidth = canvas.width;
@@ -310,18 +311,39 @@ export class EnhancedPDFGenerator {
     if (scaledHeight <= pdfHeight) {
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, scaledHeight, undefined, 'FAST');
     } else {
-      // Multi-page handling
-      const totalPages = Math.ceil(scaledHeight / pdfHeight);
+      // Multi-page handling with top margin for subsequent pages
+      const firstPageHeight = pdfHeight;
+      const subsequentPageHeight = pdfHeight - topMarginSecondPage;
+      
+      // Calculate total pages considering the reduced height for subsequent pages
+      let remainingHeight = scaledHeight - firstPageHeight;
+      const additionalPages = Math.ceil(remainingHeight / subsequentPageHeight);
+      const totalPages = 1 + additionalPages;
       
       for (let page = 0; page < totalPages; page++) {
         if (page > 0) {
           pdf.addPage();
         }
         
-        // Calculate the portion of the image for this page
-        const sourceY = (page * pdfHeight) / scale; // Convert back to canvas coordinates
-        const sourceHeight = Math.min(pdfHeight / scale, canvasHeight - sourceY);
-        const targetHeight = sourceHeight * scale;
+        let sourceY: number;
+        let sourceHeight: number;
+        let targetY: number;
+        let targetHeight: number;
+        
+        if (page === 0) {
+          // First page - no top margin
+          sourceY = 0;
+          sourceHeight = Math.min(firstPageHeight / scale, canvasHeight);
+          targetY = 0;
+          targetHeight = sourceHeight * scale;
+        } else {
+          // Subsequent pages - add top margin
+          const contentStartForPage = firstPageHeight + (page - 1) * subsequentPageHeight;
+          sourceY = contentStartForPage / scale;
+          sourceHeight = Math.min(subsequentPageHeight / scale, canvasHeight - sourceY);
+          targetY = topMarginSecondPage; // Start content below the top margin
+          targetHeight = sourceHeight * scale;
+        }
         
         // Create a temporary canvas for this page slice
         const pageCanvas = document.createElement('canvas');
@@ -342,7 +364,14 @@ export class EnhancedPDFGenerator {
         );
         
         const pageImgData = pageCanvas.toDataURL('image/jpeg', quality);
-        pdf.addImage(pageImgData, 'JPEG', 0, 0, pdfWidth, targetHeight, undefined, 'FAST');
+        pdf.addImage(pageImgData, 'JPEG', 0, targetY, pdfWidth, targetHeight, undefined, 'FAST');
+        
+        // Add top border line for subsequent pages
+        if (page > 0) {
+          pdf.setDrawColor(0, 0, 0); // Black color
+          pdf.setLineWidth(0.5); // Thin line
+          pdf.line(15, 10, pdfWidth - 15, 10); // Draw line 10mm from top of page
+        }
       }
     }
     
@@ -360,11 +389,18 @@ export class EnhancedPDFGenerator {
   ): Promise<void> {
     const pdfWidth = 210; // A4 width in mm
     const pdfHeight = 297; // A4 height in mm
+    const topMarginSecondPage = 17; // 17mm top margin for second page and beyond (includes space for border line)
     
     // Calculate scale factors from canvas to PDF
     const scale = pdfWidth / canvas.width;
     const scaledCanvasHeight = canvas.height * scale;
-    const totalPages = Math.ceil(scaledCanvasHeight / pdfHeight);
+    
+    // Calculate total pages considering the reduced height for subsequent pages
+    const firstPageHeight = pdfHeight;
+    const subsequentPageHeight = pdfHeight - topMarginSecondPage;
+    let remainingHeight = scaledCanvasHeight - firstPageHeight;
+    const additionalPages = Math.ceil(Math.max(0, remainingHeight) / subsequentPageHeight);
+    const totalPages = 1 + additionalPages;
     
     // Find all clickable elements
     const linkElements = element.querySelectorAll('a, [data-link], [data-link-type]');
@@ -380,12 +416,24 @@ export class EnhancedPDFGenerator {
       const width = rect.width * scale;
       const height = rect.height * scale;
       
-      // Determine which page this link is on
-      const pageIndex = Math.floor(relativeY / pdfHeight);
-      const yOnPage = relativeY - (pageIndex * pdfHeight);
+      // Determine which page this link is on and calculate position on that page
+      let pageIndex: number;
+      let yOnPage: number;
+      
+      if (relativeY < firstPageHeight) {
+        // Link is on the first page
+        pageIndex = 0;
+        yOnPage = relativeY;
+      } else {
+        // Link is on a subsequent page
+        const remainingY = relativeY - firstPageHeight;
+        pageIndex = 1 + Math.floor(remainingY / subsequentPageHeight);
+        yOnPage = topMarginSecondPage + (remainingY % subsequentPageHeight);
+      }
       
       // Only add link if it's within valid page bounds
-      if (pageIndex < totalPages && yOnPage >= 0 && yOnPage + height <= pdfHeight) {
+      const maxYForPage = pageIndex === 0 ? pdfHeight : pdfHeight;
+      if (pageIndex < totalPages && yOnPage >= 0 && yOnPage + height <= maxYForPage) {
         // Determine the URL
         let url = '';
         const href = htmlEl.getAttribute('href') || htmlEl.getAttribute('data-link') || '';

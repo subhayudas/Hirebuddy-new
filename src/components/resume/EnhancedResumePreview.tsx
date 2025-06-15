@@ -381,7 +381,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className={templateStyles.section}
+        className={`${templateStyles.section} resume-section avoid-page-break`}
         style={{ 
           marginBottom: `${settings.sectionSpacing || 16}px`,
           textAlign: settings.textAlign === 'justify' ? 'justify' : 'left'
@@ -409,7 +409,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="relative pl-4 border-l-2"
+            className="experience-item relative pl-4 border-l-2"
             style={{ borderColor: colors.accent }}
           >
             <div 
@@ -462,7 +462,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="relative pl-4 border-l-2"
+            className="education-item relative pl-4 border-l-2"
             style={{ borderColor: colors.accent }}
           >
             <div 
@@ -565,7 +565,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="relative pl-4 border-l-2"
+            className="project-item relative pl-4 border-l-2"
             style={{ borderColor: colors.accent }}
           >
             <div 
@@ -817,8 +817,95 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
              fontFamily: getFontFamily(),
              fontSize: `${settings.fontSize}pt`,
              lineHeight: getLineHeight(),
-             textAlign: settings.textAlign === 'justify' ? 'justify' : 'left'
+             textAlign: settings.textAlign === 'justify' ? 'justify' : 'left',
+             // Add page break styles for better PDF generation
+             pageBreakInside: 'auto',
+             orphans: 3,
+             widows: 3
            }}>
+        
+        {/* Add CSS for better page break handling */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+                         @media print {
+               .resume-section {
+                 page-break-inside: avoid;
+                 break-inside: avoid;
+               }
+               
+               .experience-item,
+               .education-item,
+               .project-item,
+               .certification-item {
+                 page-break-inside: avoid;
+                 break-inside: avoid;
+                 margin-bottom: 16px;
+               }
+               
+               h1, h2, h3, h4, h5, h6 {
+                 page-break-after: avoid;
+                 break-after: avoid;
+                 page-break-inside: avoid;
+                 break-inside: avoid;
+               }
+               
+               /* Ensure second page content starts with proper margin */
+               @page:first {
+                 margin-top: 15mm;
+               }
+               
+               @page {
+                 margin-top: 15mm;
+                 margin-bottom: 15mm;
+                 margin-left: 15mm;
+                 margin-right: 15mm;
+               }
+               
+               /* Add top border line for subsequent pages */
+               @page:not(:first) {
+                 border-top: 0.5pt solid black;
+                 margin-top: 17mm; /* Slightly more margin to accommodate border */
+               }
+             }
+            
+                         /* For PDF generation - ensure proper spacing */
+             .page-break-before {
+               page-break-before: always;
+               break-before: page;
+             }
+             
+             .avoid-page-break {
+               page-break-inside: avoid;
+               break-inside: avoid;
+             }
+             
+             /* Simulate page break with top border for preview */
+             .page-break-with-border {
+               page-break-before: always;
+               break-before: page;
+               border-top: 1px solid #000;
+               padding-top: 15mm;
+               margin-top: 15mm;
+             }
+             
+             /* Visual indicator for second page content in preview */
+             .second-page-content {
+               position: relative;
+             }
+             
+             .second-page-content::before {
+               content: '';
+               position: absolute;
+               top: -17mm;
+               left: 0;
+               right: 0;
+               height: 1px;
+               background-color: #000;
+               opacity: 0.3;
+             }
+          `
+        }} />
+        
         {/* Header */}
         <div className={getHeaderLayout()} style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
           {settings.headerStyle === 'centered' ? (
@@ -1082,11 +1169,13 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
         </div>
 
         {/* Professional Summary */}
-        {renderSummary()}
+        <div className="avoid-page-break">
+          {renderSummary()}
+        </div>
 
         {/* Education */}
         {data.education && data.education.length > 0 && (
-          <div style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
+          <div className="resume-section avoid-page-break" style={{ marginBottom: `${settings.sectionSpacing || 16}px` }}>
             <h2 
               className="font-bold mb-2 pb-1" 
               style={{ 
@@ -1097,7 +1186,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
               EDUCATION
             </h2>
             {data.education.map((edu, index) => (
-              <div key={edu.id || index} className="flex justify-between items-start mb-2">
+              <div key={edu.id || index} className="education-item flex justify-between items-start mb-2">
                 <div className="flex-1 pr-4">
                   <div className="font-bold" style={{ fontSize: fontSizes.body }}>{edu.school}</div>
                   <div className="italic" style={{ fontSize: fontSizes.body }}>
