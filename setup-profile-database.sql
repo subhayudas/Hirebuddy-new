@@ -48,6 +48,65 @@ CREATE POLICY "Users can update own profile" ON user_profiles
 CREATE POLICY "Users can delete own profile" ON user_profiles
     FOR DELETE USING (auth.uid() = user_id);
 
+-- Create storage buckets for profile pictures and resumes (if they don't exist)
+INSERT INTO storage.buckets (id, name, public) 
+VALUES 
+  ('profile-pictures', 'profile-pictures', true),
+  ('resumes', 'resumes', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Drop existing storage policies if they exist
+DROP POLICY IF EXISTS "Users can upload their own profile pictures" ON storage.objects;
+DROP POLICY IF EXISTS "Users can view their own profile pictures" ON storage.objects;
+DROP POLICY IF EXISTS "Users can update their own profile pictures" ON storage.objects;
+DROP POLICY IF EXISTS "Users can delete their own profile pictures" ON storage.objects;
+DROP POLICY IF EXISTS "Users can upload their own resumes" ON storage.objects;
+DROP POLICY IF EXISTS "Users can view their own resumes" ON storage.objects;
+DROP POLICY IF EXISTS "Users can update their own resumes" ON storage.objects;
+DROP POLICY IF EXISTS "Users can delete their own resumes" ON storage.objects;
+
+-- Create storage policies for profile pictures
+CREATE POLICY "Users can upload their own profile pictures" 
+  ON storage.objects 
+  FOR INSERT 
+  WITH CHECK (bucket_id = 'profile-pictures' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+CREATE POLICY "Users can view their own profile pictures" 
+  ON storage.objects 
+  FOR SELECT 
+  USING (bucket_id = 'profile-pictures' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+CREATE POLICY "Users can update their own profile pictures" 
+  ON storage.objects 
+  FOR UPDATE 
+  USING (bucket_id = 'profile-pictures' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+CREATE POLICY "Users can delete their own profile pictures" 
+  ON storage.objects 
+  FOR DELETE 
+  USING (bucket_id = 'profile-pictures' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+-- Create storage policies for resumes
+CREATE POLICY "Users can upload their own resumes" 
+  ON storage.objects 
+  FOR INSERT 
+  WITH CHECK (bucket_id = 'resumes' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+CREATE POLICY "Users can view their own resumes" 
+  ON storage.objects 
+  FOR SELECT 
+  USING (bucket_id = 'resumes' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+CREATE POLICY "Users can update their own resumes" 
+  ON storage.objects 
+  FOR UPDATE 
+  USING (bucket_id = 'resumes' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+CREATE POLICY "Users can delete their own resumes" 
+  ON storage.objects 
+  FOR DELETE 
+  USING (bucket_id = 'resumes' AND auth.uid()::text = (storage.foldername(name))[1]);
+
 -- Create or replace function to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$

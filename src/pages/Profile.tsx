@@ -1,8 +1,4 @@
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/AppSidebar";
-import { Separator } from "@/components/ui/separator";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/components/ui/breadcrumb";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +10,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { 
   Edit, Save, User, Briefcase, MapPin, Mail, Phone, Globe, 
-  Camera, Plus, X, Loader2, AlertCircle, CheckCircle2,
-  FileText, Download, Upload, Trash2
+  Upload, Plus, X, Loader2, AlertCircle, CheckCircle2,
+  FileText, Download, Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProfileService, UserProfile } from "@/services/profileService";
@@ -27,6 +23,7 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [newSkill, setNewSkill] = useState("");
 
@@ -92,13 +89,13 @@ const Profile = () => {
           website: "",
           github: "",
           linkedin: "",
-                  skills: ["JavaScript", "React"],
-        experience_years: 0,
-        available_for_work: false,
-        profile_image_url: null,
-        resume_url: null,
-        resume_filename: null,
-        resume_uploaded_at: null
+          skills: ["JavaScript", "React"],
+          experience_years: 0,
+          available_for_work: false,
+          profile_image_url: null,
+          resume_url: null,
+          resume_filename: null,
+          resume_uploaded_at: null
         });
         
         toast({
@@ -187,10 +184,18 @@ const Profile = () => {
     handleInputChange('skills', currentSkills.filter(skill => skill !== skillToRemove));
   };
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, fileType: 'profile_picture' | 'resume') => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
+    if (fileType === 'profile_picture') {
+      handleImageUpload(file);
+    } else {
+      handleResumeUpload(file);
+    }
+  };
+
+  const handleImageUpload = async (file: File) => {
     // Validate file type
     const allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!allowedImageTypes.includes(file.type)) {
@@ -213,7 +218,7 @@ const Profile = () => {
     }
 
     try {
-      setIsSaving(true);
+      setUploading(true);
       
       if (user?.id) {
         // Try to upload to database storage
@@ -253,14 +258,11 @@ const Profile = () => {
         variant: "destructive"
       });
     } finally {
-      setIsSaving(false);
+      setUploading(false);
     }
   };
 
-  const handleResumeUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
+  const handleResumeUpload = async (file: File) => {
     // Validate file type
     const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
     if (!allowedTypes.includes(file.type)) {
@@ -283,7 +285,7 @@ const Profile = () => {
     }
 
     try {
-      setIsSaving(true);
+      setUploading(true);
       
       if (user?.id) {
         // Try to upload to database storage
@@ -338,7 +340,7 @@ const Profile = () => {
         variant: "destructive"
       });
     } finally {
-      setIsSaving(false);
+      setUploading(false);
     }
   };
 
@@ -367,7 +369,7 @@ const Profile = () => {
     if (!profile?.resume_url || !user?.id) return;
 
     try {
-      setIsSaving(true);
+      setUploading(true);
       
       if (!profile.resume_url.startsWith('blob:')) {
         // Delete from database storage
@@ -394,504 +396,287 @@ const Profile = () => {
         variant: "destructive"
       });
     } finally {
-      setIsSaving(false);
+      setUploading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      // Add sign out logic here if needed
+      toast({
+        title: "Signed Out",
+        description: "You have been signed out successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out",
+        variant: "destructive"
+      });
     }
   };
 
   if (isLoading) {
     return (
-      <SidebarProvider>
-        <div className="min-h-screen flex w-full">
-          <AppSidebar />
-          <SidebarInset>
-            <div className="flex items-center justify-center h-full">
-              <Loader2 className="h-8 w-8 animate-spin" />
-            </div>
-          </SidebarInset>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p>Loading...</p>
         </div>
-      </SidebarProvider>
+      </div>
     );
   }
 
   if (!profile) {
     return (
-      <SidebarProvider>
-        <div className="min-h-screen flex w-full">
-          <AppSidebar />
-          <SidebarInset>
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-                <h2 className="text-xl font-semibold mb-2">Profile Not Found</h2>
-                <p className="text-gray-600">Unable to load your profile data.</p>
-                <Button onClick={loadProfile} className="mt-4">
-                  Try Again
-                </Button>
-              </div>
-            </div>
-          </SidebarInset>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Profile Not Found</h2>
+          <p className="text-gray-600">Unable to load your profile data.</p>
+          <Button onClick={loadProfile} className="mt-4">
+            Try Again
+          </Button>
         </div>
-      </SidebarProvider>
+      </div>
     );
   }
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50 dark:bg-gray-900">
-        <AppSidebar />
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 bg-white dark:bg-gray-800 border-b">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbPage className="font-medium">Profile</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-2xl mx-auto space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
+          <Button onClick={handleSignOut} variant="outline">
+            Sign Out
+          </Button>
+        </div>
+
+        {/* Profile Picture Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile Picture</CardTitle>
+            <CardDescription>Upload and manage your profile picture</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <Avatar className="w-20 h-20">
+                <AvatarImage src={profile?.profile_image_url || undefined} />
+                <AvatarFallback>
+                  {user?.email?.charAt(0).toUpperCase() || profile?.full_name?.charAt(0).toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="space-y-2">
+                <Label htmlFor="profile-picture" className="cursor-pointer">
+                  <div className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                    <Upload size={16} />
+                    <span>Upload Picture</span>
+                  </div>
+                </Label>
+                <Input
+                  id="profile-picture"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e, 'profile_picture')}
+                  className="hidden"
+                  disabled={uploading}
+                />
+                <p className="text-sm text-gray-500">JPG, PNG up to 5MB</p>
+              </div>
             </div>
-          </header>
-          
-          <div className="flex flex-1 flex-col gap-6 p-6">
-            <div className="max-w-4xl mx-auto w-full space-y-6">
-              {/* Profile Header */}
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2">
-                      <User className="h-5 w-5" />
-                      Profile Information
-                    </CardTitle>
-                    <div className="flex items-center gap-2">
-                      {profile.available_for_work && (
-                        <Badge variant="secondary" className="bg-green-100 text-green-800">
-                          <CheckCircle2 className="h-3 w-3 mr-1" />
-                          Available for Work
-                        </Badge>
-                      )}
-                      <Button 
-                        onClick={isEditing ? handleSave : () => setIsEditing(true)}
-                        disabled={isSaving}
-                        className="min-w-[100px]"
-                      >
-                        {isSaving ? (
-                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        ) : isEditing ? (
-                          <Save className="h-4 w-4 mr-2" />
-                        ) : (
-                          <Edit className="h-4 w-4 mr-2" />
-                        )}
-                        {isSaving ? "Saving..." : isEditing ? "Save" : "Edit"}
-                      </Button>
-                    </div>
+          </CardContent>
+        </Card>
+
+        {/* Resume Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Resume</CardTitle>
+            <CardDescription>Upload and manage your resume</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-4">
+              {profile?.resume_url && (
+                <div className="flex items-center space-x-2 p-3 bg-gray-100 rounded-md">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Current Resume</p>
+                    <p className="text-xs text-gray-500">
+                      {profile.resume_uploaded_at && `Uploaded on ${new Date(profile.resume_uploaded_at).toLocaleDateString()}`}
+                    </p>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Profile Image */}
-                    <div className="flex flex-col items-center space-y-4">
-                      <div className="relative group">
-                        <Avatar className="h-32 w-32 border-4 border-gray-200 dark:border-gray-700">
-                          <AvatarImage src={profile.profile_image_url || undefined} />
-                          <AvatarFallback className="text-2xl font-bold">
-                            {profile.full_name?.substring(0, 2)?.toUpperCase() || "U"}
-                          </AvatarFallback>
-                        </Avatar>
-                        {isEditing && (
-                          <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                            <Camera className="h-6 w-6 text-white" />
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={handleImageUpload}
-                              className="hidden"
-                            />
-                          </label>
-                        )}
-                      </div>
-                      <div className="text-center">
-                        <h2 className="text-xl font-bold">{profile.full_name || "User"}</h2>
-                        <p className="text-gray-600 dark:text-gray-400">{profile.title || "No title set"}</p>
-                      </div>
-                    </div>
-
-                    {/* Basic Information */}
-                    <div className="lg:col-span-2 space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="full_name">Full Name</Label>
-                          {isEditing ? (
-                            <Input
-                              id="full_name"
-                              value={profile.full_name || ""}
-                              onChange={(e) => handleInputChange('full_name', e.target.value)}
-                              placeholder="Enter your full name"
-                            />
-                          ) : (
-                            <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                              {profile.full_name || "Not set"}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <Label htmlFor="title">Job Title</Label>
-                          {isEditing ? (
-                            <Input
-                              id="title"
-                              value={profile.title || ""}
-                              onChange={(e) => handleInputChange('title', e.target.value)}
-                              placeholder="e.g. Software Developer"
-                            />
-                          ) : (
-                            <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                              {profile.title || "Not set"}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <Label htmlFor="company">Company</Label>
-                          {isEditing ? (
-                            <Input
-                              id="company"
-                              value={profile.company || ""}
-                              onChange={(e) => handleInputChange('company', e.target.value)}
-                              placeholder="Enter your company"
-                            />
-                          ) : (
-                            <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                              {profile.company || "Not set"}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <Label htmlFor="location">Location</Label>
-                          {isEditing ? (
-                            <Input
-                              id="location"
-                              value={profile.location || ""}
-                              onChange={(e) => handleInputChange('location', e.target.value)}
-                              placeholder="e.g. San Francisco, CA"
-                            />
-                          ) : (
-                            <p className="mt-1 text-sm text-gray-900 dark:text-gray-100 flex items-center gap-1">
-                              <MapPin className="h-4 w-4" />
-                              {profile.location || "Not set"}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <Label htmlFor="phone">Phone</Label>
-                          {isEditing ? (
-                            <Input
-                              id="phone"
-                              value={profile.phone || ""}
-                              onChange={(e) => handleInputChange('phone', e.target.value)}
-                              placeholder="Enter your phone number"
-                              type="tel"
-                            />
-                          ) : (
-                            <p className="mt-1 text-sm text-gray-900 dark:text-gray-100 flex items-center gap-1">
-                              <Phone className="h-4 w-4" />
-                              {profile.phone || "Not set"}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <Label htmlFor="experience_years">Years of Experience</Label>
-                          {isEditing ? (
-                            <Input
-                              id="experience_years"
-                              type="number"
-                              min="0"
-                              value={profile.experience_years || 0}
-                              onChange={(e) => handleInputChange('experience_years', parseInt(e.target.value) || 0)}
-                            />
-                          ) : (
-                            <p className="mt-1 text-sm text-gray-900 dark:text-gray-100 flex items-center gap-1">
-                              <Briefcase className="h-4 w-4" />
-                              {profile.experience_years || 0} years
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label htmlFor="bio">Bio</Label>
-                        {isEditing ? (
-                          <Textarea
-                            id="bio"
-                            value={profile.bio || ""}
-                            onChange={(e) => handleInputChange('bio', e.target.value)}
-                            placeholder="Tell us about yourself..."
-                            className="min-h-[100px] resize-none"
-                          />
-                        ) : (
-                          <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                            {profile.bio || "No bio added yet"}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          id="available_for_work"
-                          checked={profile.available_for_work || false}
-                          onCheckedChange={(checked) => handleInputChange('available_for_work', checked)}
-                          disabled={!isEditing}
-                        />
-                        <Label htmlFor="available_for_work">Available for work opportunities</Label>
-                      </div>
-                    </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleResumeDownload}
+                  >
+                    <Download size={16} className="mr-1" />
+                    View
+                  </Button>
+                </div>
+              )}
+              
+              <div>
+                <Label htmlFor="resume" className="cursor-pointer">
+                  <div className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                    <Upload size={16} />
+                    <span>{profile?.resume_url ? 'Replace Resume' : 'Upload Resume'}</span>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Contact & Social Links */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Contact & Social Links</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="website">Website</Label>
-                      {isEditing ? (
-                        <Input
-                          id="website"
-                          value={profile.website || ""}
-                          onChange={(e) => handleInputChange('website', e.target.value)}
-                          placeholder="https://yourwebsite.com"
-                          type="url"
-                        />
-                      ) : (
-                        <p className="mt-1 text-sm">
-                          {profile.website ? (
-                            <a 
-                              href={profile.website} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline flex items-center gap-1"
-                            >
-                              <Globe className="h-4 w-4" />
-                              {profile.website}
-                            </a>
-                          ) : (
-                            "Not set"
-                          )}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <Label htmlFor="github">GitHub</Label>
-                      {isEditing ? (
-                        <Input
-                          id="github"
-                          value={profile.github || ""}
-                          onChange={(e) => handleInputChange('github', e.target.value)}
-                          placeholder="github.com/username"
-                        />
-                      ) : (
-                        <p className="mt-1 text-sm">
-                          {profile.github ? (
-                            <a 
-                              href={`https://${profile.github}`} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
-                            >
-                              {profile.github}
-                            </a>
-                          ) : (
-                            "Not set"
-                          )}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <Label htmlFor="linkedin">LinkedIn</Label>
-                      {isEditing ? (
-                        <Input
-                          id="linkedin"
-                          value={profile.linkedin || ""}
-                          onChange={(e) => handleInputChange('linkedin', e.target.value)}
-                          placeholder="linkedin.com/in/username"
-                        />
-                      ) : (
-                        <p className="mt-1 text-sm">
-                          {profile.linkedin ? (
-                            <a 
-                              href={`https://${profile.linkedin}`} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
-                            >
-                              {profile.linkedin}
-                            </a>
-                          ) : (
-                            "Not set"
-                          )}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Skills */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Skills</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex flex-wrap gap-2">
-                      {(profile.skills || []).map((skill, index) => (
-                        <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                          {skill}
-                          {isEditing && (
-                            <button
-                              onClick={() => handleRemoveSkill(skill)}
-                              className="ml-1 hover:text-red-500"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          )}
-                        </Badge>
-                      ))}
-                      {(!profile.skills || profile.skills.length === 0) && (
-                        <p className="text-sm text-gray-500">No skills added yet</p>
-                      )}
-                    </div>
-
-                    {isEditing && (
-                      <div className="flex gap-2">
-                        <Input
-                          value={newSkill}
-                          onChange={(e) => setNewSkill(e.target.value)}
-                          placeholder="Add a skill..."
-                          onKeyPress={(e) => e.key === 'Enter' && handleAddSkill()}
-                        />
-                        <Button onClick={handleAddSkill} size="sm">
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Resume Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="h-5 w-5" />
-                    Resume
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {profile.resume_url ? (
-                      <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                              <FileText className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                            </div>
-                            <div>
-                              <p className="font-medium text-sm">
-                                {profile.resume_filename || "Resume.pdf"}
-                              </p>
-                              {profile.resume_uploaded_at && (
-                                <p className="text-xs text-gray-500">
-                                  Uploaded {new Date(profile.resume_uploaded_at).toLocaleDateString()}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={handleResumeDownload}
-                              className="flex items-center gap-1"
-                            >
-                              <Download className="h-4 w-4" />
-                              Download
-                            </Button>
-                            {isEditing && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleResumeDelete}
-                                disabled={isSaving}
-                                className="flex items-center gap-1 text-red-600 hover:text-red-700"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                                Delete
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center">
-                        <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                          No resume uploaded
-                        </h3>
-                        <p className="text-sm text-gray-500 mb-4">
-                          Upload your resume to showcase your experience and skills
-                        </p>
-                        {isEditing && (
-                          <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors">
-                            <Upload className="h-4 w-4" />
-                            Upload Resume
-                            <input
-                              type="file"
-                              accept=".pdf,.doc,.docx"
-                              onChange={handleResumeUpload}
-                              className="hidden"
-                            />
-                          </label>
-                        )}
-                      </div>
-                    )}
-
-                    {isEditing && profile.resume_url && (
-                      <div className="flex justify-center">
-                        <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors">
-                          <Upload className="h-4 w-4" />
-                          Replace Resume
-                          <input
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={handleResumeUpload}
-                            className="hidden"
-                          />
-                        </label>
-                      </div>
-                    )}
-
-                    <div className="text-xs text-gray-500 text-center">
-                      Supported formats: PDF, DOC, DOCX (Max 5MB)
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                </Label>
+                <Input
+                  id="resume"
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) => handleFileUpload(e, 'resume')}
+                  className="hidden"
+                  disabled={uploading}
+                />
+                <p className="text-sm text-gray-500 mt-2">PDF, DOC, DOCX up to 10MB</p>
+              </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Basic Profile Information Card */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Profile Information</CardTitle>
+              <Button 
+                onClick={isEditing ? handleSave : () => setIsEditing(true)}
+                disabled={isSaving}
+                className="min-w-[100px]"
+              >
+                {isSaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : isEditing ? (
+                  <Save className="h-4 w-4 mr-2" />
+                ) : (
+                  <Edit className="h-4 w-4 mr-2" />
+                )}
+                {isSaving ? "Saving..." : isEditing ? "Save" : "Edit"}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="full_name">Full Name</Label>
+                {isEditing ? (
+                  <Input
+                    id="full_name"
+                    value={profile.full_name || ""}
+                    onChange={(e) => handleInputChange('full_name', e.target.value)}
+                    placeholder="Enter your full name"
+                  />
+                ) : (
+                  <p className="mt-1 text-sm text-gray-900">
+                    {profile.full_name || "Not set"}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="title">Job Title</Label>
+                {isEditing ? (
+                  <Input
+                    id="title"
+                    value={profile.title || ""}
+                    onChange={(e) => handleInputChange('title', e.target.value)}
+                    placeholder="e.g. Software Developer"
+                  />
+                ) : (
+                  <p className="mt-1 text-sm text-gray-900">
+                    {profile.title || "Not set"}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="location">Location</Label>
+                {isEditing ? (
+                  <Input
+                    id="location"
+                    value={profile.location || ""}
+                    onChange={(e) => handleInputChange('location', e.target.value)}
+                    placeholder="e.g. San Francisco, CA"
+                  />
+                ) : (
+                  <p className="mt-1 text-sm text-gray-900">
+                    {profile.location || "Not set"}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="phone">Phone</Label>
+                {isEditing ? (
+                  <Input
+                    id="phone"
+                    value={profile.phone || ""}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    placeholder="Enter your phone number"
+                    type="tel"
+                  />
+                ) : (
+                  <p className="mt-1 text-sm text-gray-900">
+                    {profile.phone || "Not set"}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="bio">Bio</Label>
+              {isEditing ? (
+                <Textarea
+                  id="bio"
+                  value={profile.bio || ""}
+                  onChange={(e) => handleInputChange('bio', e.target.value)}
+                  placeholder="Tell us about yourself..."
+                  rows={3}
+                />
+              ) : (
+                <p className="mt-1 text-sm text-gray-900">
+                  {profile.bio || "Not set"}
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Account Information Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Account Information</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div>
+                <Label className="text-sm font-medium text-gray-500">Email</Label>
+                <p className="text-sm">{user?.email || "Not available"}</p>
+              </div>
+              {user?.created_at && (
+                <div>
+                  <Label className="text-sm font-medium text-gray-500">Member Since</Label>
+                  <p className="text-sm">{new Date(user.created_at).toLocaleDateString()}</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Loading Overlay */}
+        {uploading && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <Card className="p-6">
+              <div className="text-center space-y-2">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <p>Uploading file...</p>
+              </div>
+            </Card>
           </div>
-        </SidebarInset>
+        )}
       </div>
-    </SidebarProvider>
+    </div>
   );
 };
 
