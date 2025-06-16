@@ -80,28 +80,18 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
 
 interface NavItem {
   title: string;
-  href: string;
+  url: string;
   icon: React.ComponentType<{ className?: string }>;
   badge?: string;
 }
 
-const mainNavItems: NavItem[] = [
-  { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { title: "Find Jobs", href: "/jobs", icon: Search },
-  { title: "Applications", href: "/applications", icon: Briefcase },
-  { title: "Resume Builder", href: "/resume-builder", icon: FileText },
-];
-
-const toolsNavItems: NavItem[] = [
-  { title: "Email Outreach", href: "/email-outreach", icon: Mail },
-  { title: "Analytics", href: "/analytics", icon: TrendingUp },
-  { title: "Calendar", href: "/calendar", icon: Calendar },
-  { title: "Notifications", href: "/notifications", icon: Bell, badge: "3" },
-];
-
-const accountNavItems: NavItem[] = [
-  { title: "Profile", href: "/profile", icon: User },
-  { title: "Settings", href: "/settings", icon: Settings },
+const mainItems: NavItem[] = [
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Find Jobs", url: "/jobs", icon: Search },
+  { title: "Applications", url: "/applications", icon: Briefcase },
+  { title: "Resume Builder", url: "/resume-builder", icon: FileText },
+  { title: "Email Outreach", url: "/email-outreach", icon: Mail },
+  { title: "Profile", url: "/profile", icon: User },
 ];
 
 interface SidebarLinkProps {
@@ -111,11 +101,11 @@ interface SidebarLinkProps {
 
 const SidebarLink: React.FC<SidebarLinkProps> = ({ item, isCollapsed }) => {
   const location = useLocation();
-  const isActive = location.pathname === item.href;
+  const isActive = location.pathname === item.url;
 
   return (
     <NavLink
-      to={item.href}
+      to={item.url}
       className={cn(
         "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative",
         isActive
@@ -179,7 +169,7 @@ const SidebarSection: React.FC<SidebarSectionProps> = ({ title, items, isCollaps
       </AnimatePresence>
       <div className="space-y-1">
         {items.map((item) => (
-          <SidebarLink key={item.href} item={item} isCollapsed={isCollapsed} />
+          <SidebarLink key={item.url} item={item} isCollapsed={isCollapsed} />
         ))}
       </div>
     </div>
@@ -236,10 +226,10 @@ const DesktopSidebar: React.FC = () => {
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 p-4 space-y-6 overflow-y-auto">
-        <SidebarSection title="Main" items={mainNavItems} isCollapsed={isCollapsed} />
-        <SidebarSection title="Tools" items={toolsNavItems} isCollapsed={isCollapsed} />
-        <SidebarSection title="Account" items={accountNavItems} isCollapsed={isCollapsed} />
+      <div className="flex-1 p-4 space-y-1 overflow-y-auto">
+        {mainItems.map((item) => (
+          <SidebarLink key={item.url} item={item} isCollapsed={isCollapsed} />
+        ))}
       </div>
 
       {/* Footer */}
@@ -343,10 +333,10 @@ const MobileSidebar: React.FC = () => {
               </div>
 
               {/* Mobile Navigation */}
-              <div className="flex-1 p-4 space-y-6 overflow-y-auto">
-                <SidebarSection title="Main" items={mainNavItems} isCollapsed={false} />
-                <SidebarSection title="Tools" items={toolsNavItems} isCollapsed={false} />
-                <SidebarSection title="Account" items={accountNavItems} isCollapsed={false} />
+              <div className="flex-1 p-4 space-y-1 overflow-y-auto">
+                {mainItems.map((item) => (
+                  <SidebarLink key={item.url} item={item} isCollapsed={false} />
+                ))}
               </div>
 
               {/* Mobile Footer */}
