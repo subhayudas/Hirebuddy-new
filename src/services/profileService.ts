@@ -16,6 +16,9 @@ export interface UserProfile {
   experience_years?: number;
   available_for_work?: boolean;
   profile_image_url?: string;
+  resume_url?: string;
+  resume_filename?: string;
+  resume_uploaded_at?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -134,6 +137,84 @@ export class ProfileService {
       await this.updateProfile(userId, { profile_image_url: null });
     } catch (error) {
       console.error('Error deleting profile image:', error);
+      throw error;
+    }
+  }
+
+  // Upload resume
+  static async uploadResume(userId: string, file: File): Promise<{ url: string; filename: string }> {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}-resume-${Date.now()}.${fileExt}`;
+      const filePath = `resumes/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('profiles')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('profiles')
+        .getPublicUrl(filePath);
+
+      // Update profile with new resume URL and filename
+      await this.updateProfile(userId, { 
+        resume_url: data.publicUrl,
+        resume_filename: file.name,
+        resume_uploaded_at: new Date().toISOString()
+      });
+
+      return { url: data.publicUrl, filename: file.name };
+    } catch (error) {
+      console.error('Error uploading resume:', error);
+      throw error;
+    }
+  }
+
+  // Delete resume
+  static async deleteResume(userId: string, resumeUrl: string): Promise<void> {
+    try {
+      // Extract file path from URL
+      const urlParts = resumeUrl.split('/');
+      const fileName = urlParts[urlParts.length - 1];
+      const filePath = `resumes/${fileName}`;
+
+      const { error } = await supabase.storage
+        .from('profiles')
+        .remove([filePath]);
+
+      if (error) throw error;
+
+      // Update profile to remove resume data
+      await this.updateProfile(userId, { 
+        resume_url: null,
+        resume_filename: null,
+        resume_uploaded_at: null
+      });
+    } catch (error) {
+      console.error('Error deleting resume:', error);
+      throw error;
+    }
+  }
+
+  // Download resume
+  static async downloadResume(resumeUrl: string, filename: string): Promise<void> {
+    try {
+      const response = await fetch(resumeUrl);
+      const blob = await response.blob();
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading resume:', error);
       throw error;
     }
   }

@@ -14,7 +14,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { 
   Edit, Save, User, Briefcase, MapPin, Mail, Phone, Globe, 
-  Camera, Plus, X, Loader2, AlertCircle, CheckCircle2
+  Camera, Plus, X, Loader2, AlertCircle, CheckCircle2,
+  FileText, Download, Upload, Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProfileService, UserProfile } from "@/services/profileService";
@@ -48,7 +49,10 @@ const Profile = () => {
         skills: ["React", "TypeScript", "Node.js", "Python"],
         experience_years: 5,
         available_for_work: true,
-        profile_image_url: null
+        profile_image_url: null,
+        resume_url: null,
+        resume_filename: null,
+        resume_uploaded_at: null
       });
       setIsLoading(false);
     }
@@ -88,10 +92,13 @@ const Profile = () => {
           website: "",
           github: "",
           linkedin: "",
-          skills: ["JavaScript", "React"],
-          experience_years: 0,
-          available_for_work: false,
-          profile_image_url: null
+                  skills: ["JavaScript", "React"],
+        experience_years: 0,
+        available_for_work: false,
+        profile_image_url: null,
+        resume_url: null,
+        resume_filename: null,
+        resume_uploaded_at: null
         });
         
         toast({
@@ -222,6 +229,147 @@ const Profile = () => {
       toast({
         title: "Error",
         description: "Failed to upload image",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleResumeUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please upload a PDF or Word document.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please upload a file smaller than 5MB.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      
+      if (user?.id) {
+        // Try to upload to database storage
+        try {
+          const { url, filename } = await ProfileService.uploadResume(user.id, file);
+          setProfile(prev => prev ? { 
+            ...prev, 
+            resume_url: url,
+            resume_filename: filename,
+            resume_uploaded_at: new Date().toISOString()
+          } : null);
+          toast({
+            title: "Success",
+            description: "Resume uploaded successfully",
+          });
+        } catch (dbError) {
+          console.warn('Database not connected, using local preview:', dbError);
+          // Create a local preview for demo purposes
+          const localResumeUrl = URL.createObjectURL(file);
+          setProfile(prev => prev ? { 
+            ...prev, 
+            resume_url: localResumeUrl,
+            resume_filename: file.name,
+            resume_uploaded_at: new Date().toISOString()
+          } : null);
+          toast({
+            title: "Demo Mode",
+            description: "Resume preview only. Database not connected.",
+            variant: "default"
+          });
+        }
+      } else {
+        // No user logged in, just show local preview
+        const localResumeUrl = URL.createObjectURL(file);
+        setProfile(prev => prev ? { 
+          ...prev, 
+          resume_url: localResumeUrl,
+          resume_filename: file.name,
+          resume_uploaded_at: new Date().toISOString()
+        } : null);
+        toast({
+          title: "Demo Mode",
+          description: "Resume preview only. Please log in to save permanently.",
+          variant: "default"
+        });
+      }
+    } catch (error) {
+      console.error('Error uploading resume:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload resume",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleResumeDownload = async () => {
+    if (!profile?.resume_url || !profile?.resume_filename) return;
+
+    try {
+      if (user?.id && !profile.resume_url.startsWith('blob:')) {
+        // Download from database storage
+        await ProfileService.downloadResume(profile.resume_url, profile.resume_filename);
+      } else {
+        // For demo mode or blob URLs, just open in new tab
+        window.open(profile.resume_url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error downloading resume:', error);
+      toast({
+        title: "Error",
+        description: "Failed to download resume",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleResumeDelete = async () => {
+    if (!profile?.resume_url || !user?.id) return;
+
+    try {
+      setIsSaving(true);
+      
+      if (!profile.resume_url.startsWith('blob:')) {
+        // Delete from database storage
+        await ProfileService.deleteResume(user.id, profile.resume_url);
+      }
+      
+      // Update local state
+      setProfile(prev => prev ? { 
+        ...prev, 
+        resume_url: null,
+        resume_filename: null,
+        resume_uploaded_at: null
+      } : null);
+      
+      toast({
+        title: "Success",
+        description: "Resume deleted successfully",
+      });
+    } catch (error) {
+      console.error('Error deleting resume:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete resume",
         variant: "destructive"
       });
     } finally {
@@ -616,6 +764,105 @@ const Profile = () => {
                         </Button>
                       </div>
                     )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Resume Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Resume
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {profile.resume_url ? (
+                      <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                              <FileText className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm">
+                                {profile.resume_filename || "Resume.pdf"}
+                              </p>
+                              {profile.resume_uploaded_at && (
+                                <p className="text-xs text-gray-500">
+                                  Uploaded {new Date(profile.resume_uploaded_at).toLocaleDateString()}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={handleResumeDownload}
+                              className="flex items-center gap-1"
+                            >
+                              <Download className="h-4 w-4" />
+                              Download
+                            </Button>
+                            {isEditing && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleResumeDelete}
+                                disabled={isSaving}
+                                className="flex items-center gap-1 text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                Delete
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center">
+                        <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                          No resume uploaded
+                        </h3>
+                        <p className="text-sm text-gray-500 mb-4">
+                          Upload your resume to showcase your experience and skills
+                        </p>
+                        {isEditing && (
+                          <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors">
+                            <Upload className="h-4 w-4" />
+                            Upload Resume
+                            <input
+                              type="file"
+                              accept=".pdf,.doc,.docx"
+                              onChange={handleResumeUpload}
+                              className="hidden"
+                            />
+                          </label>
+                        )}
+                      </div>
+                    )}
+
+                    {isEditing && profile.resume_url && (
+                      <div className="flex justify-center">
+                        <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors">
+                          <Upload className="h-4 w-4" />
+                          Replace Resume
+                          <input
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            onChange={handleResumeUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+                    )}
+
+                    <div className="text-xs text-gray-500 text-center">
+                      Supported formats: PDF, DOC, DOCX (Max 5MB)
+                    </div>
                   </div>
                 </CardContent>
               </Card>

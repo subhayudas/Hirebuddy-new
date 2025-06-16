@@ -37,7 +37,7 @@ enabled = true
 port = 54325
 file_size_limit = "50MiB"
 buckets = [
-  { name = "profiles", public = true }
+  { name = "profiles", public = true, file_size_limit = "5MiB" }
 ]
 
 [edge_functions]
