@@ -204,37 +204,47 @@ const DesktopSidebar: React.FC = () => {
       {/* Header */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between">
+          {/* Always show logo, but expand with text when not collapsed */}
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold">
+              H
+            </div>
+            <AnimatePresence>
+              {isExpanded && (
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <h2 className="font-semibold text-lg whitespace-nowrap">Hirebuddy</h2>
+                  <p className="text-xs text-muted-foreground whitespace-nowrap">Your Career Assistant</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          
+          {/* Only show toggle button when expanded */}
           <AnimatePresence>
             {isExpanded && (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
                 transition={{ duration: 0.2 }}
-                className="flex items-center gap-3"
               >
-                <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold">
-                  H
-                </div>
-                <div>
-                  <h2 className="font-semibold text-lg">Hirebuddy</h2>
-                  <p className="text-xs text-muted-foreground">Your Career Assistant</p>
-                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsCollapsed(!isCollapsed)}
+                  className="h-8 w-8"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
               </motion.div>
             )}
           </AnimatePresence>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="h-8 w-8"
-          >
-            {isCollapsed ? (
-              <ChevronRight className="h-4 w-4" />
-            ) : (
-              <ChevronLeft className="h-4 w-4" />
-            )}
-          </Button>
         </div>
       </div>
 
