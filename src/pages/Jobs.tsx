@@ -1,5 +1,4 @@
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/AppSidebar";
+import { NewSidebar } from "@/components/layout/NewSidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/components/ui/breadcrumb";
 import { useState, useEffect } from "react";
@@ -330,26 +329,23 @@ const Jobs = () => {
   const activeFilterCount = Object.values(filters).filter(value => value !== "").length + (searchQuery ? 1 : 0);
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-        <AppSidebar />
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 bg-white/80 backdrop-blur-sm border-b border-gray-200/60">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbPage className="font-semibold flex items-center gap-2">
-                      <Briefcase className="w-4 h-4" />
-                      Jobs
-                    </BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
-          </header>
+    <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+      <NewSidebar />
+      <div className="flex-1 flex flex-col">
+        <header className="flex h-16 shrink-0 items-center gap-2 bg-white/80 backdrop-blur-sm border-b border-gray-200/60">
+          <div className="flex items-center gap-2 px-4">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="font-semibold flex items-center gap-2">
+                    <Briefcase className="w-4 h-4" />
+                    Jobs
+                  </BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
 
           <div className="flex-1 relative overflow-hidden">
             <div className="flex h-[calc(100vh-4rem)]">
@@ -1025,9 +1021,8 @@ const Jobs = () => {
               )}
             </div>
           </div>
-        </SidebarInset>
+        </div>
       </div>
-    </SidebarProvider>
   );
 };
 

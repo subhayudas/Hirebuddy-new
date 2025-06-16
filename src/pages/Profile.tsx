@@ -6,8 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/AppSidebar";
+import { NewSidebar } from "@/components/layout/NewSidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/components/ui/breadcrumb";
 import { useAuth } from "@/contexts/AuthContext";
@@ -424,62 +423,55 @@ const Profile = () => {
 
   if (isLoading) {
     return (
-      <SidebarProvider>
-        <div className="min-h-screen flex w-full bg-gray-50">
-          <AppSidebar />
-          <SidebarInset>
-            <div className="flex items-center justify-center h-[80vh]">
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-sm text-gray-500">Loading your profile...</p>
-              </div>
+      <div className="min-h-screen flex w-full bg-gray-50">
+        <NewSidebar />
+        <div className="flex-1 flex flex-col">
+          <div className="flex items-center justify-center h-[80vh]">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-sm text-gray-500">Loading your profile...</p>
             </div>
-          </SidebarInset>
+          </div>
         </div>
-      </SidebarProvider>
+      </div>
     );
   }
 
   if (!profile) {
     return (
-      <SidebarProvider>
-        <div className="min-h-screen flex w-full bg-gray-50">
-          <AppSidebar />
-          <SidebarInset>
-            <div className="flex items-center justify-center h-[80vh]">
-              <div className="text-center">
-                <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-                <h2 className="text-xl font-semibold mb-2">Profile Not Found</h2>
-                <p className="text-gray-600 mb-4">Unable to load your profile data.</p>
-                <Button onClick={loadProfile}>
-                  Try Again
-                </Button>
-              </div>
+      <div className="min-h-screen flex w-full bg-gray-50">
+        <NewSidebar />
+        <div className="flex-1 flex flex-col">
+          <div className="flex items-center justify-center h-[80vh]">
+            <div className="text-center">
+              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold mb-2">Profile Not Found</h2>
+              <p className="text-gray-600 mb-4">Unable to load your profile data.</p>
+              <Button onClick={loadProfile}>
+                Try Again
+              </Button>
             </div>
-          </SidebarInset>
+          </div>
         </div>
-      </SidebarProvider>
+      </div>
     );
   }
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50">
-        <AppSidebar />
-        <SidebarInset>
-          {/* Header */}
-          <header className="flex h-16 shrink-0 items-center justify-between px-6 border-b bg-white sticky top-0 z-10">
-            <div className="flex items-center gap-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Profile</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
+    <div className="min-h-screen flex w-full bg-gray-50">
+      <NewSidebar />
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="flex h-16 shrink-0 items-center justify-between px-6 border-b bg-white sticky top-0 z-10">
+          <div className="flex items-center gap-4">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Profile</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
             
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon" className="rounded-full relative">
@@ -1049,9 +1041,8 @@ const Profile = () => {
               </Card>
             </div>
           )}
-        </SidebarInset>
+        </div>
       </div>
-    </SidebarProvider>
   );
 };
 
