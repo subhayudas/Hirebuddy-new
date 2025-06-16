@@ -15,7 +15,8 @@ import { useState, useEffect } from "react";
 import { 
   Edit, Save, User, Briefcase, MapPin, Mail, Phone, Globe, 
   Upload, Plus, X, Loader2, AlertCircle, CheckCircle2,
-  FileText, Download, Trash2, Camera, Settings, Bell, Search
+  FileText, Download, Trash2, Camera, Settings, Bell, Search,
+  Github, Linkedin, ExternalLink, Calendar
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProfileService, UserProfile } from "@/services/profileService";
@@ -54,24 +55,24 @@ const Profile = () => {
       loadProfile();
     } else {
       // If no user, create a mock profile for demo purposes
-      setProfile({
-        full_name: "Demo User",
-        title: "Software Developer",
-        company: "Tech Company",
-        location: "San Francisco, CA",
-        phone: "+1 (555) 123-4567",
-        bio: "Passionate software developer with experience in modern web technologies.",
-        website: "https://example.com",
-        github: "github.com/demouser",
-        linkedin: "linkedin.com/in/demouser",
-        skills: ["React", "TypeScript", "Node.js", "Python"],
-        experience_years: 5,
-        available_for_work: true,
-        profile_image_url: null,
-        resume_url: null,
-        resume_filename: null,
-        resume_uploaded_at: null
-      });
+              setProfile({
+          full_name: "Demo User",
+          title: "Software Developer",
+          company: "Tech Company",
+          location: "San Francisco, CA",
+          phone: "+1 (555) 123-4567",
+          bio: "Passionate software developer with experience in modern web technologies. I love building scalable applications and working with cutting-edge technologies.",
+          website: "https://demouser.dev",
+          github: "demouser",
+          linkedin: "demouser",
+          skills: ["React", "TypeScript", "Node.js", "Python", "AWS", "Docker"],
+          experience_years: 5,
+          available_for_work: true,
+          profile_image_url: null,
+          resume_url: null,
+          resume_filename: null,
+          resume_uploaded_at: null
+        });
       setIsLoading(false);
     }
   }, [user?.id]);
@@ -102,7 +103,7 @@ const Profile = () => {
         // Fallback to mock data when database is not available
         setProfile({
           full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || "User",
-          title: "Software Developer",
+          title: "",
           company: "",
           location: "",
           phone: "",
@@ -110,7 +111,7 @@ const Profile = () => {
           website: "",
           github: "",
           linkedin: "",
-          skills: ["JavaScript", "React"],
+          skills: [],
           experience_years: 0,
           available_for_work: false,
           profile_image_url: null,
@@ -582,7 +583,59 @@ const Profile = () => {
                       <div className="flex-1">
                         <h3 className="text-xl font-semibold">{profile.full_name || "Your Name"}</h3>
                         <p className="text-gray-600">{profile.title || "Your Title"}</p>
-                        <p className="text-sm text-gray-500">{user?.email}</p>
+                        {profile.company && (
+                          <p className="text-sm text-gray-600 flex items-center mt-1">
+                            <Briefcase className="w-3 h-3 mr-1" />
+                            {profile.company}
+                          </p>
+                        )}
+                        {profile.experience_years && (
+                          <p className="text-sm text-gray-600 flex items-center mt-1">
+                            <Calendar className="w-3 h-3 mr-1" />
+                            {profile.experience_years} {profile.experience_years === 1 ? 'year' : 'years'} experience
+                          </p>
+                        )}
+                        <p className="text-sm text-gray-500 flex items-center mt-1">
+                          <Mail className="w-3 h-3 mr-1" />
+                          {user?.email}
+                        </p>
+                        
+                        {/* Quick Social Links */}
+                        <div className="flex items-center gap-3 mt-2">
+                          {profile.website && (
+                            <a 
+                              href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-gray-500 hover:text-blue-600 transition-colors"
+                              title="Website"
+                            >
+                              <Globe className="w-4 h-4" />
+                            </a>
+                          )}
+                          {profile.github && (
+                            <a 
+                              href={profile.github.startsWith('http') ? profile.github : `https://github.com/${profile.github.replace('github.com/', '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-gray-500 hover:text-gray-900 transition-colors"
+                              title="GitHub"
+                            >
+                              <Github className="w-4 h-4" />
+                            </a>
+                          )}
+                          {profile.linkedin && (
+                            <a 
+                              href={profile.linkedin.startsWith('http') ? profile.linkedin : `https://linkedin.com/in/${profile.linkedin.replace('linkedin.com/in/', '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-gray-500 hover:text-blue-700 transition-colors"
+                              title="LinkedIn"
+                            >
+                              <Linkedin className="w-4 h-4" />
+                            </a>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -645,8 +698,15 @@ const Profile = () => {
                             placeholder="e.g. San Francisco, CA"
                           />
                         ) : (
-                          <p className="mt-1 text-sm text-gray-900">
-                            {profile.location || "Not set"}
+                          <p className="mt-1 text-sm text-gray-900 flex items-center">
+                            {profile.location ? (
+                              <>
+                                <MapPin className="w-4 h-4 mr-1 text-gray-500" />
+                                {profile.location}
+                              </>
+                            ) : (
+                              "Not set"
+                            )}
                           </p>
                         )}
                       </div>
@@ -662,27 +722,139 @@ const Profile = () => {
                             type="tel"
                           />
                         ) : (
-                          <p className="mt-1 text-sm text-gray-900">
-                            {profile.phone || "Not set"}
+                          <p className="mt-1 text-sm text-gray-900 flex items-center">
+                            {profile.phone ? (
+                              <>
+                                <Phone className="w-4 h-4 mr-1 text-gray-500" />
+                                <a href={`tel:${profile.phone}`} className="text-blue-600 hover:text-blue-800 hover:underline">
+                                  {profile.phone}
+                                </a>
+                              </>
+                            ) : (
+                              "Not set"
+                            )}
                           </p>
                         )}
                       </div>
 
                       <div>
-                        <Label htmlFor="website">Website</Label>
+                        <Label htmlFor="experience_years">Years of Experience</Label>
                         {isEditing ? (
                           <Input
-                            id="website"
-                            value={profile.website || ""}
-                            onChange={(e) => handleInputChange('website', e.target.value)}
-                            placeholder="https://yourwebsite.com"
-                            type="url"
+                            id="experience_years"
+                            value={profile.experience_years || ""}
+                            onChange={(e) => handleInputChange('experience_years', parseInt(e.target.value) || 0)}
+                            placeholder="e.g. 5"
+                            type="number"
+                            min="0"
+                            max="50"
                           />
                         ) : (
-                          <p className="mt-1 text-sm text-gray-900">
-                            {profile.website || "Not set"}
+                          <p className="mt-1 text-sm text-gray-900 flex items-center">
+                            {profile.experience_years ? (
+                              <>
+                                <Calendar className="w-4 h-4 mr-1 text-gray-500" />
+                                {profile.experience_years} {profile.experience_years === 1 ? 'year' : 'years'}
+                              </>
+                            ) : (
+                              "Not set"
+                            )}
                           </p>
                         )}
+                      </div>
+                    </div>
+
+                    {/* Social Links Section */}
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-medium text-gray-900 mb-3">Links & Social</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <Label htmlFor="website">Website</Label>
+                          {isEditing ? (
+                            <Input
+                              id="website"
+                              value={profile.website || ""}
+                              onChange={(e) => handleInputChange('website', e.target.value)}
+                              placeholder="https://yourwebsite.com"
+                              type="url"
+                            />
+                          ) : (
+                            <p className="mt-1 text-sm text-gray-900">
+                              {profile.website ? (
+                                <a 
+                                  href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 hover:underline flex items-center"
+                                >
+                                  <Globe className="w-4 h-4 mr-1" />
+                                  Website
+                                  <ExternalLink className="w-3 h-3 ml-1" />
+                                </a>
+                              ) : (
+                                "Not set"
+                              )}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <Label htmlFor="github">GitHub</Label>
+                          {isEditing ? (
+                            <Input
+                              id="github"
+                              value={profile.github || ""}
+                              onChange={(e) => handleInputChange('github', e.target.value)}
+                              placeholder="github.com/username or username"
+                            />
+                          ) : (
+                            <p className="mt-1 text-sm text-gray-900">
+                              {profile.github ? (
+                                <a 
+                                  href={profile.github.startsWith('http') ? profile.github : `https://github.com/${profile.github.replace('github.com/', '')}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 hover:underline flex items-center"
+                                >
+                                  <Github className="w-4 h-4 mr-1" />
+                                  GitHub
+                                  <ExternalLink className="w-3 h-3 ml-1" />
+                                </a>
+                              ) : (
+                                "Not set"
+                              )}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <Label htmlFor="linkedin">LinkedIn</Label>
+                          {isEditing ? (
+                            <Input
+                              id="linkedin"
+                              value={profile.linkedin || ""}
+                              onChange={(e) => handleInputChange('linkedin', e.target.value)}
+                              placeholder="linkedin.com/in/username or username"
+                            />
+                          ) : (
+                            <p className="mt-1 text-sm text-gray-900">
+                              {profile.linkedin ? (
+                                <a 
+                                  href={profile.linkedin.startsWith('http') ? profile.linkedin : `https://linkedin.com/in/${profile.linkedin.replace('linkedin.com/in/', '')}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 hover:underline flex items-center"
+                                >
+                                  <Linkedin className="w-4 h-4 mr-1" />
+                                  LinkedIn
+                                  <ExternalLink className="w-3 h-3 ml-1" />
+                                </a>
+                              ) : (
+                                "Not set"
+                              )}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -847,6 +1019,12 @@ const Profile = () => {
                         <span className="text-gray-600">Email</span>
                         <span>{user?.email || "Not available"}</span>
                       </div>
+                      {profile.experience_years && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Experience</span>
+                          <span>{profile.experience_years} {profile.experience_years === 1 ? 'year' : 'years'}</span>
+                        </div>
+                      )}
                       {user?.created_at && (
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Member Since</span>
