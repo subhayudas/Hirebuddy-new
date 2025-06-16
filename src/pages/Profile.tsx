@@ -6,19 +6,31 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/layout/AppSidebar";
+import { Separator } from "@/components/ui/separator";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/components/ui/breadcrumb";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { 
   Edit, Save, User, Briefcase, MapPin, Mail, Phone, Globe, 
   Upload, Plus, X, Loader2, AlertCircle, CheckCircle2,
-  FileText, Download, Trash2
+  FileText, Download, Trash2, Camera, Settings, Bell, Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProfileService, UserProfile } from "@/services/profileService";
 import { useToast } from "@/hooks/use-toast";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,6 +38,15 @@ const Profile = () => {
   const [uploading, setUploading] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [newSkill, setNewSkill] = useState("");
+  const [userName, setUserName] = useState(user?.user_metadata?.full_name || user?.email?.split('@')[0] || "User");
+  const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+
+  // Update username when user auth state changes
+  useEffect(() => {
+    if (user) {
+      setUserName(user.user_metadata?.full_name || user.email?.split('@')[0] || user.email || "User");
+    }
+  }, [user]);
 
   // Load profile data on component mount
   useEffect(() => {
@@ -400,150 +421,116 @@ const Profile = () => {
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      // Add sign out logic here if needed
-      toast({
-        title: "Signed Out",
-        description: "You have been signed out successfully",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "Failed to sign out",
-        variant: "destructive"
-      });
-    }
-  };
-
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p>Loading...</p>
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full bg-gray-50">
+          <AppSidebar />
+          <SidebarInset>
+            <div className="flex items-center justify-center h-[80vh]">
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-sm text-gray-500">Loading your profile...</p>
+              </div>
+            </div>
+          </SidebarInset>
         </div>
-      </div>
+      </SidebarProvider>
     );
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Profile Not Found</h2>
-          <p className="text-gray-600">Unable to load your profile data.</p>
-          <Button onClick={loadProfile} className="mt-4">
-            Try Again
-          </Button>
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full bg-gray-50">
+          <AppSidebar />
+          <SidebarInset>
+            <div className="flex items-center justify-center h-[80vh]">
+              <div className="text-center">
+                <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold mb-2">Profile Not Found</h2>
+                <p className="text-gray-600 mb-4">Unable to load your profile data.</p>
+                <Button onClick={loadProfile}>
+                  Try Again
+                </Button>
+              </div>
+            </div>
+          </SidebarInset>
         </div>
-      </div>
+      </SidebarProvider>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-          <Button onClick={handleSignOut} variant="outline">
-            Sign Out
-          </Button>
-        </div>
-
-        {/* Profile Picture Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Profile Picture</CardTitle>
-            <CardDescription>Upload and manage your profile picture</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <Avatar className="w-20 h-20">
-                <AvatarImage src={profile?.profile_image_url || undefined} />
-                <AvatarFallback>
-                  {user?.email?.charAt(0).toUpperCase() || profile?.full_name?.charAt(0).toUpperCase() || "U"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="space-y-2">
-                <Label htmlFor="profile-picture" className="cursor-pointer">
-                  <div className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                    <Upload size={16} />
-                    <span>Upload Picture</span>
-                  </div>
-                </Label>
-                <Input
-                  id="profile-picture"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleFileUpload(e, 'profile_picture')}
-                  className="hidden"
-                  disabled={uploading}
-                />
-                <p className="text-sm text-gray-500">JPG, PNG up to 5MB</p>
-              </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-gray-50">
+        <AppSidebar />
+        <SidebarInset>
+          {/* Header */}
+          <header className="flex h-16 shrink-0 items-center justify-between px-6 border-b bg-white sticky top-0 z-10">
+            <div className="flex items-center gap-4">
+              <SidebarTrigger className="-ml-1" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>Profile</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Resume Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Resume</CardTitle>
-            <CardDescription>Upload and manage your resume</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-4">
-              {profile?.resume_url && (
-                <div className="flex items-center space-x-2 p-3 bg-gray-100 rounded-md">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Current Resume</p>
-                    <p className="text-xs text-gray-500">
-                      {profile.resume_uploaded_at && `Uploaded on ${new Date(profile.resume_uploaded_at).toLocaleDateString()}`}
-                    </p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleResumeDownload}
-                  >
-                    <Download size={16} className="mr-1" />
-                    View
-                  </Button>
-                </div>
-              )}
+            
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" className="rounded-full relative">
+                <Bell className="h-5 w-5" />
+                <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center">3</span>
+              </Button>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Settings className="h-5 w-5" />
+              </Button>
+              <Separator orientation="vertical" className="h-6" />
               
-              <div>
-                <Label htmlFor="resume" className="cursor-pointer">
-                  <div className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
-                    <Upload size={16} />
-                    <span>{profile?.resume_url ? 'Replace Resume' : 'Upload Resume'}</span>
-                  </div>
-                </Label>
-                <Input
-                  id="resume"
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={(e) => handleFileUpload(e, 'resume')}
-                  className="hidden"
-                  disabled={uploading}
-                />
-                <p className="text-sm text-gray-500 mt-2">PDF, DOC, DOCX up to 10MB</p>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="rounded-full flex items-center gap-2 p-1 pl-2">
+                    <span className="text-sm font-medium hidden md:inline">{userName}</span>
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={profile?.profile_image_url || user?.user_metadata?.avatar_url} />
+                      <AvatarFallback>{userInitials}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => signOut?.()}>
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-          </CardContent>
-        </Card>
+          </header>
 
-        {/* Basic Profile Information Card */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Profile Information</CardTitle>
+          {/* Main Content */}
+          <div className="flex flex-1 flex-col max-w-7xl mx-auto px-4 md:px-6 py-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
+                <p className="text-gray-600 mt-1">Manage your personal information and preferences</p>
+              </div>
               <Button 
                 onClick={isEditing ? handleSave : () => setIsEditing(true)}
                 disabled={isSaving}
-                className="min-w-[100px]"
+                className="min-w-[120px]"
               >
                 {isSaving ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -552,131 +539,341 @@ const Profile = () => {
                 ) : (
                   <Edit className="h-4 w-4 mr-2" />
                 )}
-                {isSaving ? "Saving..." : isEditing ? "Save" : "Edit"}
+                {isSaving ? "Saving..." : isEditing ? "Save Changes" : "Edit Profile"}
               </Button>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="full_name">Full Name</Label>
-                {isEditing ? (
-                  <Input
-                    id="full_name"
-                    value={profile.full_name || ""}
-                    onChange={(e) => handleInputChange('full_name', e.target.value)}
-                    placeholder="Enter your full name"
-                  />
-                ) : (
-                  <p className="mt-1 text-sm text-gray-900">
-                    {profile.full_name || "Not set"}
-                  </p>
-                )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left Column - Profile Info */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Basic Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Basic Information</CardTitle>
+                    <CardDescription>Your personal details and contact information</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="flex items-center space-x-6">
+                      <div className="relative group">
+                        <Avatar className="w-20 h-20">
+                          <AvatarImage src={profile?.profile_image_url || undefined} />
+                          <AvatarFallback className="text-lg font-semibold">
+                            {user?.email?.charAt(0).toUpperCase() || profile?.full_name?.charAt(0).toUpperCase() || "U"}
+                          </AvatarFallback>
+                        </Avatar>
+                        {isEditing && (
+                          <>
+                            <Label htmlFor="profile-picture" className="absolute inset-0 cursor-pointer">
+                              <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <Camera className="w-5 h-5 text-white" />
+                              </div>
+                            </Label>
+                            <Input
+                              id="profile-picture"
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleFileUpload(e, 'profile_picture')}
+                              className="hidden"
+                              disabled={uploading}
+                            />
+                          </>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold">{profile.full_name || "Your Name"}</h3>
+                        <p className="text-gray-600">{profile.title || "Your Title"}</p>
+                        <p className="text-sm text-gray-500">{user?.email}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="full_name">Full Name</Label>
+                        {isEditing ? (
+                          <Input
+                            id="full_name"
+                            value={profile.full_name || ""}
+                            onChange={(e) => handleInputChange('full_name', e.target.value)}
+                            placeholder="Enter your full name"
+                          />
+                        ) : (
+                          <p className="mt-1 text-sm text-gray-900">
+                            {profile.full_name || "Not set"}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <Label htmlFor="title">Job Title</Label>
+                        {isEditing ? (
+                          <Input
+                            id="title"
+                            value={profile.title || ""}
+                            onChange={(e) => handleInputChange('title', e.target.value)}
+                            placeholder="e.g. Software Developer"
+                          />
+                        ) : (
+                          <p className="mt-1 text-sm text-gray-900">
+                            {profile.title || "Not set"}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <Label htmlFor="company">Company</Label>
+                        {isEditing ? (
+                          <Input
+                            id="company"
+                            value={profile.company || ""}
+                            onChange={(e) => handleInputChange('company', e.target.value)}
+                            placeholder="Current company"
+                          />
+                        ) : (
+                          <p className="mt-1 text-sm text-gray-900">
+                            {profile.company || "Not set"}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <Label htmlFor="location">Location</Label>
+                        {isEditing ? (
+                          <Input
+                            id="location"
+                            value={profile.location || ""}
+                            onChange={(e) => handleInputChange('location', e.target.value)}
+                            placeholder="e.g. San Francisco, CA"
+                          />
+                        ) : (
+                          <p className="mt-1 text-sm text-gray-900">
+                            {profile.location || "Not set"}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <Label htmlFor="phone">Phone</Label>
+                        {isEditing ? (
+                          <Input
+                            id="phone"
+                            value={profile.phone || ""}
+                            onChange={(e) => handleInputChange('phone', e.target.value)}
+                            placeholder="Enter your phone number"
+                            type="tel"
+                          />
+                        ) : (
+                          <p className="mt-1 text-sm text-gray-900">
+                            {profile.phone || "Not set"}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <Label htmlFor="website">Website</Label>
+                        {isEditing ? (
+                          <Input
+                            id="website"
+                            value={profile.website || ""}
+                            onChange={(e) => handleInputChange('website', e.target.value)}
+                            placeholder="https://yourwebsite.com"
+                            type="url"
+                          />
+                        ) : (
+                          <p className="mt-1 text-sm text-gray-900">
+                            {profile.website || "Not set"}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* About */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>About</CardTitle>
+                    <CardDescription>Tell us about yourself and your experience</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {isEditing ? (
+                      <Textarea
+                        value={profile.bio || ""}
+                        onChange={(e) => handleInputChange('bio', e.target.value)}
+                        placeholder="Tell us about yourself, your experience, and what you're passionate about..."
+                        rows={4}
+                      />
+                    ) : (
+                      <p className="text-gray-700 leading-relaxed">
+                        {profile.bio || "Share your story, experience, and what makes you unique..."}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Skills */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Skills</CardTitle>
+                    <CardDescription>Add your technical and professional skills</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {(profile.skills || []).map((skill, index) => (
+                        <Badge 
+                          key={skill} 
+                          variant="secondary" 
+                          className="px-3 py-1"
+                        >
+                          {skill}
+                          {isEditing && (
+                            <button
+                              onClick={() => handleRemoveSkill(skill)}
+                              className="ml-2 hover:text-red-600 transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
+                        </Badge>
+                      ))}
+                    </div>
+                    
+                    {isEditing && (
+                      <div className="flex space-x-2">
+                        <Input
+                          value={newSkill}
+                          onChange={(e) => setNewSkill(e.target.value)}
+                          placeholder="Add a skill..."
+                          onKeyPress={(e) => e.key === 'Enter' && handleAddSkill()}
+                        />
+                        <Button onClick={handleAddSkill} size="sm">
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
 
-              <div>
-                <Label htmlFor="title">Job Title</Label>
-                {isEditing ? (
-                  <Input
-                    id="title"
-                    value={profile.title || ""}
-                    onChange={(e) => handleInputChange('title', e.target.value)}
-                    placeholder="e.g. Software Developer"
-                  />
-                ) : (
-                  <p className="mt-1 text-sm text-gray-900">
-                    {profile.title || "Not set"}
-                  </p>
-                )}
-              </div>
+              {/* Right Column - Resume & Settings */}
+              <div className="space-y-6">
+                {/* Resume */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Resume</CardTitle>
+                    <CardDescription>Upload and manage your resume</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {profile?.resume_url ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <FileText className="w-8 h-8 text-blue-600" />
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{profile.resume_filename}</p>
+                            {profile.resume_uploaded_at && (
+                              <p className="text-xs text-gray-500">
+                                Uploaded {new Date(profile.resume_uploaded_at).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleResumeDownload}
+                            className="flex-1"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            View
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleResumeDelete}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-6">
+                        <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-600 mb-4">No resume uploaded yet</p>
+                      </div>
+                    )}
+                    
+                    <Label htmlFor="resume" className="cursor-pointer">
+                      <div className="flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                        <Upload className="w-4 h-4" />
+                        <span>{profile?.resume_url ? 'Replace Resume' : 'Upload Resume'}</span>
+                      </div>
+                    </Label>
+                    <Input
+                      id="resume"
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={(e) => handleFileUpload(e, 'resume')}
+                      className="hidden"
+                      disabled={uploading}
+                    />
+                    <p className="text-xs text-gray-500 mt-2">PDF, DOC, DOCX up to 10MB</p>
+                  </CardContent>
+                </Card>
 
-              <div>
-                <Label htmlFor="location">Location</Label>
-                {isEditing ? (
-                  <Input
-                    id="location"
-                    value={profile.location || ""}
-                    onChange={(e) => handleInputChange('location', e.target.value)}
-                    placeholder="e.g. San Francisco, CA"
-                  />
-                ) : (
-                  <p className="mt-1 text-sm text-gray-900">
-                    {profile.location || "Not set"}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="phone">Phone</Label>
-                {isEditing ? (
-                  <Input
-                    id="phone"
-                    value={profile.phone || ""}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    placeholder="Enter your phone number"
-                    type="tel"
-                  />
-                ) : (
-                  <p className="mt-1 text-sm text-gray-900">
-                    {profile.phone || "Not set"}
-                  </p>
-                )}
+                {/* Account Settings */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Account Settings</CardTitle>
+                    <CardDescription>Manage your account preferences</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">Available for Work</p>
+                        <p className="text-sm text-gray-600">Show recruiters you're open to opportunities</p>
+                      </div>
+                      <Switch
+                        checked={profile.available_for_work || false}
+                        onCheckedChange={(checked) => handleInputChange('available_for_work', checked)}
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Email</span>
+                        <span>{user?.email || "Not available"}</span>
+                      </div>
+                      {user?.created_at && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Member Since</span>
+                          <span>{new Date(user.created_at).toLocaleDateString()}</span>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
-
-            <div>
-              <Label htmlFor="bio">Bio</Label>
-              {isEditing ? (
-                <Textarea
-                  id="bio"
-                  value={profile.bio || ""}
-                  onChange={(e) => handleInputChange('bio', e.target.value)}
-                  placeholder="Tell us about yourself..."
-                  rows={3}
-                />
-              ) : (
-                <p className="mt-1 text-sm text-gray-900">
-                  {profile.bio || "Not set"}
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Account Information Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Account Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div>
-                <Label className="text-sm font-medium text-gray-500">Email</Label>
-                <p className="text-sm">{user?.email || "Not available"}</p>
-              </div>
-              {user?.created_at && (
-                <div>
-                  <Label className="text-sm font-medium text-gray-500">Member Since</Label>
-                  <p className="text-sm">{new Date(user.created_at).toLocaleDateString()}</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Loading Overlay */}
-        {uploading && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <Card className="p-6">
-              <div className="text-center space-y-2">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p>Uploading file...</p>
-              </div>
-            </Card>
           </div>
-        )}
+
+          {/* Loading Overlay */}
+          {uploading && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <Card className="p-6">
+                <div className="text-center space-y-2">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                  <p>Uploading file...</p>
+                </div>
+              </Card>
+            </div>
+          )}
+        </SidebarInset>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
