@@ -191,6 +191,27 @@ const Profile = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Validate file type
+    const allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedImageTypes.includes(file.type)) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please upload a JPEG, PNG, WebP, or GIF image.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file size (5MB limit for images)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please upload an image smaller than 5MB.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       setIsSaving(true);
       
@@ -251,11 +272,11 @@ const Profile = () => {
       return;
     }
 
-    // Validate file size (5MB limit)
-    if (file.size > 5 * 1024 * 1024) {
+    // Validate file size (10MB limit for resumes)
+    if (file.size > 10 * 1024 * 1024) {
       toast({
         title: "File Too Large",
-        description: "Please upload a file smaller than 5MB.",
+        description: "Please upload a file smaller than 10MB.",
         variant: "destructive"
       });
       return;
