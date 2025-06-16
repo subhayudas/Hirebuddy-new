@@ -29,6 +29,8 @@ interface SidebarContextType {
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
   isMobile: boolean;
+  isHovered: boolean;
+  setIsHovered: (hovered: boolean) => void;
 }
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
@@ -47,8 +49,9 @@ interface SidebarProviderProps {
 
 export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true); // Start collapsed by default
   const [isMobile, setIsMobile] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -71,6 +74,8 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
         isCollapsed,
         setIsCollapsed,
         isMobile,
+        isHovered,
+        setIsHovered,
       }}
     >
       {children}
@@ -120,7 +125,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ item, isCollapsed }) => {
             initial={{ opacity: 0, width: 0 }}
             animate={{ opacity: 1, width: "auto" }}
             exit={{ opacity: 0, width: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
             className="font-medium whitespace-nowrap overflow-hidden"
           >
             {item.title}
@@ -132,6 +137,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ item, isCollapsed }) => {
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0 }}
+          transition={{ duration: 0.2, ease: "easeInOut" }}
           className="ml-auto bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full"
         >
           {item.badge}
@@ -161,6 +167,7 @@ const SidebarSection: React.FC<SidebarSectionProps> = ({ title, items, isCollaps
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
             className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
           >
             {title}
@@ -177,27 +184,33 @@ const SidebarSection: React.FC<SidebarSectionProps> = ({ title, items, isCollaps
 };
 
 const DesktopSidebar: React.FC = () => {
-  const { isCollapsed, setIsCollapsed } = useSidebar();
+  const { isCollapsed, setIsCollapsed, isHovered, setIsHovered } = useSidebar();
   const { user, signOut } = useAuth();
 
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || "User";
   const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
 
+  // Determine if sidebar should be expanded (either not collapsed or hovered)
+  const isExpanded = !isCollapsed || isHovered;
+
   return (
     <motion.div
-      animate={{ width: isCollapsed ? 80 : 280 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
+      animate={{ width: isExpanded ? 280 : 80 }}
+      transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
       className="hidden md:flex flex-col bg-card border-r border-border h-screen sticky top-0"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Header */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between">
           <AnimatePresence>
-            {!isCollapsed && (
+            {isExpanded && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
                 className="flex items-center gap-3"
               >
                 <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold">
@@ -228,7 +241,7 @@ const DesktopSidebar: React.FC = () => {
       {/* Navigation */}
       <div className="flex-1 p-4 space-y-1 overflow-y-auto">
         {mainItems.map((item) => (
-          <SidebarLink key={item.url} item={item} isCollapsed={isCollapsed} />
+          <SidebarLink key={item.url} item={item} isCollapsed={!isExpanded} />
         ))}
       </div>
 
@@ -240,11 +253,12 @@ const DesktopSidebar: React.FC = () => {
             <AvatarFallback>{userInitials}</AvatarFallback>
           </Avatar>
           <AnimatePresence>
-            {!isCollapsed && (
+            {isExpanded && (
               <motion.div
                 initial={{ opacity: 0, width: 0 }}
                 animate={{ opacity: 1, width: "auto" }}
                 exit={{ opacity: 0, width: 0 }}
+                transition={{ duration: 0.2 }}
                 className="flex-1 min-w-0"
               >
                 <p className="text-sm font-medium truncate">{userName}</p>
