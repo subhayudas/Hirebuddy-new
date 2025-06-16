@@ -1,15 +1,10 @@
-
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Search,
   FileText,
   User,
-  Settings,
-  Bell,
-  Calendar,
   Briefcase,
-  TrendingUp,
   Mail
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -33,18 +28,8 @@ const mainItems = [
   { title: "Find Jobs", url: "/jobs", icon: Search },
   { title: "Applications", url: "/applications", icon: Briefcase },
   { title: "Resume Builder", url: "/resume-builder", icon: FileText },
-];
-
-const toolsItems = [
   { title: "Email Outreach", url: "/email-outreach", icon: Mail },
-  { title: "Analytics", url: "/analytics", icon: TrendingUp },
-  { title: "Calendar", url: "/calendar", icon: Calendar },
-  { title: "Notifications", url: "/notifications", icon: Bell },
-];
-
-const accountItems = [
   { title: "Profile", url: "/profile", icon: User },
-  { title: "Settings", url: "/settings", icon: Settings },
 ];
 
 export function AppSidebar() {
@@ -75,7 +60,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
@@ -91,55 +76,27 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Tools</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {toolsItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={item.url} className={getNavCls}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Account</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {accountItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={item.url} className={getNavCls}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="p-4">
-        {state === "expanded" && (
-          <div className="flex items-center space-x-3 p-2 rounded-lg bg-sidebar-accent">
-            <Avatar className="h-8 w-8 border-2 border-primary/20">
-              <AvatarImage src="https://images.unsplash.com/photo-1494790108755-2616b612b932?w=60&h=60&fit=crop&crop=center" />
-              <AvatarFallback className="bg-primary/10 text-primary">{user?.email?.split('@')[0]?.substring(0, 2)?.toUpperCase() || "U"}</AvatarFallback>
+        {user && (
+          <div className="flex items-center space-x-3">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user.user_metadata?.avatar_url} />
+              <AvatarFallback>
+                {user.email?.charAt(0).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{user?.email?.split('@')[0] || "User"}</p>
-              <p className="text-xs text-muted-foreground truncate">{user?.email || "Not signed in"}</p>
-            </div>
+            {state === "expanded" && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">
+                  {user.user_metadata?.full_name || user.email}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {user.email}
+                </p>
+              </div>
+            )}
           </div>
         )}
       </SidebarFooter>

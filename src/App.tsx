@@ -11,8 +11,6 @@ import ResumeChoice from "./pages/ResumeChoice";
 import { ResumeImportPage } from "./pages/ResumeImportPage";
 import Jobs from "./pages/Jobs";
 import Applications from "./pages/Applications";
-import Analytics from "./pages/Analytics";
-import Calendar from "./pages/Calendar";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import SignIn from "./pages/SignIn";
@@ -57,8 +55,6 @@ const App = () => (
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/jobs" element={<ProtectedRoute><Jobs /></ProtectedRoute>} />
             <Route path="/applications" element={<ProtectedRoute><Applications /></ProtectedRoute>} />
-            <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-            <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
             <Route path="/resume-builder" element={<ProtectedRoute><ResumeChoice /></ProtectedRoute>} />
             <Route path="/resume-builder-form" element={<ProtectedRoute><ResumeBuilder /></ProtectedRoute>} />
             <Route path="/resume-editor" element={<Navigate to="/resume-builder" replace />} />

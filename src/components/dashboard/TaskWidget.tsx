@@ -87,7 +87,7 @@ export const TaskWidget: React.FC<TaskWidgetProps> = ({
         </div>
         {showAddButton && (
           <Button size="sm" variant="outline" className="h-8 gap-1" asChild>
-            <Link to="/calendar">
+            <Link to="/dashboard">
               <Plus className="h-3.5 w-3.5" />
               <span>Add</span>
             </Link>
@@ -138,7 +138,7 @@ export const TaskWidget: React.FC<TaskWidgetProps> = ({
             <Calendar className="h-10 w-10 mx-auto mb-2 text-gray-300" />
             <p>No upcoming tasks</p>
             <Button variant="link" size="sm" asChild>
-              <Link to="/calendar">Add a task</Link>
+              <Link to="/dashboard">Add a task</Link>
             </Button>
           </div>
         )}

@@ -33,9 +33,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StatCard } from "./StatCard";
 import { RecommendedJobCard } from "./RecommendedJobCard";
-import { AnalyticsChart, BarChart, LineChart, PieChart } from "./AnalyticsChart";
 import { TaskWidget } from "./TaskWidget";
-import { MarketInsights } from "./MarketInsights";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
@@ -361,105 +359,7 @@ export const MainDashboard = () => {
         </div>
       </section>
 
-      {/* Analytics Section */}
-      <section className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Analytics Overview</h2>
-          <Link to="/analytics" className="text-sm text-blue-600 flex items-center gap-1 hover:underline">
-            View detailed analytics
-            <ArrowUpRight className="h-3 w-3" />
-          </Link>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <AnalyticsChart 
-            title="Application Trends" 
-            icon={<BarChart3 className="h-4 w-4 text-blue-600" />}
-            link={{ text: "Details", to: "/analytics" }}
-          >
-            <BarChart 
-              data={[
-                { label: "Mon", value: 3, color: "bg-blue-500" },
-                { label: "Tue", value: 7, color: "bg-blue-500" },
-                { label: "Wed", value: 5, color: "bg-blue-500" },
-                { label: "Thu", value: 8, color: "bg-blue-500" },
-                { label: "Fri", value: 4, color: "bg-blue-500" },
-                { label: "Sat", value: 2, color: "bg-blue-500" },
-                { label: "Sun", value: 1, color: "bg-blue-500" }
-              ]}
-              maxValue={10}
-              height={180}
-            />
-          </AnalyticsChart>
-          
-          <AnalyticsChart 
-            title="Response Rate" 
-            icon={<LineChartIcon className="h-4 w-4 text-green-600" />}
-          >
-            <LineChart 
-              data={[
-                { value: 25 },
-                { value: 32 },
-                { value: 28 },
-                { value: 35 },
-                { value: 40 },
-                { value: 38 },
-                { value: 50 }
-              ]}
-              color="#16a34a"
-            />
-          </AnalyticsChart>
-          
-          <AnalyticsChart 
-            title="Job Types" 
-            icon={<PieChartIcon className="h-4 w-4 text-purple-600" />}
-          >
-            <PieChart 
-              data={[
-                { label: "Remote", value: 65, color: "#8b5cf6" },
-                { label: "Hybrid", value: 25, color: "#3b82f6" },
-                { label: "On-site", value: 10, color: "#f59e0b" }
-              ]}
-            />
-          </AnalyticsChart>
-        </div>
-      </section>
-      
-      {/* Market Insights Section */}
-      <section className="mb-8">
-        <MarketInsights
-          insights={[
-            {
-              title: "Average Salary",
-              value: "$125,000",
-              change: {
-                value: "+5%",
-                isPositive: true,
-                description: "from last quarter"
-              },
-              category: "Frontend"
-            },
-            {
-              title: "Most In-Demand Skill",
-              value: "React",
-              change: {
-                value: "+12%",
-                isPositive: true,
-                description: "YoY growth"
-              }
-            },
-            {
-              title: "Interview Success Rate",
-              value: "34%",
-              change: {
-                value: "+8%",
-                isPositive: true,
-                description: "industry average"
-              }
-            }
-          ]}
-        />
-      </section>
+
     </div>
   );
 };

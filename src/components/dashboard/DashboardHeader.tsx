@@ -89,12 +89,7 @@ export function DashboardHeader({ userName, isNewSession = false }: DashboardHea
       {/* Dashboard Title */}
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-        <Button variant="outline" size="sm" asChild>
-          <Link to="/analytics">
-            <TrendingUp className="mr-2 h-4 w-4" />
-            View Analytics
-          </Link>
-        </Button>
+
       </div>
     </div>
   );
