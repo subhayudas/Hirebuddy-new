@@ -107,9 +107,9 @@ const Profile = () => {
           location: "",
           phone: "",
           bio: "",
-          website: "",
-          github: "",
           linkedin: "",
+          github: "",
+          website: "",
           skills: [],
           experience_years: 0,
           available_for_work: false,
@@ -594,15 +594,15 @@ const Profile = () => {
                         
                         {/* Quick Social Links */}
                         <div className="flex items-center gap-3 mt-2">
-                          {profile.website && (
+                        {profile.linkedin && (
                             <a 
-                              href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                              href={profile.linkedin.startsWith('http') ? profile.linkedin : `https://linkedin.com/in/${profile.linkedin.replace('linkedin.com/in/', '')}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-500 hover:text-blue-600 transition-colors"
-                              title="Website"
+                              className="text-gray-500 hover:text-blue-700 transition-colors"
+                              title="LinkedIn"
                             >
-                              <Globe className="w-4 h-4" />
+                              <Linkedin className="w-4 h-4" />
                             </a>
                           )}
                           {profile.github && (
@@ -616,15 +616,16 @@ const Profile = () => {
                               <Github className="w-4 h-4" />
                             </a>
                           )}
-                          {profile.linkedin && (
+                          
+                          {profile.website && (
                             <a 
-                              href={profile.linkedin.startsWith('http') ? profile.linkedin : `https://linkedin.com/in/${profile.linkedin.replace('linkedin.com/in/', '')}`}
+                              href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-500 hover:text-blue-700 transition-colors"
-                              title="LinkedIn"
+                              className="text-gray-500 hover:text-blue-600 transition-colors"
+                              title="Website"
                             >
-                              <Linkedin className="w-4 h-4" />
+                              <Globe className="w-4 h-4" />
                             </a>
                           )}
                         </div>
@@ -760,27 +761,27 @@ const Profile = () => {
                     <div className="pt-4 border-t">
                       <h4 className="text-sm font-medium text-gray-900 mb-3">Links & Social</h4>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <Label htmlFor="website">Website</Label>
+                        
+                      <div>
+                          <Label htmlFor="linkedin">LinkedIn</Label>
                           {isEditing ? (
                             <Input
-                              id="website"
-                              value={profile.website || ""}
-                              onChange={(e) => handleInputChange('website', e.target.value)}
-                              placeholder="https://yourwebsite.com"
-                              type="url"
+                              id="linkedin"
+                              value={profile.linkedin || ""}
+                              onChange={(e) => handleInputChange('linkedin', e.target.value)}
+                              placeholder="linkedin.com/in/username or username"
                             />
                           ) : (
                             <p className="mt-1 text-sm text-gray-900">
-                              {profile.website ? (
+                              {profile.linkedin ? (
                                 <a 
-                                  href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                                  href={profile.linkedin.startsWith('http') ? profile.linkedin : `https://linkedin.com/in/${profile.linkedin.replace('linkedin.com/in/', '')}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-blue-600 hover:text-blue-800 hover:underline flex items-center"
                                 >
-                                  <Globe className="w-4 h-4 mr-1" />
-                                  Website
+                                  <Linkedin className="w-4 h-4 mr-1" />
+                                  LinkedIn
                                   <ExternalLink className="w-3 h-3 ml-1" />
                                 </a>
                               ) : (
@@ -820,25 +821,26 @@ const Profile = () => {
                         </div>
 
                         <div>
-                          <Label htmlFor="linkedin">LinkedIn</Label>
+                          <Label htmlFor="website">Website</Label>
                           {isEditing ? (
                             <Input
-                              id="linkedin"
-                              value={profile.linkedin || ""}
-                              onChange={(e) => handleInputChange('linkedin', e.target.value)}
-                              placeholder="linkedin.com/in/username or username"
+                              id="website"
+                              value={profile.website || ""}
+                              onChange={(e) => handleInputChange('website', e.target.value)}
+                              placeholder="https://yourwebsite.com"
+                              type="url"
                             />
                           ) : (
                             <p className="mt-1 text-sm text-gray-900">
-                              {profile.linkedin ? (
+                              {profile.website ? (
                                 <a 
-                                  href={profile.linkedin.startsWith('http') ? profile.linkedin : `https://linkedin.com/in/${profile.linkedin.replace('linkedin.com/in/', '')}`}
+                                  href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-blue-600 hover:text-blue-800 hover:underline flex items-center"
                                 >
-                                  <Linkedin className="w-4 h-4 mr-1" />
-                                  LinkedIn
+                                  <Globe className="w-4 h-4 mr-1" />
+                                  Website
                                   <ExternalLink className="w-3 h-3 ml-1" />
                                 </a>
                               ) : (
