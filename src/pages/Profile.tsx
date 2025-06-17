@@ -15,7 +15,7 @@ import {
   Edit, Save, User, Briefcase, MapPin, Mail, Phone, Globe, 
   Upload, Plus, X, Loader2, AlertCircle, CheckCircle2,
   FileText, Download, Trash2, Camera, Settings, Bell, Search,
-  Github, Linkedin, ExternalLink, Calendar, GraduationCap
+  Github, Linkedin, ExternalLink, Calendar, GraduationCap, Eye
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProfileService, UserProfile } from "@/services/profileService";
@@ -28,6 +28,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const Profile = () => {
   const { user, signOut } = useAuth();
@@ -39,6 +47,8 @@ const Profile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [newSkill, setNewSkill] = useState("");
   const [userName, setUserName] = useState(user?.user_metadata?.full_name || user?.email?.split('@')[0] || "User");
+  const [showResumePreview, setShowResumePreview] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(true);
   const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
 
   // Update username when user auth state changes
@@ -71,9 +81,9 @@ const Profile = () => {
           experience_years: 5,
           available_for_work: true,
           profile_image_url: null,
-          resume_url: null,
-          resume_filename: null,
-          resume_uploaded_at: null
+          resume_url: "/sample-resume.pdf",
+          resume_filename: "Demo_User_Resume.pdf",
+          resume_uploaded_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days ago
         });
       setIsLoading(false);
     }
@@ -379,9 +389,19 @@ const Profile = () => {
         // Download from database storage
         await ProfileService.downloadResume(profile.resume_url, profile.resume_filename);
       } else {
-        // For demo mode or blob URLs, just open in new tab
-        window.open(profile.resume_url, '_blank');
+        // For demo mode or blob URLs, create download link
+        const link = document.createElement('a');
+        link.href = profile.resume_url;
+        link.download = profile.resume_filename || 'resume.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       }
+      
+      toast({
+        title: "Success",
+        description: "Resume download started",
+      });
     } catch (error) {
       console.error('Error downloading resume:', error);
       toast({
@@ -390,6 +410,19 @@ const Profile = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const getFileSize = (url: string): string => {
+    // This is a mock function since we can't get actual file size from URL
+    // In a real implementation, you'd store this info when uploading
+    return "~500KB";
+  };
+
+  const getFileType = (filename: string): string => {
+    const extension = filename?.split('.').pop()?.toUpperCase();
+    if (extension === 'PDF') return 'PDF';
+    if (extension === 'DOC' || extension === 'DOCX') return 'DOC';
+    return 'FILE';
   };
 
   const handleResumeDelete = async () => {
@@ -999,65 +1032,195 @@ const Profile = () => {
                 {/* Resume */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Resume</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      <FileText className="w-5 h-5 text-blue-600" />
+                      Resume
+                    </CardTitle>
                     <CardDescription>Upload and manage your resume</CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="space-y-5">
                     {profile?.resume_url ? (
-                      <div className="space-y-4">
-                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                          <FileText className="w-8 h-8 text-blue-600" />
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">{profile.resume_filename}</p>
-                            {profile.resume_uploaded_at && (
-                              <p className="text-xs text-gray-500">
-                                Uploaded {new Date(profile.resume_uploaded_at).toLocaleDateString()}
+                      <>
+                        {/* Resume File Display */}
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                              <FileText className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-gray-900 truncate">
+                                {profile.resume_filename}
                               </p>
-                            )}
+                              <div className="flex items-center gap-3 mt-1.5">
+                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                  {getFileType(profile.resume_filename || '')}
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  {getFileSize(profile.resume_url)}
+                                </span>
+                                {profile.resume_uploaded_at && (
+                                  <span className="text-xs text-gray-500">
+                                    {new Date(profile.resume_uploaded_at).toLocaleDateString()}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                              <span className="text-xs text-green-600 font-medium">Active</span>
+                            </div>
                           </div>
                         </div>
-                        <div className="flex space-x-2">
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3 pt-1">
+                          <Dialog 
+                            open={showResumePreview} 
+                            onOpenChange={(open) => {
+                              setShowResumePreview(open);
+                              if (open) setPdfLoading(true);
+                            }}
+                          >
+                            <DialogTrigger asChild>
+                              <Button variant="outline" className="flex-1">
+                                <Eye className="w-4 h-4 mr-2" />
+                                Preview
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-5xl w-[90vw] h-[90vh] p-0">
+                              <div className="flex flex-col h-full">
+                                {/* Header */}
+                                <div className="flex items-center justify-between p-4 border-b bg-gray-50">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                      <FileText className="w-4 h-4 text-blue-600" />
+                                    </div>
+                                    <div>
+                                      <DialogTitle className="text-lg font-semibold">
+                                        {profile.resume_filename}
+                                      </DialogTitle>
+                                      <DialogDescription className="text-sm">
+                                        Resume Preview • {getFileType(profile.resume_filename || '')} • {getFileSize(profile.resume_url)}
+                                      </DialogDescription>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={handleResumeDownload}
+                                    >
+                                      <Download className="w-4 h-4 mr-2" />
+                                      Download
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                                                 {/* Preview Content */}
+                                 <div className="flex-1 p-4 relative">
+                                   {profile.resume_url.endsWith('.pdf') || profile.resume_filename?.endsWith('.pdf') ? (
+                                     <>
+                                       {pdfLoading && (
+                                         <div className="absolute inset-4 flex items-center justify-center bg-white rounded-lg border border-gray-200">
+                                           <div className="text-center">
+                                             <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-3" />
+                                             <p className="text-sm text-gray-600">Loading PDF preview...</p>
+                                           </div>
+                                         </div>
+                                       )}
+                                       <iframe
+                                         src={`${profile.resume_url}#toolbar=1&navpanes=0&scrollbar=1&view=FitH`}
+                                         className="w-full h-full border border-gray-200 rounded-lg bg-white"
+                                         title="Resume Preview"
+                                         onLoad={() => setPdfLoading(false)}
+                                         onError={() => setPdfLoading(false)}
+                                       />
+                                     </>
+                                   ) : (
+                                     <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                                       <div className="text-center p-8">
+                                         <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                           <FileText className="w-8 h-8 text-gray-400" />
+                                         </div>
+                                         <h4 className="font-medium text-gray-900 mb-2">Preview not available</h4>
+                                         <p className="text-sm text-gray-500 mb-4">
+                                           {getFileType(profile.resume_filename || '')} files cannot be previewed in the browser
+                                         </p>
+                                         <Button
+                                           onClick={handleResumeDownload}
+                                           size="sm"
+                                         >
+                                           <Download className="w-4 h-4 mr-2" />
+                                           Download to View
+                                         </Button>
+                                       </div>
+                                     </div>
+                                   )}
+                                 </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+
                           <Button
                             variant="outline"
-                            size="sm"
                             onClick={handleResumeDownload}
-                            className="flex-1"
                           >
                             <Download className="w-4 h-4 mr-2" />
-                            View
+                            Download
                           </Button>
+
                           <Button
                             variant="outline"
-                            size="sm"
                             onClick={handleResumeDelete}
-                            className="text-red-600 hover:text-red-700"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
-                      </div>
+                      </>
                     ) : (
                       <div className="text-center py-6">
-                        <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                        <p className="text-gray-600 mb-4">No resume uploaded yet</p>
+                        <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-5 border-2 border-dashed border-blue-200">
+                          <Upload className="w-6 h-6 text-blue-500" />
+                        </div>
+                        <h4 className="font-medium text-gray-900 mb-2">No resume uploaded</h4>
+                        <p className="text-gray-500 text-sm mb-5">
+                          Upload your resume to help recruiters find you
+                        </p>
+                        <div className="flex items-center justify-center gap-4 text-xs text-gray-400">
+                          <span>PDF, DOC, DOCX</span>
+                          <span>•</span>
+                          <span>Up to 10MB</span>
+                        </div>
                       </div>
                     )}
                     
-                    <Label htmlFor="resume" className="cursor-pointer">
-                      <div className="flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                        <Upload className="w-4 h-4" />
-                        <span>{profile?.resume_url ? 'Replace Resume' : 'Upload Resume'}</span>
-                      </div>
-                    </Label>
-                    <Input
-                      id="resume"
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      onChange={(e) => handleFileUpload(e, 'resume')}
-                      className="hidden"
-                      disabled={uploading}
-                    />
-                    <p className="text-xs text-gray-500 mt-2">PDF, DOC, DOCX up to 10MB</p>
+                    {/* Upload Button */}
+                    <div className="pt-2">
+                      <Label htmlFor="resume" className="cursor-pointer">
+                      <div className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium w-full">
+                        {uploading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-4 h-4" />
+                            {profile?.resume_url ? 'Replace Resume' : 'Upload Resume'}
+                          </>
+                        )}
+                                              </div>
+                      </Label>
+                      <Input
+                        id="resume"
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={(e) => handleFileUpload(e, 'resume')}
+                        className="hidden"
+                        disabled={uploading}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
 
