@@ -6,10 +6,16 @@ export class JobService {
   // Transform database job to frontend job interface
   private static transformDatabaseJob(dbJob: DatabaseJob): Job {
     // Handle date parsing - the database might return just a date string like "2025-06-02"
-    const createdDate = dbJob.created_at.includes('T') 
-      ? new Date(dbJob.created_at) 
-      : new Date(dbJob.created_at + 'T00:00:00Z');
-    const posted = formatDistanceToNow(createdDate, { addSuffix: true });
+    let posted = 'Recently';
+    try {
+      const createdDate = dbJob.created_at.includes('T') 
+        ? new Date(dbJob.created_at) 
+        : new Date(dbJob.created_at + 'T00:00:00Z');
+      posted = formatDistanceToNow(createdDate, { addSuffix: true });
+    } catch (error) {
+      console.warn('Error formatting date:', error);
+      posted = 'Recently';
+    }
     
     return {
       id: dbJob.job_id,
@@ -110,6 +116,8 @@ export class JobService {
   // Get all jobs with optional search and filtering
   static async getJobs(params: JobSearchParams = {}): Promise<{ jobs: Job[]; total: number }> {
     try {
+      console.log('JobService.getJobs called with params:', params);
+      
       let query = supabase
         .from('hirebuddy_job_board')
         .select('*', { count: 'exact' });
@@ -158,11 +166,34 @@ export class JobService {
       const { data, error, count } = await query;
 
       if (error) {
-        console.error('Error fetching jobs:', error);
-        throw error;
+        console.error('Supabase query error:', error);
+        throw new Error(`Database query failed: ${error.message}`);
       }
 
-      const jobs = (data || []).map(this.transformDatabaseJob);
+      console.log(`JobService: Fetched ${data?.length || 0} jobs out of ${count || 0} total`);
+      
+      const jobs = (data || []).map(job => {
+        try {
+          return this.transformDatabaseJob(job);
+        } catch (transformError) {
+          console.error('Error transforming job:', job.job_id, transformError);
+          // Return a basic job object if transformation fails
+          return {
+            id: job.job_id,
+            title: job.job_title || 'Untitled Position',
+            company: job.company_name || 'Unknown Company',
+            location: job.job_location || 'Location not specified',
+            description: job.job_description || 'No description available',
+            isRemote: job.remote_flag || false,
+            isProbablyRemote: job.probably_remote || false,
+            createdAt: job.created_at,
+            posted: 'Recently',
+            logo: 'https://images.unsplash.com/photo-1549924231-f129b911e442?w=60&h=60&fit=crop&crop=center',
+            tags: [],
+            type: 'Full-time'
+          };
+        }
+      });
       
       return {
         jobs,
