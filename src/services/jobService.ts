@@ -5,7 +5,11 @@ import { formatDistanceToNow } from 'date-fns';
 export class JobService {
   // Transform database job to frontend job interface
   private static transformDatabaseJob(dbJob: DatabaseJob): Job {
-    const posted = formatDistanceToNow(new Date(dbJob.created_at), { addSuffix: true });
+    // Handle date parsing - the database might return just a date string like "2025-06-02"
+    const createdDate = dbJob.created_at.includes('T') 
+      ? new Date(dbJob.created_at) 
+      : new Date(dbJob.created_at + 'T00:00:00Z');
+    const posted = formatDistanceToNow(createdDate, { addSuffix: true });
     
     return {
       id: dbJob.job_id,
@@ -153,7 +157,10 @@ export class JobService {
 
       const { data, error, count } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching jobs:', error);
+        throw error;
+      }
 
       const jobs = (data || []).map(this.transformDatabaseJob);
       
@@ -162,7 +169,7 @@ export class JobService {
         total: count || 0
       };
     } catch (error) {
-      console.error('Error fetching jobs:', error);
+      console.error('Error in JobService.getJobs:', error);
       throw error;
     }
   }
@@ -266,10 +273,11 @@ export class JobService {
       // Get jobs from this week
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
+      const weekAgoString = weekAgo.toISOString().split('T')[0]; // Format as YYYY-MM-DD
       const { count: thisWeek } = await supabase
         .from('hirebuddy_job_board')
         .select('*', { count: 'exact', head: true })
-        .gte('created_at', weekAgo.toISOString());
+        .gte('created_at', weekAgoString);
 
       // Get unique companies count
       const { data: companiesData } = await supabase
