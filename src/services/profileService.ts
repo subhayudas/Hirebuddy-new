@@ -12,6 +12,9 @@ export interface UserProfile {
   website?: string;
   github?: string;
   linkedin?: string;
+  college?: string;
+  university?: string;
+  gpa?: number;
   skills?: string[];
   experience_years?: number;
   available_for_work?: boolean;

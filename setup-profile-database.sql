@@ -14,6 +14,9 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     website TEXT,
     github TEXT,
     linkedin TEXT,
+    college TEXT,
+    university TEXT,
+    gpa DECIMAL(3,2) CHECK (gpa >= 0.00 AND gpa <= 4.00),
     skills TEXT[], -- Array of skills
     experience_years INTEGER DEFAULT 0,
     available_for_work BOOLEAN DEFAULT false,
@@ -25,6 +28,28 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(user_id)
 );
+
+-- Add education fields to existing table (for existing installations)
+DO $$ 
+BEGIN
+    -- Add college column if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='user_profiles' AND column_name='college') THEN
+        ALTER TABLE user_profiles ADD COLUMN college TEXT;
+    END IF;
+    
+    -- Add university column if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='user_profiles' AND column_name='university') THEN
+        ALTER TABLE user_profiles ADD COLUMN university TEXT;
+    END IF;
+    
+    -- Add gpa column if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='user_profiles' AND column_name='gpa') THEN
+        ALTER TABLE user_profiles ADD COLUMN gpa DECIMAL(3,2) CHECK (gpa >= 0.00 AND gpa <= 4.00);
+    END IF;
+END $$;
 
 -- Enable RLS
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;

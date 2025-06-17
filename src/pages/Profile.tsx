@@ -15,7 +15,7 @@ import {
   Edit, Save, User, Briefcase, MapPin, Mail, Phone, Globe, 
   Upload, Plus, X, Loader2, AlertCircle, CheckCircle2,
   FileText, Download, Trash2, Camera, Settings, Bell, Search,
-  Github, Linkedin, ExternalLink, Calendar
+  Github, Linkedin, ExternalLink, Calendar, GraduationCap
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProfileService, UserProfile } from "@/services/profileService";
@@ -64,6 +64,9 @@ const Profile = () => {
           website: "https://demouser.dev",
           github: "demouser",
           linkedin: "demouser",
+          college: "University of California",
+          university: "UC Berkeley",
+          gpa: 3.8,
           skills: ["React", "TypeScript", "Node.js", "Python", "AWS", "Docker"],
           experience_years: 5,
           available_for_work: true,
@@ -110,6 +113,9 @@ const Profile = () => {
           linkedin: "",
           github: "",
           website: "",
+          college: "",
+          university: "",
+          gpa: undefined,
           skills: [],
           experience_years: 0,
           available_for_work: false,
@@ -587,6 +593,13 @@ const Profile = () => {
                             {profile.experience_years} {profile.experience_years === 1 ? 'year' : 'years'} experience
                           </p>
                         )}
+                        {(profile.university || profile.college) && (
+                          <p className="text-sm text-gray-600 flex items-center mt-1">
+                            <GraduationCap className="w-3 h-3 mr-1" />
+                            {profile.university || profile.college}
+                            {profile.gpa && ` • GPA: ${profile.gpa.toFixed(2)}`}
+                          </p>
+                        )}
                         <p className="text-sm text-gray-500 flex items-center mt-1">
                           <Mail className="w-3 h-3 mr-1" />
                           {user?.email}
@@ -754,6 +767,67 @@ const Profile = () => {
                             )}
                           </p>
                         )}
+                      </div>
+                    </div>
+
+                    {/* Education Section */}
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
+                        <GraduationCap className="w-4 h-4 mr-2 text-gray-500" />
+                        Education
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <Label htmlFor="college">College</Label>
+                          {isEditing ? (
+                            <Input
+                              id="college"
+                              value={profile.college || ""}
+                              onChange={(e) => handleInputChange('college', e.target.value)}
+                              placeholder="e.g. Harvard College"
+                            />
+                          ) : (
+                            <p className="mt-1 text-sm text-gray-900">
+                              {profile.college || "Not set"}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <Label htmlFor="university">University</Label>
+                          {isEditing ? (
+                            <Input
+                              id="university"
+                              value={profile.university || ""}
+                              onChange={(e) => handleInputChange('university', e.target.value)}
+                              placeholder="e.g. Harvard University"
+                            />
+                          ) : (
+                            <p className="mt-1 text-sm text-gray-900">
+                              {profile.university || "Not set"}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <Label htmlFor="gpa">GPA</Label>
+                          {isEditing ? (
+                            <Input
+                              id="gpa"
+                              value={profile.gpa || ""}
+                              onChange={(e) => handleInputChange('gpa', parseFloat(e.target.value) || undefined)}
+                              placeholder="e.g. 3.8"
+                              type="number"
+                              min="0"
+                              max="4"
+                              step="0.01"
+                            />
+                          ) : (
+                            <p className="mt-1 text-sm text-gray-900">
+                              {profile.gpa ? `${profile.gpa.toFixed(2)} / 4.00` : "Not set"}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
 

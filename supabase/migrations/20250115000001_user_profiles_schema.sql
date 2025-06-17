@@ -11,6 +11,9 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     website TEXT,
     github TEXT,
     linkedin TEXT,
+    college TEXT,
+    university TEXT,
+    gpa DECIMAL(3,2) CHECK (gpa >= 0.00 AND gpa <= 4.00),
     skills TEXT[], -- Array of skills
     experience_years INTEGER DEFAULT 0,
     available_for_work BOOLEAN DEFAULT false,
