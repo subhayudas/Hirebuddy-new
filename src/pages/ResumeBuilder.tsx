@@ -11,7 +11,7 @@ const ResumeBuilder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-pink-100">
+    <div className="min-h-screen bg-white">
       <Header />
       <EnhancedResumeBuilder template="perfect-fit" onBack={handleBack} />
     </div>

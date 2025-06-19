@@ -248,12 +248,12 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
   // Software Engineer template styles
   const getTemplateStyles = () => {
     return {
-      container: "bg-white text-black",
-      header: "flex justify-between items-start mb-4",
-      headerName: "text-xl font-bold mb-2",
-      headerDetails: "text-xs space-y-1",
-      section: "mb-4",
-      sectionTitle: "text-sm font-bold border-b border-black mb-2 pb-1 uppercase tracking-wide",
+      container: "bg-white text-black shadow-sm",
+      header: "flex justify-between items-start mb-6",
+      headerName: "text-xl font-bold mb-3",
+      headerDetails: "text-xs space-y-2",
+      section: "mb-6",
+      sectionTitle: "text-sm font-bold border-b border-gray-200 mb-3 pb-2 uppercase tracking-wide",
       layout: "perfect-fit"
     };
   };
@@ -806,8 +806,8 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
 
   // Software Engineer Template Render
   return (
-    <div className="w-full max-w-4xl">
-      <div id="resume-content" className="bg-white text-black shadow-lg min-h-[11in]"
+    <div className="w-full max-w-4xl p-4">
+      <div id="resume-content" className="bg-white text-black shadow-sm border border-gray-100 min-h-[11in]"
            style={{ 
              width: '210mm',
              minHeight: '297mm',

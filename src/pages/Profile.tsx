@@ -462,11 +462,11 @@ const Profile = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex w-full bg-gray-50">
+      <div className="min-h-screen flex w-full bg-white">
         <NewSidebar />
         <div className="flex-1 flex flex-col">
           <div className="flex items-center justify-center h-[80vh]">
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-4 bg-white p-8 rounded-lg shadow-sm">
               <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
               <p className="text-sm text-gray-500">Loading your profile...</p>
             </div>
@@ -478,11 +478,11 @@ const Profile = () => {
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex w-full bg-gray-50">
+      <div className="min-h-screen flex w-full bg-white">
         <NewSidebar />
         <div className="flex-1 flex flex-col">
           <div className="flex items-center justify-center h-[80vh]">
-            <div className="text-center">
+            <div className="text-center bg-white p-8 rounded-lg shadow-sm">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <h2 className="text-xl font-semibold mb-2">Profile Not Found</h2>
               <p className="text-gray-600 mb-4">Unable to load your profile data.</p>
@@ -497,11 +497,11 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen flex w-full bg-gray-50">
+    <div className="min-h-screen flex w-full bg-white">
       <NewSidebar />
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="flex h-16 shrink-0 items-center justify-between px-6 border-b bg-white sticky top-0 z-10">
+        <header className="flex h-16 shrink-0 items-center justify-between px-6 border-b bg-white sticky top-0 z-10 shadow-sm">
           <div className="flex items-center gap-4">
             <Breadcrumb>
               <BreadcrumbList>
@@ -1285,4 +1285,4 @@ const Profile = () => {
   );
 };
 
-export default Profile; 
+export default Profile;

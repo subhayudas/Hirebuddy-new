@@ -729,9 +729,9 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-pink-100">
+      <div className="min-h-screen bg-white">
         {/* Enhanced Header */}
-        <div className="bg-white/80 backdrop-blur-sm border-b border-pink-200 sticky top-0 z-50">
+        <div className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
           <div className="max-w-full px-6">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center gap-4">
@@ -894,7 +894,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
 
         {/* Main Content */}
         <div className="flex-1 p-6">
-          <ResizablePanelGroup direction="horizontal" className="min-h-[calc(100vh-8rem)]">
+          <ResizablePanelGroup direction="horizontal" className="min-h-[calc(100vh-8rem)] bg-white">
             {/* Left Panel - Form */}
             <ResizablePanel defaultSize={isPreviewExpanded ? 30 : 50} minSize={25}>
               <div className="h-full pr-3">
@@ -906,7 +906,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+                      <Card className="border-0 shadow-sm bg-white">
                         <CardHeader className="pb-4">
                           <div className="flex items-center justify-between">
                             <CardTitle className="text-lg flex items-center gap-2">
@@ -965,7 +965,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+                      <Card className="border-0 shadow-sm bg-white">
                         <CardHeader>
                           <CardTitle className="flex items-center gap-2">
                             {(() => {
