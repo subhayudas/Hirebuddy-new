@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { GoogleContact } from '@/services/googleAuthService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,8 +10,17 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Send, Mail, Users, X, Loader2 } from 'lucide-react';
 
+interface EmailContact {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  title?: string;
+}
+
 interface SimpleEmailComposerProps {
-  selectedContacts: GoogleContact[];
+  selectedContacts: EmailContact[];
   onSendEmail: (subject: string, body: string, isHtml: boolean) => Promise<void>;
   onClose: () => void;
   isOpen: boolean;
