@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { googleAuthService, GoogleUser, GoogleContact } from '@/services/googleAuthService';
 import { contactsService, ContactForDisplay } from '@/services/contactsService';
+import { testDatabaseConnection } from '@/utils/databaseTest';
 import ContactList from '@/components/email/ContactList';
 import SimpleEmailComposer from '@/components/email/SimpleEmailComposer';
 import { useAuth } from '@/contexts/AuthContext';
@@ -42,12 +43,27 @@ const EmailOutreach = () => {
   const loadContactsFromDatabase = async () => {
     setIsLoadingContacts(true);
     try {
+      // First test the database connection
+      const testResult = await testDatabaseConnection();
+      if (!testResult.success) {
+        console.error('Database connection test failed:', testResult);
+        toast.error(`Database connection failed: ${testResult.message}`);
+        return;
+      }
+
       const contactsData = await contactsService.getContacts();
       setContacts(contactsData);
       toast.success(`Loaded ${contactsData.length} contacts from database`);
+      
+      // Log environment info for debugging
+      console.log('Environment:', {
+        mode: import.meta.env.MODE,
+        supabaseUrl: import.meta.env.VITE_SUPABASE_URL ? 'Present' : 'Missing',
+        supabaseKey: import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Present' : 'Missing'
+      });
     } catch (error) {
       console.error('Error loading contacts from database:', error);
-      toast.error('Failed to load contacts from database');
+      toast.error(`Failed to load contacts from database: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsLoadingContacts(false);
     }

@@ -29,15 +29,26 @@ class ContactsService {
   // Get all contacts from the testdb table
   async getContacts(): Promise<ContactForDisplay[]> {
     try {
+      console.log('🔍 Fetching contacts from database...');
+      console.log('Supabase client initialized:', !!supabase);
+      
       const { data, error } = await supabase
         .from('testdb')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error fetching contacts:', error);
-        throw new Error(`Failed to fetch contacts: ${error.message}`);
+        console.error('❌ Supabase error fetching contacts:', error);
+        console.error('Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        throw new Error(`Failed to fetch contacts: ${error.message} (Code: ${error.code})`);
       }
+
+      console.log('✅ Successfully fetched contacts:', data?.length || 0);
 
       // Transform the data to match the expected interface
       const transformedContacts: ContactForDisplay[] = (data || []).map((contact: Contact) => ({
@@ -53,8 +64,11 @@ class ContactsService {
 
       return transformedContacts;
     } catch (error) {
-      console.error('Error in getContacts:', error);
-      throw error;
+      console.error('❌ Error in getContacts:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(`Unknown error occurred while fetching contacts: ${String(error)}`);
     }
   }
 
