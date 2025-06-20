@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { googleAuthService, GoogleUser, GoogleContact } from '@/services/googleAuthService';
 import { contactsService, ContactForDisplay } from '@/services/contactsService';
 import { testDatabaseConnection } from '@/utils/databaseTest';
 import ContactList from '@/components/email/ContactList';
@@ -11,24 +10,18 @@ import SimpleEmailComposer from '@/components/email/SimpleEmailComposer';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   Mail, 
-  Shield, 
   Users, 
   CheckCircle, 
   AlertCircle, 
   Loader2, 
   LogOut, 
   RefreshCw,
-  Send,
-  ExternalLink,
-  Lock,
-  Sparkles,
   Database
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const EmailOutreach = () => {
   const { signOut } = useAuth();
-  const [googleUser, setGoogleUser] = useState<GoogleUser | null>(null);
   const [contacts, setContacts] = useState<ContactForDisplay[]>([]);
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,16 +29,13 @@ const EmailOutreach = () => {
   const [isComposerOpen, setIsComposerOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [databaseConnected, setDatabaseConnected] = useState(false);
-  const [showDatabaseMode, setShowDatabaseMode] = useState(false);
-  const [isDevelopmentMode, setIsDevelopmentMode] = useState(
-    import.meta.env.MODE === 'development' && 
-    localStorage.getItem('dev_use_real_google_auth') !== 'true'
-  );
 
   // Load contacts from Supabase database
   const loadContactsFromDatabase = async () => {
     setIsLoadingContacts(true);
     try {
+      console.log('🔍 Loading contacts from database...');
+      
       // First test the database connection
       const testResult = await testDatabaseConnection();
       if (!testResult.success) {
@@ -58,7 +48,12 @@ const EmailOutreach = () => {
       setDatabaseConnected(true);
       const contactsData = await contactsService.getContacts();
       setContacts(contactsData);
-      toast.success(`Loaded ${contactsData.length} contacts from database`);
+      
+      if (contactsData.length > 0) {
+        toast.success(`Loaded ${contactsData.length} contacts from database`);
+      } else {
+        toast.info('No contacts found in database');
+      }
       
       // Log environment info for debugging
       console.log('Environment:', {
@@ -76,65 +71,14 @@ const EmailOutreach = () => {
   };
 
   useEffect(() => {
-    checkGoogleAuth();
-    // Always try to load contacts from database first
-    loadContactsFromDatabase();
-  }, []);
-
-  const checkGoogleAuth = async () => {
-    setIsLoading(true);
-    try {
-      // In development mode, you can skip Google auth and use database data
-      if (import.meta.env.MODE === 'development') {
-        // Check if user wants to use real Google auth or just database data
-        const useRealAuth = localStorage.getItem('dev_use_real_google_auth') === 'true';
-        
-        if (!useRealAuth) {
-          // Use database data for development
-          setIsLoading(false);
-          return;
-        }
-      }
-      
-      const user = await googleAuthService.getStoredUser();
-      if (user) {
-        setGoogleUser(user);
-        await loadContacts(user.access_token);
-      }
-    } catch (error) {
-      console.error('Error checking Google auth:', error);
-    } finally {
+    const initializePage = async () => {
+      setIsLoading(true);
+      await loadContactsFromDatabase();
       setIsLoading(false);
-    }
-  };
+    };
 
-  const loadContacts = async (accessToken: string) => {
-    setIsLoadingContacts(true);
-    try {
-      const contactsData = await googleAuthService.getContacts(accessToken);
-      setContacts(contactsData);
-      toast.success(`Loaded ${contactsData.length} contacts from Google`);
-    } catch (error) {
-      console.error('Error loading contacts:', error);
-      toast.error('Failed to load contacts');
-    } finally {
-      setIsLoadingContacts(false);
-    }
-  };
-
-  const handleGoogleAuth = async () => {
-    try {
-      await googleAuthService.initiateAuth();
-    } catch (error) {
-      console.error('Error initiating Google auth:', error);
-      toast.error('Failed to start Google authentication');
-    }
-  };
-
-  const handleRefreshContacts = async () => {
-    if (!googleUser) return;
-    await loadContacts(googleUser.access_token);
-  };
+    initializePage();
+  }, []);
 
   const handleContactSelect = (contactId: string) => {
     setSelectedContacts(prev => 
@@ -170,76 +114,40 @@ const EmailOutreach = () => {
     let failCount = 0;
 
     try {
-      if (isDevelopmentMode || showDatabaseMode || !googleUser) {
-        // In development mode or database mode, simulate email sending
-        toast.info(`${isDevelopmentMode ? 'Development' : 'Database'} Mode: Simulating email sending...`);
+      // Always simulate email sending in database mode
+      toast.info('Simulating email sending...');
+      
+      for (const contact of selectedContactsData) {
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 500));
         
-        for (const contact of selectedContactsData) {
-          // Simulate network delay
-          await new Promise(resolve => setTimeout(resolve, 500));
+        // Simulate 90% success rate
+        const success = Math.random() > 0.1;
+        
+        if (success) {
+          successCount++;
+          console.log(`[SIMULATED] Email sent to ${contact.name} (${contact.email})`);
+          console.log(`[SIMULATED] Subject: ${subject}`);
+          console.log(`[SIMULATED] Body: ${body}`);
           
-          // Simulate 90% success rate
-          const success = Math.random() > 0.1;
-          
-          if (success) {
-            successCount++;
-            console.log(`[MOCK] Email sent to ${contact.name} (${contact.email})`);
-            console.log(`[MOCK] Subject: ${subject}`);
-            console.log(`[MOCK] Body: ${body}`);
-            
-            // Mark email as sent in database
-            try {
-              await contactsService.markEmailSent(contact.id);
-            } catch (error) {
-              console.error(`Error marking email as sent for ${contact.id}:`, error);
-            }
-          } else {
-            failCount++;
-            console.log(`[MOCK] Failed to send email to ${contact.email}`);
-          }
-        }
-      } else {
-        // Real email sending
-        if (!googleUser) {
-          toast.error('Google authentication required');
-          return;
-        }
-
-        // Send emails to all selected contacts
-        for (const contact of selectedContactsData) {
+          // Mark email as sent in database
           try {
-            const success = await googleAuthService.sendEmail(
-              googleUser.access_token,
-              contact.email,
-              subject,
-              body,
-              isHtml
-            );
-            
-            if (success) {
-              successCount++;
-              // Mark email as sent in database
-              try {
-                await contactsService.markEmailSent(contact.id);
-              } catch (error) {
-                console.error(`Error marking email as sent for ${contact.id}:`, error);
-              }
-            } else {
-              failCount++;
-            }
+            await contactsService.markEmailSent(contact.id);
           } catch (error) {
-            console.error(`Error sending email to ${contact.email}:`, error);
-            failCount++;
+            console.error(`Error marking email as sent for ${contact.id}:`, error);
           }
+        } else {
+          failCount++;
+          console.log(`[SIMULATED] Failed to send email to ${contact.email}`);
         }
       }
 
       // Show results
       if (successCount > 0) {
-        toast.success(`${(isDevelopmentMode || showDatabaseMode || !googleUser) ? '[MOCK] ' : ''}Successfully sent ${successCount} email${successCount !== 1 ? 's' : ''}`);
+        toast.success(`[SIMULATED] Successfully sent ${successCount} email${successCount !== 1 ? 's' : ''}`);
       }
       if (failCount > 0) {
-        toast.error(`${(isDevelopmentMode || showDatabaseMode || !googleUser) ? '[MOCK] ' : ''}Failed to send ${failCount} email${failCount !== 1 ? 's' : ''}`);
+        toast.error(`[SIMULATED] Failed to send ${failCount} email${failCount !== 1 ? 's' : ''}`);
       }
 
       // Refresh contacts to show updated email sent status
@@ -256,56 +164,6 @@ const EmailOutreach = () => {
     }
   };
 
-  const handleRevokeAccess = async () => {
-    if (!googleUser) return;
-
-    try {
-      await googleAuthService.revokeAccess(googleUser.access_token);
-      setGoogleUser(null);
-      setContacts([]);
-      setSelectedContacts([]);
-      toast.success('Google access revoked successfully');
-      // Load database contacts after revoking Google access
-      await loadContactsFromDatabase();
-    } catch (error) {
-      console.error('Error revoking access:', error);
-      toast.error('Failed to revoke access');
-    }
-  };
-
-  const handleToggleDevelopmentMode = () => {
-    const newMode = !isDevelopmentMode;
-    setIsDevelopmentMode(newMode);
-    
-    if (newMode) {
-      // Switch to development mode with database data
-      localStorage.setItem('dev_use_real_google_auth', 'false');
-      setGoogleUser(null);
-      setContacts([]);
-      setSelectedContacts([]);
-      loadContactsFromDatabase();
-      toast.success('Switched to development mode with database contacts');
-    } else {
-      // Switch to real Google auth mode
-      localStorage.setItem('dev_use_real_google_auth', 'true');
-      setContacts([]);
-      setSelectedContacts([]);
-      checkGoogleAuth();
-      toast.success('Switched to real Google authentication mode');
-    }
-  };
-
-  const handleToggleDatabaseMode = () => {
-    setShowDatabaseMode(!showDatabaseMode);
-    if (!showDatabaseMode) {
-      // Switching to database mode
-      toast.success('Switched to database mode - emails will be simulated');
-    } else {
-      // Switching back to Google mode
-      toast.success('Switched back to Google authentication mode');
-    }
-  };
-
   const handleRefreshDatabase = () => {
     loadContactsFromDatabase();
   };
@@ -317,16 +175,12 @@ const EmailOutreach = () => {
           <CardContent className="p-8 text-center">
             <Loader2 className="h-8 w-8 animate-spin text-[#d35c65] mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">Loading Email Outreach</h3>
-            <p className="text-gray-600">Checking your authentication status...</p>
+            <p className="text-gray-600">Loading your contacts from database...</p>
           </CardContent>
         </Card>
       </div>
     );
   }
-
-  // Show database contacts if available, even without Google auth
-  const hasContacts = contacts.length > 0;
-  const showAuthRequired = !googleUser && !isDevelopmentMode && !showDatabaseMode && !hasContacts;
 
   return (
     <div className="min-h-screen bg-[#fff7f8]">
@@ -341,52 +195,6 @@ const EmailOutreach = () => {
               <h1 className="text-2xl font-mabry font-semibold text-[#403334]">Email Outreach</h1>
             </div>
             <div className="flex items-center space-x-4">
-              {/* Development Mode Controls */}
-              {import.meta.env.MODE === 'development' && (
-                <div className="flex items-center space-x-2">
-                  <Badge variant={isDevelopmentMode ? "default" : "secondary"} className="text-xs">
-                    {isDevelopmentMode ? 'Database Mode' : 'Real Auth'}
-                  </Badge>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleToggleDevelopmentMode}
-                    className="border-blue-200 text-blue-600 hover:bg-blue-50"
-                  >
-                    {isDevelopmentMode ? 'Use Real Auth' : 'Use Database Only'}
-                  </Button>
-                </div>
-              )}
-
-              {/* Production Database Mode Toggle */}
-              {import.meta.env.MODE === 'production' && databaseConnected && (
-                <div className="flex items-center space-x-2">
-                  <Badge variant={showDatabaseMode ? "default" : "secondary"} className="text-xs">
-                    {showDatabaseMode ? 'Database Mode' : 'Google Mode'}
-                  </Badge>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleToggleDatabaseMode}
-                    className="border-purple-200 text-purple-600 hover:bg-purple-50"
-                  >
-                    <Database className="h-4 w-4 mr-2" />
-                    {showDatabaseMode ? 'Use Google Auth' : 'Use Database'}
-                  </Button>
-                </div>
-              )}
-              
-              {googleUser && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleRevokeAccess}
-                  className="border-red-200 text-red-600 hover:bg-red-50"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Revoke Access
-                </Button>
-              )}
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -402,277 +210,114 @@ const EmailOutreach = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        {showAuthRequired ? (
-          // Authentication Required View (only shown if no database contacts and no auth)
-          <div className="space-y-8">
-            {/* Hero Section */}
-            <div className="bg-[#d35c65] rounded-3xl p-8 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
-              <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
-              
-              <div className="relative z-10">
-                <Badge variant="secondary" className="mb-4 px-4 py-2 text-sm font-medium bg-white/20 text-white border-white/30">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Gmail Integration
-                </Badge>
-                
-                <h2 className="text-3xl md:text-4xl font-mabry font-semibold mb-4">
-                  Connect Your Gmail Account
-                </h2>
-                <p className="text-white/90 text-lg mb-6 max-w-2xl font-light">
-                  Authenticate with Google to access your contacts and send personalized emails 
-                  directly through your Gmail account with full security and privacy.
-                </p>
-              </div>
-            </div>
-
-            {/* Authentication Card */}
-            <Card className="max-w-2xl mx-auto">
-              <CardHeader className="text-center">
-                <CardTitle className="flex items-center justify-center gap-2 text-2xl">
-                  <Shield className="h-6 w-6 text-[#d35c65]" />
-                  Google Authentication Required
-                </CardTitle>
-                <CardDescription className="text-base">
-                  To send emails and access your contacts, you need to authenticate with Google
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center">
-                    <div className="bg-[#d35c65]/10 p-4 rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-                      <Lock className="h-8 w-8 text-[#d35c65]" />
-                    </div>
-                    <h3 className="font-semibold mb-2">Secure Authentication</h3>
-                    <p className="text-sm text-gray-600">
-                      OAuth 2.0 secure authentication with Google
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="bg-[#d35c65]/10 p-4 rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-                      <Users className="h-8 w-8 text-[#d35c65]" />
-                    </div>
-                    <h3 className="font-semibold mb-2">Access Contacts</h3>
-                    <p className="text-sm text-gray-600">
-                      View and select from your Google contacts
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="bg-[#d35c65]/10 p-4 rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-                      <Send className="h-8 w-8 text-[#d35c65]" />
-                    </div>
-                    <h3 className="font-semibold mb-2">Send Emails</h3>
-                    <p className="text-sm text-gray-600">
-                      Send personalized emails through Gmail
-                    </p>
-                  </div>
-                </div>
-
-                <Alert>
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    <strong>Privacy Notice:</strong> We only request access to send emails and read your contacts. 
-                    Your data is never stored permanently and tokens are encrypted.
-                  </AlertDescription>
-                </Alert>
-
-                {/* Database alternative option */}
-                {databaseConnected && (
-                  <Alert>
-                    <Database className="h-4 w-4" />
-                    <AlertDescription>
-                      <strong>Alternative:</strong> We found contacts in your database. You can use database mode to work with existing contacts without Google authentication.
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowDatabaseMode(true)}
-                        className="ml-2 border-purple-200 text-purple-600 hover:bg-purple-50"
-                      >
-                        Use Database Mode
-                      </Button>
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                <div className="text-center">
-                  <Button
-                    onClick={handleGoogleAuth}
-                    size="lg"
-                    className="bg-[#d35c65] hover:bg-[#b24e55] text-white px-8 py-3"
-                  >
-                    <ExternalLink className="h-5 w-5 mr-3" />
-                    Connect with Google
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        ) : (
-          // Show Contacts and Email Interface (for authenticated users, dev mode, or database mode)
-          <div className="space-y-8">
-            {/* Status Section */}
-            <Card className={`bg-gradient-to-r ${
-              isDevelopmentMode 
-                ? 'from-blue-50 to-purple-50 border-blue-200' 
-                : showDatabaseMode 
-                  ? 'from-purple-50 to-indigo-50 border-purple-200'
-                  : googleUser 
-                    ? 'from-green-50 to-blue-50 border-green-200'
-                    : 'from-yellow-50 to-orange-50 border-yellow-200'
-            }`}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-full ${
-                      isDevelopmentMode 
-                        ? 'bg-blue-100' 
-                        : showDatabaseMode 
-                          ? 'bg-purple-100'
-                          : googleUser 
-                            ? 'bg-green-100'
-                            : 'bg-yellow-100'
-                    }`}>
-                      {isDevelopmentMode ? (
-                        <CheckCircle className="h-6 w-6 text-blue-600" />
-                      ) : showDatabaseMode ? (
-                        <Database className="h-6 w-6 text-purple-600" />
-                      ) : googleUser ? (
-                        <CheckCircle className="h-6 w-6 text-green-600" />
-                      ) : (
-                        <AlertCircle className="h-6 w-6 text-yellow-600" />
-                      )}
-                    </div>
-                    <div>
-                      <h3 className={`text-lg font-semibold ${
-                        isDevelopmentMode 
-                          ? 'text-blue-900' 
-                          : showDatabaseMode 
-                            ? 'text-purple-900'
-                            : googleUser 
-                              ? 'text-green-900'
-                              : 'text-yellow-900'
-                      }`}>
-                        {isDevelopmentMode 
-                          ? 'Development Mode Active' 
-                          : showDatabaseMode 
-                            ? 'Database Mode Active'
-                            : googleUser 
-                              ? 'Connected to Gmail'
-                              : 'Using Database Contacts'
-                        }
-                      </h3>
-                      <p className={
-                        isDevelopmentMode 
-                          ? 'text-blue-700' 
-                          : showDatabaseMode 
-                            ? 'text-purple-700'
-                            : googleUser 
-                              ? 'text-green-700'
-                              : 'text-yellow-700'
-                      }>
-                        {isDevelopmentMode 
-                          ? 'Using database contacts - no real emails will be sent'
-                          : showDatabaseMode 
-                            ? 'Using database contacts - emails will be simulated'
-                            : googleUser 
-                              ? `Signed in as ${googleUser?.name} (${googleUser?.email})`
-                              : 'Working with database contacts - authenticate with Google for real email sending'
-                        }
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {isDevelopmentMode || showDatabaseMode || !googleUser ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleRefreshDatabase}
-                        disabled={isLoadingContacts}
-                        className={`${
-                          isDevelopmentMode 
-                            ? 'border-blue-300 text-blue-700 hover:bg-blue-100'
-                            : showDatabaseMode 
-                              ? 'border-purple-300 text-purple-700 hover:bg-purple-100'
-                              : 'border-yellow-300 text-yellow-700 hover:bg-yellow-100'
-                        }`}
-                      >
-                        <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingContacts ? 'animate-spin' : ''}`} />
-                        Refresh Database
-                      </Button>
+        <div className="space-y-8">
+          {/* Database Status Section */}
+          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-full bg-blue-100">
+                    {databaseConnected ? (
+                      <Database className="h-6 w-6 text-blue-600" />
                     ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleRefreshContacts}
-                        disabled={isLoadingContacts}
-                        className="border-green-300 text-green-700 hover:bg-green-100"
-                      >
-                        <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingContacts ? 'animate-spin' : ''}`} />
-                        Refresh Contacts
-                      </Button>
+                      <AlertCircle className="h-6 w-6 text-red-600" />
                     )}
                   </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-blue-900">
+                      {databaseConnected ? 'Database Connected' : 'Database Connection Issue'}
+                    </h3>
+                    <p className="text-blue-700">
+                      {databaseConnected 
+                        ? 'Your contacts are loaded from the database - emails will be simulated'
+                        : 'Unable to connect to database - please check your connection'
+                      }
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleRefreshDatabase}
+                    disabled={isLoadingContacts}
+                    className="border-blue-300 text-blue-700 hover:bg-blue-100"
+                  >
+                    <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingContacts ? 'animate-spin' : ''}`} />
+                    Refresh Contacts
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Connection Alert */}
+          {!databaseConnected && (
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Database Connection Issue:</strong> Unable to load contacts from the database. 
+                Please check your internet connection and try refreshing the page.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Contacts</p>
+                    <p className="text-2xl font-bold text-[#403334]">{contacts.length}</p>
+                  </div>
+                  <div className="bg-blue-100 p-3 rounded-full">
+                    <Users className="h-6 w-6 text-blue-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
-
-            {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Total Contacts</p>
-                      <p className="text-2xl font-bold text-[#403334]">{contacts.length}</p>
-                    </div>
-                    <div className="bg-blue-100 p-3 rounded-full">
-                      <Users className="h-6 w-6 text-blue-600" />
-                    </div>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Selected</p>
+                    <p className="text-2xl font-bold text-[#403334]">{selectedContacts.length}</p>
                   </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Selected</p>
-                      <p className="text-2xl font-bold text-[#403334]">{selectedContacts.length}</p>
-                    </div>
-                    <div className="bg-[#d35c65]/10 p-3 rounded-full">
-                      <CheckCircle className="h-6 w-6 text-[#d35c65]" />
-                    </div>
+                  <div className="bg-[#d35c65]/10 p-3 rounded-full">
+                    <CheckCircle className="h-6 w-6 text-[#d35c65]" />
                   </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Ready to Send</p>
-                      <p className="text-2xl font-bold text-[#403334]">
-                        {selectedContacts.length > 0 ? 'Yes' : 'No'}
-                      </p>
-                    </div>
-                    <div className="bg-green-100 p-3 rounded-full">
-                      <Mail className="h-6 w-6 text-green-600" />
-                    </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Ready to Send</p>
+                    <p className="text-2xl font-bold text-[#403334]">
+                      {selectedContacts.length > 0 ? 'Yes' : 'No'}
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Contact List */}
-            <ContactList
-              contacts={contacts}
-              selectedContacts={selectedContacts}
-              onContactSelect={handleContactSelect}
-              onSelectAll={handleSelectAll}
-              onClearSelection={handleClearSelection}
-              onSendEmail={handleSendEmail}
-              loading={isLoadingContacts}
-            />
+                  <div className="bg-green-100 p-3 rounded-full">
+                    <Mail className="h-6 w-6 text-green-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        )}
+
+          {/* Contact List */}
+          <ContactList
+            contacts={contacts}
+            selectedContacts={selectedContacts}
+            onContactSelect={handleContactSelect}
+            onSelectAll={handleSelectAll}
+            onClearSelection={handleClearSelection}
+            onSendEmail={handleSendEmail}
+            loading={isLoadingContacts}
+          />
+        </div>
       </div>
 
       {/* Email Composer Modal */}
