@@ -1,35 +1,190 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import EmailComposer from '@/components/email/EmailComposer';
-import CampaignManager from '@/components/email/CampaignManager';
-import FollowUpManager from '@/components/email/FollowUpManager';
-import AnalyticsDashboard from '@/components/email/AnalyticsDashboard';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { googleAuthService, GoogleUser, GoogleContact } from '@/services/googleAuthService';
+import ContactList from '@/components/email/ContactList';
+import SimpleEmailComposer from '@/components/email/SimpleEmailComposer';
 import { useAuth } from '@/contexts/AuthContext';
-import { useCampaigns } from '@/hooks/useCampaigns';
-import { useContacts } from '@/hooks/useContacts';
-import { Mail, Calendar, BarChart3, Settings, Send, Users, TrendingUp, LogOut, Plus, Sparkles } from 'lucide-react';
+import { 
+  Mail, 
+  Shield, 
+  Users, 
+  CheckCircle, 
+  AlertCircle, 
+  Loader2, 
+  LogOut, 
+  RefreshCw,
+  Send,
+  ExternalLink,
+  Lock,
+  Sparkles
+} from 'lucide-react';
+import { toast } from 'sonner';
 
 const EmailOutreach = () => {
-  const [activeTab, setActiveTab] = useState('compose');
   const { signOut } = useAuth();
-  const { campaigns } = useCampaigns();
-  const { contacts } = useContacts();
+  const [googleUser, setGoogleUser] = useState<GoogleUser | null>(null);
+  const [contacts, setContacts] = useState<GoogleContact[]>([]);
+  const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingContacts, setIsLoadingContacts] = useState(false);
+  const [isComposerOpen, setIsComposerOpen] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
-  // Calculate stats from real data
-  const totalCampaigns = campaigns.length;
-  const activeCampaigns = campaigns.filter(c => c.status === 'active').length;
-  const totalContacts = contacts.length;
-  const activeContacts = contacts.filter(c => c.status === 'active').length;
+  useEffect(() => {
+    checkGoogleAuth();
+  }, []);
 
-  const stats = [
-    { title: 'Active Contacts', value: activeContacts.toString(), change: '+8%', icon: Users, description: 'Ready to receive emails' },
-    { title: 'Total Campaigns', value: totalCampaigns.toString(), change: '+12%', icon: Mail, description: 'Created campaigns' },
-    { title: 'Active Campaigns', value: activeCampaigns.toString(), change: '+5%', icon: Send, description: 'Currently running' },
-    { title: 'Response Rate', value: '12.8%', change: '+4.3%', icon: TrendingUp, description: 'Average response rate' },
-  ];
+  const checkGoogleAuth = async () => {
+    setIsLoading(true);
+    try {
+      const user = await googleAuthService.getStoredUser();
+      if (user) {
+        setGoogleUser(user);
+        await loadContacts(user.access_token);
+      }
+    } catch (error) {
+      console.error('Error checking Google auth:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadContacts = async (accessToken: string) => {
+    setIsLoadingContacts(true);
+    try {
+      const contactsData = await googleAuthService.getContacts(accessToken);
+      setContacts(contactsData);
+      toast.success(`Loaded ${contactsData.length} contacts from Google`);
+    } catch (error) {
+      console.error('Error loading contacts:', error);
+      toast.error('Failed to load contacts');
+    } finally {
+      setIsLoadingContacts(false);
+    }
+  };
+
+  const handleGoogleAuth = async () => {
+    try {
+      await googleAuthService.initiateAuth();
+    } catch (error) {
+      console.error('Error initiating Google auth:', error);
+      toast.error('Failed to start Google authentication');
+    }
+  };
+
+  const handleRefreshContacts = async () => {
+    if (!googleUser) return;
+    await loadContacts(googleUser.access_token);
+  };
+
+  const handleContactSelect = (contactId: string) => {
+    setSelectedContacts(prev => 
+      prev.includes(contactId) 
+        ? prev.filter(id => id !== contactId)
+        : [...prev, contactId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    setSelectedContacts(contacts.map(contact => contact.id));
+  };
+
+  const handleClearSelection = () => {
+    setSelectedContacts([]);
+  };
+
+  const handleSendEmail = (contactIds: string[]) => {
+    const selectedContactsData = contacts.filter(contact => 
+      contactIds.includes(contact.id)
+    );
+    setSelectedContacts(contactIds);
+    setIsComposerOpen(true);
+  };
+
+  const handleEmailSend = async (subject: string, body: string, isHtml: boolean) => {
+    if (!googleUser) return;
+
+    setIsSending(true);
+    const selectedContactsData = contacts.filter(contact => 
+      selectedContacts.includes(contact.id)
+    );
+
+    let successCount = 0;
+    let failCount = 0;
+
+    try {
+      // Send emails to all selected contacts
+      for (const contact of selectedContactsData) {
+        try {
+          const success = await googleAuthService.sendEmail(
+            googleUser.access_token,
+            contact.email,
+            subject,
+            body,
+            isHtml
+          );
+          
+          if (success) {
+            successCount++;
+          } else {
+            failCount++;
+          }
+        } catch (error) {
+          console.error(`Error sending email to ${contact.email}:`, error);
+          failCount++;
+        }
+      }
+
+      // Show results
+      if (successCount > 0) {
+        toast.success(`Successfully sent ${successCount} email${successCount !== 1 ? 's' : ''}`);
+      }
+      if (failCount > 0) {
+        toast.error(`Failed to send ${failCount} email${failCount !== 1 ? 's' : ''}`);
+      }
+
+      // Close composer and clear selection
+      setIsComposerOpen(false);
+      setSelectedContacts([]);
+    } catch (error) {
+      console.error('Error sending emails:', error);
+      toast.error('Failed to send emails');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleRevokeAccess = async () => {
+    if (!googleUser) return;
+
+    try {
+      await googleAuthService.revokeAccess(googleUser.access_token);
+      setGoogleUser(null);
+      setContacts([]);
+      setSelectedContacts([]);
+      toast.success('Google access revoked successfully');
+    } catch (error) {
+      console.error('Error revoking access:', error);
+      toast.error('Failed to revoke access');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#fff7f8] flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-8 text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-[#d35c65] mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Loading Email Outreach</h3>
+            <p className="text-gray-600">Checking your authentication status...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#fff7f8]">
@@ -44,20 +199,25 @@ const EmailOutreach = () => {
               <h1 className="text-2xl font-mabry font-semibold text-[#403334]">Email Outreach</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm" onClick={signOut} className="border-pink-200 text-[#403334] hover:bg-pink-50">
+              {googleUser && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleRevokeAccess}
+                  className="border-red-200 text-red-600 hover:bg-red-50"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Revoke Access
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={signOut} 
+                className="border-pink-200 text-[#403334] hover:bg-pink-50"
+              >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
-              </Button>
-              <Button variant="outline" size="sm" className="border-pink-200 text-[#403334] hover:bg-pink-50">
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </Button>
-              <Button 
-                className="bg-[#d35c65] hover:bg-[#b24e55] text-white"
-                onClick={() => setActiveTab('compose')}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                New Campaign
               </Button>
             </div>
           </div>
@@ -65,149 +225,198 @@ const EmailOutreach = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <div className="bg-[#d35c65] rounded-3xl p-8 text-white relative overflow-hidden">
-            {/* Background decoration */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
-            
-            <div className="relative z-10">
-              <Badge variant="secondary" className="mb-4 px-4 py-2 text-sm font-medium bg-white/20 text-white border-white/30">
-                <Sparkles className="h-4 w-4 mr-2" />
-                Email Automation
-              </Badge>
+        {!googleUser ? (
+          // Authentication Required View
+          <div className="space-y-8">
+            {/* Hero Section */}
+            <div className="bg-[#d35c65] rounded-3xl p-8 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
               
-              <h2 className="text-3xl md:text-4xl font-mabry font-semibold mb-4">Start Your Email Campaign</h2>
-              <p className="text-white/90 text-lg mb-6 max-w-2xl font-light">
-                Select your contacts, craft your message, and launch targeted cold email campaigns 
-                with intelligent automation and real-time analytics.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  variant="secondary" 
-                  className="bg-white text-[#d35c65] hover:bg-pink-50 font-medium"
-                  onClick={() => setActiveTab('compose')}
-                >
-                  <Send className="h-4 w-4 mr-2" />
-                  Create Campaign
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="border-white text-white hover:bg-white hover:text-[#d35c65] font-medium"
-                  onClick={() => setActiveTab('campaigns')}
-                >
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  View Campaigns
-                </Button>
+              <div className="relative z-10">
+                <Badge variant="secondary" className="mb-4 px-4 py-2 text-sm font-medium bg-white/20 text-white border-white/30">
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Gmail Integration
+                </Badge>
+                
+                <h2 className="text-3xl md:text-4xl font-mabry font-semibold mb-4">
+                  Connect Your Gmail Account
+                </h2>
+                <p className="text-white/90 text-lg mb-6 max-w-2xl font-light">
+                  Authenticate with Google to access your contacts and send personalized emails 
+                  directly through your Gmail account with full security and privacy.
+                </p>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Quick Start Alert */}
-        {totalContacts === 0 && (
-          <div className="mb-8">
-            <Card className="border-orange-200 bg-orange-50">
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-4">
-                  <div className="bg-orange-100 p-2 rounded-full">
-                    <Users className="h-6 w-6 text-orange-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-orange-900 mb-2">No contacts found</h3>
-                    <p className="text-orange-800 mb-4 font-light">
-                      You need to add contacts before you can send email campaigns. 
-                      Go to the Admin panel to add your first contacts.
+            {/* Authentication Card */}
+            <Card className="max-w-2xl mx-auto">
+              <CardHeader className="text-center">
+                <CardTitle className="flex items-center justify-center gap-2 text-2xl">
+                  <Shield className="h-6 w-6 text-[#d35c65]" />
+                  Google Authentication Required
+                </CardTitle>
+                <CardDescription className="text-base">
+                  To send emails and access your contacts, you need to authenticate with Google
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <div className="bg-[#d35c65]/10 p-4 rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+                      <Lock className="h-8 w-8 text-[#d35c65]" />
+                    </div>
+                    <h3 className="font-semibold mb-2">Secure Authentication</h3>
+                    <p className="text-sm text-gray-600">
+                      OAuth 2.0 secure authentication with Google
                     </p>
-                    <Button 
-                      variant="outline" 
-                      className="border-orange-300 text-orange-700 hover:bg-orange-100"
-                      onClick={() => window.location.href = '/admin'}
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-[#d35c65]/10 p-4 rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+                      <Users className="h-8 w-8 text-[#d35c65]" />
+                    </div>
+                    <h3 className="font-semibold mb-2">Access Contacts</h3>
+                    <p className="text-sm text-gray-600">
+                      View and select from your Google contacts
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-[#d35c65]/10 p-4 rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+                      <Send className="h-8 w-8 text-[#d35c65]" />
+                    </div>
+                    <h3 className="font-semibold mb-2">Send Emails</h3>
+                    <p className="text-sm text-gray-600">
+                      Send personalized emails through Gmail
+                    </p>
+                  </div>
+                </div>
+
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>Privacy Notice:</strong> We only request access to send emails and read your contacts. 
+                    Your data is never stored permanently and tokens are encrypted.
+                  </AlertDescription>
+                </Alert>
+
+                <div className="text-center">
+                  <Button
+                    onClick={handleGoogleAuth}
+                    size="lg"
+                    className="bg-[#d35c65] hover:bg-[#b24e55] text-white px-8 py-3"
+                  >
+                    <ExternalLink className="h-5 w-5 mr-3" />
+                    Connect with Google
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          // Authenticated View - Show Contacts and Email Interface
+          <div className="space-y-8">
+            {/* Welcome Back Section */}
+            <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-green-100 p-3 rounded-full">
+                      <CheckCircle className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-green-900">
+                        Connected to Gmail
+                      </h3>
+                      <p className="text-green-700">
+                        Signed in as {googleUser.name} ({googleUser.email})
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleRefreshContacts}
+                      disabled={isLoadingContacts}
+                      className="border-green-300 text-green-700 hover:bg-green-100"
                     >
-                      Go to Admin Panel
+                      <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingContacts ? 'animate-spin' : ''}`} />
+                      Refresh Contacts
                     </Button>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          </div>
-        )}
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <Card key={index} className="hover:shadow-lg transition-all duration-200 border-pink-100 hover:border-pink-200 bg-white/80 backdrop-blur-sm">
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-[#4A3D55]">{stat.title}</p>
-                      <p className="text-2xl font-bold text-[#403334]">{stat.value}</p>
-                      <p className="text-xs text-[#d35c65] font-medium">{stat.change}</p>
+                      <p className="text-sm font-medium text-gray-600">Total Contacts</p>
+                      <p className="text-2xl font-bold text-[#403334]">{contacts.length}</p>
                     </div>
-                    <div className="bg-pink-100 p-3 rounded-full">
-                      <Icon className="h-6 w-6 text-[#d35c65]" />
+                    <div className="bg-blue-100 p-3 rounded-full">
+                      <Users className="h-6 w-6 text-blue-600" />
                     </div>
                   </div>
-                  <p className="text-xs text-[#4A3D55] mt-2 font-light">{stat.description}</p>
                 </CardContent>
               </Card>
-            );
-          })}
-        </div>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Selected</p>
+                      <p className="text-2xl font-bold text-[#403334]">{selectedContacts.length}</p>
+                    </div>
+                    <div className="bg-[#d35c65]/10 p-3 rounded-full">
+                      <CheckCircle className="h-6 w-6 text-[#d35c65]" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Ready to Send</p>
+                      <p className="text-2xl font-bold text-[#403334]">
+                        {selectedContacts.length > 0 ? 'Yes' : 'No'}
+                      </p>
+                    </div>
+                    <div className="bg-green-100 p-3 rounded-full">
+                      <Mail className="h-6 w-6 text-green-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-        {/* Main Content Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-sm border border-pink-100 rounded-xl p-1 shadow-sm">
-            <TabsTrigger 
-              value="compose" 
-              className="flex items-center space-x-2 data-[state=active]:bg-[#d35c65] data-[state=active]:text-white rounded-lg font-medium"
-            >
-              <Mail className="h-4 w-4" />
-              <span>Compose</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="campaigns" 
-              className="flex items-center space-x-2 data-[state=active]:bg-[#d35c65] data-[state=active]:text-white rounded-lg font-medium"
-            >
-              <Send className="h-4 w-4" />
-              <span>Campaigns</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="dashboard" 
-              className="flex items-center space-x-2 data-[state=active]:bg-[#d35c65] data-[state=active]:text-white rounded-lg font-medium"
-            >
-              <BarChart3 className="h-4 w-4" />
-              <span>Analytics</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="followups" 
-              className="flex items-center space-x-2 data-[state=active]:bg-[#d35c65] data-[state=active]:text-white rounded-lg font-medium"
-            >
-              <Calendar className="h-4 w-4" />
-              <span>Follow-ups</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="compose" className="space-y-6">
-            <EmailComposer />
-          </TabsContent>
-
-          <TabsContent value="campaigns" className="space-y-6">
-            <CampaignManager />
-          </TabsContent>
-
-          <TabsContent value="dashboard" className="space-y-6">
-            <AnalyticsDashboard />
-          </TabsContent>
-
-          <TabsContent value="followups" className="space-y-6">
-            <FollowUpManager />
-          </TabsContent>
-        </Tabs>
+            {/* Contact List */}
+            <ContactList
+              contacts={contacts}
+              selectedContacts={selectedContacts}
+              onContactSelect={handleContactSelect}
+              onSelectAll={handleSelectAll}
+              onClearSelection={handleClearSelection}
+              onSendEmail={handleSendEmail}
+              loading={isLoadingContacts}
+            />
+          </div>
+        )}
       </div>
+
+      {/* Email Composer Modal */}
+      {isComposerOpen && (
+        <SimpleEmailComposer
+          selectedContacts={contacts.filter(contact => selectedContacts.includes(contact.id))}
+          onSendEmail={handleEmailSend}
+          onClose={() => setIsComposerOpen(false)}
+          isOpen={isComposerOpen}
+          sending={isSending}
+        />
+      )}
     </div>
   );
 };

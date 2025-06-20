@@ -17,6 +17,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import CoverLetterTest from "./pages/CoverLetterTest";
 import EmailOutreach from "./pages/EmailOutreach";
+import GoogleCallback from "./components/auth/GoogleCallback";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,7 @@ const App = () => (
             <Route path="/resume-import" element={<ProtectedRoute><ResumeImportPage /></ProtectedRoute>} />
             <Route path="/cover-letter-test" element={<ProtectedRoute><CoverLetterTest /></ProtectedRoute>} />
             <Route path="/email-outreach" element={<ProtectedRoute><EmailOutreach /></ProtectedRoute>} />
+            <Route path="/auth/google/callback" element={<GoogleCallback />} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
