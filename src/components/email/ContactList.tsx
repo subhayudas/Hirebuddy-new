@@ -1,15 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { GoogleContact } from '@/services/googleAuthService';
+import { ContactForDisplay } from '@/services/contactsService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, Mail, Phone, Building, Users, Send } from 'lucide-react';
+import { Search, Mail, Phone, Building, Users, Send, ExternalLink, CheckCircle } from 'lucide-react';
 
 interface ContactListProps {
-  contacts: GoogleContact[];
+  contacts: ContactForDisplay[];
   selectedContacts: string[];
   onContactSelect: (contactId: string) => void;
   onSelectAll: () => void;
@@ -71,7 +71,7 @@ const ContactList: React.FC<ContactListProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5 text-[#d35c65]" />
-            Your Google Contacts ({filteredContacts.length})
+            Your Contacts ({filteredContacts.length})
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -191,7 +191,7 @@ const ContactList: React.FC<ContactListProps> = ({
                 <p className="text-gray-500">
                   {searchTerm 
                     ? 'Try adjusting your search terms or filters'
-                    : 'Your Google contacts will appear here once loaded'
+                    : 'Your contacts will appear here once loaded'
                   }
                 </p>
               </CardContent>
@@ -224,9 +224,17 @@ const ContactList: React.FC<ContactListProps> = ({
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 truncate">
-                      {contact.name}
-                    </h3>
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-900 truncate">
+                        {contact.name}
+                      </h3>
+                      {contact.email_sent_on && (
+                        <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          Sent
+                        </Badge>
+                      )}
+                    </div>
                     
                     {contact.email && (
                       <div className="flex items-center gap-1 mt-1">
@@ -253,6 +261,21 @@ const ContactList: React.FC<ContactListProps> = ({
                         <span className="text-sm text-gray-600">
                           {contact.phone}
                         </span>
+                      </div>
+                    )}
+
+                    {contact.linkedin_link && (
+                      <div className="flex items-center gap-1 mt-1">
+                        <ExternalLink className="h-3 w-3 text-gray-400" />
+                        <a 
+                          href={contact.linkedin_link} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-600 hover:text-blue-800 truncate"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          LinkedIn Profile
+                        </a>
                       </div>
                     )}
                   </div>
