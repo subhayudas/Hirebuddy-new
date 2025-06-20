@@ -36,9 +36,9 @@ const GoogleCallback = () => {
           setStatus('success');
           setMessage('Successfully authenticated! Redirecting to Email Outreach...');
           
-          // Redirect to email outreach after a short delay
+          // Redirect to email outreach after a short delay with authentication flag
           setTimeout(() => {
-            navigate('/email-outreach');
+            navigate('/email-outreach?authenticated=true');
           }, 2000);
         } else {
           setStatus('error');

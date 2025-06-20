@@ -20,7 +20,8 @@ import {
   Database,
   Shield,
   ShieldCheck,
-  Link
+  Link,
+  Info
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -34,24 +35,12 @@ const EmailOutreach = () => {
   const [isSending, setIsSending] = useState(false);
   const [databaseConnected, setDatabaseConnected] = useState(false);
   
-  // Gmail authentication states
+  // Gmail authentication states - Always start as null to force authentication
   const [googleUser, setGoogleUser] = useState<GoogleUser | null>(null);
   const [isGoogleAuthenticating, setIsGoogleAuthenticating] = useState(false);
   const [googleContacts, setGoogleContacts] = useState<GoogleContact[]>([]);
   const [useGmailMode, setUseGmailMode] = useState(false);
-
-  // Check for existing Google authentication
-  const checkGoogleAuth = async () => {
-    try {
-      const storedUser = await googleAuthService.getStoredUser();
-      if (storedUser) {
-        setGoogleUser(storedUser);
-        toast.success('Gmail authentication found - you can send real emails!');
-      }
-    } catch (error) {
-      console.error('Error checking Google auth:', error);
-    }
-  };
+  const [hasAttemptedAuth, setHasAttemptedAuth] = useState(false);
 
   // Load Google contacts
   const loadGoogleContacts = async () => {
@@ -86,9 +75,10 @@ const EmailOutreach = () => {
     }
   };
 
-  // Handle Gmail authentication
+  // Handle Gmail authentication - Always required
   const handleGmailAuth = async () => {
     setIsGoogleAuthenticating(true);
+    setHasAttemptedAuth(true);
     try {
       await googleAuthService.initiateAuth();
     } catch (error) {
@@ -98,12 +88,57 @@ const EmailOutreach = () => {
     }
   };
 
+  // Handle successful authentication (called from callback)
+  const handleAuthSuccess = (user: GoogleUser) => {
+    setGoogleUser(user);
+    setIsGoogleAuthenticating(false);
+    
+    // Show detailed success message
+    const hasRefreshToken = !!user.refresh_token;
+    toast.success(
+      `Gmail authentication successful! ${hasRefreshToken ? 'Full access granted' : 'Limited access - may need re-authentication later'}`
+    );
+    
+    console.log('Gmail authentication details:', {
+      email: user.email,
+      hasAccessToken: !!user.access_token,
+      hasRefreshToken: hasRefreshToken,
+      provider: user.provider,
+      lastUpdated: user.updated_at
+    });
+  };
+
+  // Check authentication status and refresh if needed
+  const checkAuthStatus = async () => {
+    if (!googleUser) return;
+    
+    try {
+      setIsGoogleAuthenticating(true);
+      const refreshedUser = await googleAuthService.getStoredUser();
+      
+      if (refreshedUser) {
+        setGoogleUser(refreshedUser);
+        toast.success('Authentication status verified');
+      } else {
+        setGoogleUser(null);
+        toast.warning('Authentication expired. Please re-authenticate.');
+      }
+    } catch (error) {
+      console.error('Error checking auth status:', error);
+      toast.error('Error checking authentication status');
+    } finally {
+      setIsGoogleAuthenticating(false);
+    }
+  };
+
   // Switch between Gmail and Database modes
   const switchToGmailMode = () => {
-    setUseGmailMode(true);
-    if (googleUser) {
-      loadGoogleContacts();
+    if (!googleUser) {
+      toast.warning('Please authenticate with Gmail first');
+      return;
     }
+    setUseGmailMode(true);
+    loadGoogleContacts();
   };
 
   const switchToDatabaseMode = () => {
@@ -154,12 +189,56 @@ const EmailOutreach = () => {
   useEffect(() => {
     const initializePage = async () => {
       setIsLoading(true);
-      await checkGoogleAuth();
+      
+      // First, check for existing Gmail authentication in database
+      try {
+        console.log('🔍 Checking for existing Gmail authentication...');
+        const storedUser = await googleAuthService.getStoredUser();
+        if (storedUser) {
+          console.log('✅ Found valid Gmail authentication in database');
+          handleAuthSuccess(storedUser);
+        } else {
+          console.log('❌ No valid Gmail authentication found');
+        }
+      } catch (error) {
+        console.error('Error checking for existing Gmail auth:', error);
+      }
+      
+      // Load database contacts
       await loadContactsFromDatabase();
       setIsLoading(false);
     };
 
     initializePage();
+  }, []);
+
+  // Check for OAuth callback completion
+  useEffect(() => {
+    const checkForCallbackAuth = async () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const fromCallback = urlParams.get('authenticated') === 'true';
+        
+        if (fromCallback) {
+          console.log('🔄 Checking authentication after OAuth callback...');
+          const storedUser = await googleAuthService.getStoredUser();
+          if (storedUser) {
+            console.log('✅ OAuth callback successful - user authenticated');
+            handleAuthSuccess(storedUser);
+          } else {
+            console.log('❌ OAuth callback completed but no valid tokens found');
+            toast.error('Authentication completed but tokens are invalid. Please try again.');
+          }
+          // Clean up URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      } catch (error) {
+        console.error('Error checking callback auth:', error);
+        toast.error('Error validating authentication. Please try again.');
+      }
+    };
+    
+    checkForCallbackAuth();
   }, []);
 
   const handleContactSelect = (contactId: string) => {
@@ -183,6 +262,12 @@ const EmailOutreach = () => {
       contactIds.includes(contact.id)
     );
     setSelectedContacts(contactIds);
+    
+    // Show warning if not authenticated with Gmail
+    if (!googleUser) {
+      toast.warning('Gmail not authenticated - emails will be simulated only. Authenticate Gmail to send real emails.');
+    }
+    
     setIsComposerOpen(true);
   };
 
@@ -197,7 +282,14 @@ const EmailOutreach = () => {
 
     try {
       if (useGmailMode && googleUser) {
-        // Real Gmail sending
+        // Real Gmail sending - Double check authentication
+        if (!googleUser.access_token) {
+          toast.error('Gmail authentication expired. Please re-authenticate.');
+          setGoogleUser(null);
+          setIsSending(false);
+          return;
+        }
+        
         toast.info('Sending emails through Gmail...');
         
         for (const contact of selectedContactsData) {
@@ -329,47 +421,70 @@ const EmailOutreach = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="space-y-8">
-          {/* Gmail Authentication Section */}
-          <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+          {/* Top Alert for Gmail Authentication */}
+          {!googleUser && (
+            <Alert className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+              <Shield className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-800">
+                <strong>Gmail Authentication Required:</strong> To use email outreach features, you must authenticate with Gmail. 
+                This is a separate process from your website login and grants permission to send emails through your Gmail account.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Gmail Authentication Required Section */}
+          <Card className={`bg-gradient-to-r ${!googleUser ? 'from-orange-50 to-red-50 border-orange-200' : 'from-green-50 to-emerald-50 border-green-200'}`}>
             <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-green-900">
+              <CardTitle className={`flex items-center gap-2 ${!googleUser ? 'text-orange-900' : 'text-green-900'}`}>
                 <Mail className="h-5 w-5" />
-                Gmail Integration
+                Gmail Authentication Required
               </CardTitle>
-              <CardDescription className="text-green-700">
-                Connect your Gmail account to send real emails directly through your Gmail
+              <CardDescription className={!googleUser ? 'text-orange-700' : 'text-green-700'}>
+                {!googleUser 
+                  ? 'Gmail authentication is required for email outreach functionality. This is separate from your website login.'
+                  : 'Gmail authentication successful! You can now send real emails or use database mode for testing.'
+                }
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {!googleUser ? (
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-orange-100">
-                      <Shield className="h-5 w-5 text-orange-600" />
+                <>
+                  <Alert className="bg-blue-50 border-blue-200">
+                    <Info className="h-4 w-4 text-blue-600" />
+                    <AlertDescription className="text-blue-800">
+                      <strong>Important:</strong> Being signed into this website does not grant Gmail permissions. 
+                      You must separately authenticate with Google to access Gmail features.
+                    </AlertDescription>
+                  </Alert>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-full bg-orange-100">
+                        <Shield className="h-5 w-5 text-orange-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">Gmail Authentication Required</p>
+                        <p className="text-sm text-gray-600">Authenticate with Gmail to send real emails or continue with database simulation mode</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Gmail Not Connected</p>
-                      <p className="text-sm text-gray-600">Connect Gmail to send real emails instead of simulations</p>
-                    </div>
+                    <Button
+                      onClick={handleGmailAuth}
+                      disabled={isGoogleAuthenticating}
+                      className="bg-[#4285f4] hover:bg-[#3367d6] text-white"
+                    >
+                      {isGoogleAuthenticating ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Authenticating...
+                        </>
+                      ) : (
+                        <>
+                          <Link className="h-4 w-4 mr-2" />
+                          Authenticate Gmail
+                        </>
+                      )}
+                    </Button>
                   </div>
-                  <Button
-                    onClick={handleGmailAuth}
-                    disabled={isGoogleAuthenticating}
-                    className="bg-[#4285f4] hover:bg-[#3367d6] text-white"
-                  >
-                    {isGoogleAuthenticating ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Connecting...
-                      </>
-                    ) : (
-                      <>
-                        <Link className="h-4 w-4 mr-2" />
-                        Connect Gmail
-                      </>
-                    )}
-                  </Button>
-                </div>
+                </>
               ) : (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -378,16 +493,31 @@ const EmailOutreach = () => {
                         <ShieldCheck className="h-5 w-5 text-green-600" />
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">Gmail Connected</p>
+                        <p className="font-medium text-gray-900">Gmail Authenticated</p>
                         <p className="text-sm text-gray-600">{googleUser.email}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">
+                            Access Token: ✓
+                          </Badge>
+                          {googleUser.refresh_token && (
+                            <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                              Refresh Token: ✓
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">
-                      Authenticated
-                    </Badge>
+                    <div className="flex flex-col items-end gap-2">
+                      <Badge variant="secondary" className="bg-green-100 text-green-800">
+                        Authenticated
+                      </Badge>
+                      <p className="text-xs text-gray-500">
+                        Last updated: {new Date(googleUser.updated_at).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
                   
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <Button
                       onClick={switchToGmailMode}
                       disabled={useGmailMode}
@@ -406,57 +536,107 @@ const EmailOutreach = () => {
                     >
                       Use Database Mode
                     </Button>
+                    <Button
+                      onClick={checkAuthStatus}
+                      variant="outline"
+                      size="sm"
+                      disabled={isGoogleAuthenticating}
+                      className="border-green-300 text-green-700 hover:bg-green-50"
+                    >
+                      <CheckCircle className={`h-4 w-4 mr-2 ${isGoogleAuthenticating ? 'animate-spin' : ''}`} />
+                      Verify Auth
+                    </Button>
+                    <Button
+                      onClick={handleGmailAuth}
+                      variant="outline"
+                      size="sm"
+                      className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                    >
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Re-authenticate
+                    </Button>
                   </div>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Connection Status Section */}
+          {/* Mode Selection and Status */}
           <Card className={`bg-gradient-to-r ${useGmailMode ? 'from-green-50 to-emerald-50 border-green-200' : 'from-blue-50 to-indigo-50 border-blue-200'}`}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-full ${useGmailMode ? 'bg-green-100' : 'bg-blue-100'}`}>
-                    {useGmailMode ? (
-                      <Mail className="h-6 w-6 text-green-600" />
-                    ) : databaseConnected ? (
-                      <Database className="h-6 w-6 text-blue-600" />
-                    ) : (
-                      <AlertCircle className="h-6 w-6 text-red-600" />
-                    )}
-                  </div>
-                  <div>
-                    <h3 className={`text-lg font-semibold ${useGmailMode ? 'text-green-900' : 'text-blue-900'}`}>
-                      {useGmailMode 
-                        ? 'Gmail Mode Active' 
-                        : databaseConnected 
-                          ? 'Database Connected' 
-                          : 'Database Connection Issue'
-                      }
-                    </h3>
-                    <p className={useGmailMode ? 'text-green-700' : 'text-blue-700'}>
-                      {useGmailMode 
-                        ? 'Contacts loaded from Google - emails will be sent through Gmail'
-                        : databaseConnected 
-                          ? 'Your contacts are loaded from the database - emails will be simulated'
-                          : 'Unable to connect to database - please check your connection'
-                      }
-                    </p>
-                  </div>
+            <CardHeader className="pb-4">
+              <CardTitle className={`text-lg ${useGmailMode ? 'text-green-900' : 'text-blue-900'}`}>
+                Email Mode: {useGmailMode ? 'Gmail (Real Emails)' : 'Database (Simulation)'}
+              </CardTitle>
+              <CardDescription className={useGmailMode ? 'text-green-700' : 'text-blue-700'}>
+                {useGmailMode 
+                  ? 'Sending real emails through your authenticated Gmail account'
+                  : 'Simulating email sending for testing purposes - no real emails are sent'
+                }
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className={`p-3 rounded-full ${useGmailMode ? 'bg-green-100' : 'bg-blue-100'}`}>
+                  {useGmailMode ? (
+                    <Mail className="h-6 w-6 text-green-600" />
+                  ) : databaseConnected ? (
+                    <Database className="h-6 w-6 text-blue-600" />
+                  ) : (
+                    <AlertCircle className="h-6 w-6 text-red-600" />
+                  )}
                 </div>
+                <div className="flex-1">
+                  <h3 className={`font-semibold ${useGmailMode ? 'text-green-900' : 'text-blue-900'}`}>
+                    {useGmailMode 
+                      ? 'Gmail Mode Active' 
+                      : databaseConnected 
+                        ? 'Database Mode Active' 
+                        : 'Database Connection Issue'
+                    }
+                  </h3>
+                  <p className={`text-sm ${useGmailMode ? 'text-green-700' : 'text-blue-700'}`}>
+                    {useGmailMode 
+                      ? 'Contacts from Google - real emails via Gmail API'
+                      : databaseConnected 
+                        ? 'Contacts from database - simulated email sending'
+                        : 'Unable to connect to database'
+                    }
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Button
-                    variant="outline"
+                    onClick={switchToGmailMode}
+                    disabled={useGmailMode || !googleUser}
+                    variant={useGmailMode ? "default" : "outline"}
                     size="sm"
-                    onClick={handleRefreshDatabase}
-                    disabled={isLoadingContacts}
-                    className={`${useGmailMode ? 'border-green-300 text-green-700 hover:bg-green-100' : 'border-blue-300 text-blue-700 hover:bg-blue-100'}`}
+                    className={useGmailMode ? "bg-green-600 hover:bg-green-700" : "border-green-300 text-green-700 hover:bg-green-50"}
                   >
-                    <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingContacts ? 'animate-spin' : ''}`} />
-                    Refresh Contacts
+                    Gmail Mode
+                  </Button>
+                  <Button
+                    onClick={switchToDatabaseMode}
+                    disabled={!useGmailMode}
+                    variant={!useGmailMode ? "default" : "outline"}
+                    size="sm"
+                    className={!useGmailMode ? "bg-blue-600 hover:bg-blue-700" : "border-blue-300 text-blue-700 hover:bg-blue-50"}
+                  >
+                    Database Mode
                   </Button>
                 </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRefreshDatabase}
+                  disabled={isLoadingContacts}
+                  className={`${useGmailMode ? 'border-green-300 text-green-700 hover:bg-green-100' : 'border-blue-300 text-blue-700 hover:bg-blue-100'}`}
+                >
+                  <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingContacts ? 'animate-spin' : ''}`} />
+                  Refresh Contacts
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -473,7 +653,7 @@ const EmailOutreach = () => {
           )}
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -515,7 +695,62 @@ const EmailOutreach = () => {
                 </div>
               </CardContent>
             </Card>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Auth Status</p>
+                    <p className="text-2xl font-bold text-[#403334]">
+                      {googleUser ? 'Active' : 'None'}
+                    </p>
+                  </div>
+                  <div className={`p-3 rounded-full ${googleUser ? 'bg-green-100' : 'bg-gray-100'}`}>
+                    <Shield className={`h-6 w-6 ${googleUser ? 'text-green-600' : 'text-gray-600'}`} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
+
+          {/* Debug Information - Only show in development */}
+          {import.meta.env.DEV && googleUser && (
+            <Card className="bg-gray-50 border-gray-200">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-sm text-gray-700 flex items-center gap-2">
+                  <Info className="h-4 w-4" />
+                  Debug: Authentication Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="font-medium text-gray-600">Google ID:</p>
+                    <p className="text-gray-800 font-mono text-xs">{googleUser.google_id}</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-600">Provider:</p>
+                    <p className="text-gray-800">{googleUser.provider}</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-600">Access Token:</p>
+                    <p className="text-gray-800">{googleUser.access_token ? `${googleUser.access_token.substring(0, 20)}...` : 'None'}</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-600">Refresh Token:</p>
+                    <p className="text-gray-800">{googleUser.refresh_token ? 'Present' : 'None'}</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-600">Created:</p>
+                    <p className="text-gray-800">{new Date(googleUser.created_at).toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-600">Updated:</p>
+                    <p className="text-gray-800">{new Date(googleUser.updated_at).toLocaleString()}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Contact List */}
           <ContactList

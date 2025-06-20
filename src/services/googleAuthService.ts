@@ -144,7 +144,7 @@ class GoogleAuthService {
     return data;
   }
 
-  // Get stored user by current session
+  // Get stored user by current session and validate tokens
   async getStoredUser(): Promise<GoogleUser | null> {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session?.user) return null;
@@ -156,7 +156,91 @@ class GoogleAuthService {
       .single();
 
     if (error || !data) return null;
-    return data;
+
+    // Validate that user has both access_token and refresh_token
+    if (!data.access_token) {
+      console.log('User found but no access token');
+      return null;
+    }
+
+    // Test if the access token is still valid
+    const isValid = await this.validateAccessToken(data.access_token);
+    if (isValid) {
+      return data;
+    }
+
+    // If access token is invalid, try to refresh it
+    if (data.refresh_token) {
+      const newAccessToken = await this.refreshAccessToken(data.refresh_token);
+      if (newAccessToken) {
+        // Update the access token in database
+        const { data: updatedData, error: updateError } = await supabase
+          .from('users')
+          .update({ 
+            access_token: newAccessToken,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', data.id)
+          .select()
+          .single();
+
+        if (!updateError && updatedData) {
+          return updatedData;
+        }
+      }
+    }
+
+    // If we can't refresh the token, the user needs to re-authenticate
+    console.log('Unable to refresh token, user needs to re-authenticate');
+    return null;
+  }
+
+  // Validate access token by making a test API call
+  private async validateAccessToken(accessToken: string): Promise<boolean> {
+    try {
+      const response = await fetch('https://www.googleapis.com/oauth2/v1/tokeninfo', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (response.ok) {
+        const tokenInfo = await response.json();
+        // Check if token has required scopes
+        const requiredScopes = [
+          'https://www.googleapis.com/auth/gmail.send',
+          'https://www.googleapis.com/auth/contacts.readonly'
+        ];
+        
+        const tokenScopes = tokenInfo.scope ? tokenInfo.scope.split(' ') : [];
+        const hasRequiredScopes = requiredScopes.every(scope => 
+          tokenScopes.includes(scope)
+        );
+
+        return hasRequiredScopes;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error validating access token:', error);
+      return false;
+    }
+  }
+
+  // Clear stored authentication - for forcing re-authentication
+  async clearStoredAuth(): Promise<void> {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) return;
+
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('email', session.user.email);
+
+    if (error) {
+      console.error('Error clearing stored auth:', error);
+    }
   }
 
   // Refresh access token if needed
