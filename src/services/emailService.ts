@@ -49,7 +49,6 @@ class EmailService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(request),
-        credentials: 'include', 
       });
 
       if (!response.ok) {
@@ -83,7 +82,6 @@ class EmailService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(request),
-        credentials: 'include',  // Required for CORS with allow_credentials=True
       });
 
       if (!response.ok) {
@@ -110,7 +108,6 @@ class EmailService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(request),
-        credentials: 'include', 
       });
 
       if (!response.ok) {
@@ -133,7 +130,6 @@ class EmailService {
     try {
       const response = await fetch(`${this.apiBaseUrl}/`, {
         method: 'GET',
-        credentials: 'include',  
       });
 
       if (!response.ok) {
