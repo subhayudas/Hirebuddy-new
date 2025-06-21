@@ -49,6 +49,7 @@ class EmailService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(request),
+        credentials: 'include', 
       });
 
       if (!response.ok) {
@@ -82,6 +83,7 @@ class EmailService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(request),
+        credentials: 'include',  // Required for CORS with allow_credentials=True
       });
 
       if (!response.ok) {
@@ -108,6 +110,7 @@ class EmailService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(request),
+        credentials: 'include', 
       });
 
       if (!response.ok) {
@@ -130,6 +133,7 @@ class EmailService {
     try {
       const response = await fetch(`${this.apiBaseUrl}/`, {
         method: 'GET',
+        credentials: 'include',  
       });
 
       if (!response.ok) {
@@ -152,12 +156,9 @@ class EmailService {
     }
   }
 
-  /**
-   * Generate email content using AI (if available in the API)
-   */
+  
   async generateEmailContent(companyName: string, founderName: string): Promise<{ subject: string; body: string }> {
-    // This would require adding a new endpoint to your API
-    // For now, we'll use a client-side template
+   
     const template = {
       subject: `Partnership Opportunity - ${companyName}`,
       body: `Hi ${founderName},
