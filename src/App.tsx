@@ -17,6 +17,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import CoverLetterTest from "./pages/CoverLetterTest";
 import EmailOutreach from "./pages/EmailOutreach";
+import EmailAPITest from "./pages/EmailAPITest";
 import DatabaseTest from "./pages/DatabaseTest";
 import GoogleCallback from "./components/auth/GoogleCallback";
 
@@ -63,6 +64,7 @@ const App = () => (
             <Route path="/resume-import" element={<ProtectedRoute><ResumeImportPage /></ProtectedRoute>} />
             <Route path="/cover-letter-test" element={<ProtectedRoute><CoverLetterTest /></ProtectedRoute>} />
             <Route path="/email-outreach" element={<ProtectedRoute><EmailOutreach /></ProtectedRoute>} />
+            <Route path="/email-api-test" element={<ProtectedRoute><EmailAPITest /></ProtectedRoute>} />
             <Route path="/database-test" element={<DatabaseTest />} />
             <Route path="/auth/google/callback" element={<GoogleCallback />} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

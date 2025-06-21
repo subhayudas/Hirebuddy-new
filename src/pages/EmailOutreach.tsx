@@ -3,12 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { contactsService, ContactForDisplay } from '@/services/contactsService';
 import { testDatabaseConnection } from '@/utils/databaseTest';
 import ContactList from '@/components/email/ContactList';
 import SimpleEmailComposer from '@/components/email/SimpleEmailComposer';
+import AWSEmailComposer from '@/components/email/AWSEmailComposer';
 import { useAuth } from '@/contexts/AuthContext';
 import { googleAuthService, GoogleUser, GoogleContact } from '@/services/googleAuthService';
+import emailService from '@/services/emailService';
 import { 
   Mail, 
   Users, 
@@ -20,9 +23,13 @@ import {
   Database,
   Shield,
   ShieldCheck,
-  Link,
-  Info
+  Link as LinkIcon,
+  Info,
+  Zap,
+  Cloud,
+  AlertTriangle
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const EmailOutreach = () => {
@@ -34,6 +41,8 @@ const EmailOutreach = () => {
   const [isComposerOpen, setIsComposerOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [databaseConnected, setDatabaseConnected] = useState(false);
+  const [activeEmailMode, setActiveEmailMode] = useState<'aws' | 'gmail' | 'simulation'>('aws');
+  const [awsApiStatus, setAwsApiStatus] = useState<{ connected: boolean; message: string } | null>(null);
   
   // Gmail authentication states - Always start as null to force authentication
   const [googleUser, setGoogleUser] = useState<GoogleUser | null>(null);
@@ -186,9 +195,33 @@ const EmailOutreach = () => {
     }
   };
 
+  // Test AWS API connection
+  const testAwsApiConnection = async () => {
+    try {
+      const result = await emailService.testConnection();
+      setAwsApiStatus({
+        connected: result.success,
+        message: result.message
+      });
+      if (result.success) {
+        toast.success('AWS Email API connected successfully');
+      } else {
+        toast.error(`AWS Email API connection failed: ${result.message}`);
+      }
+    } catch (error) {
+      setAwsApiStatus({
+        connected: false,
+        message: `Connection error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  };
+
   useEffect(() => {
     const initializePage = async () => {
       setIsLoading(true);
+      
+      // Test AWS API connection first
+      await testAwsApiConnection();
       
       // First, check for existing Gmail authentication in database
       try {
@@ -405,6 +438,16 @@ const EmailOutreach = () => {
               <h1 className="text-2xl font-mabry font-semibold text-[#403334]">Email Outreach</h1>
             </div>
             <div className="flex items-center space-x-4">
+              <Link to="/email-api-test">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                >
+                  <Zap className="h-4 w-4 mr-2" />
+                  Test API
+                </Button>
+              </Link>
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -478,7 +521,7 @@ const EmailOutreach = () => {
                         </>
                       ) : (
                         <>
-                          <Link className="h-4 w-4 mr-2" />
+                          <LinkIcon className="h-4 w-4 mr-2" />
                           Authenticate Gmail
                         </>
                       )}
@@ -752,16 +795,95 @@ const EmailOutreach = () => {
             </Card>
           )}
 
-          {/* Contact List */}
-          <ContactList
-            contacts={contacts}
-            selectedContacts={selectedContacts}
-            onContactSelect={handleContactSelect}
-            onSelectAll={handleSelectAll}
-            onClearSelection={handleClearSelection}
-            onSendEmail={handleSendEmail}
-            loading={isLoadingContacts}
-          />
+          {/* Email Mode Tabs */}
+          <Tabs value={activeEmailMode} onValueChange={(value) => setActiveEmailMode(value as 'aws' | 'gmail' | 'simulation')}>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="aws" className="flex items-center gap-2">
+                <Zap className="h-4 w-4" />
+                AWS Email API
+                {awsApiStatus?.connected && <CheckCircle className="h-3 w-3 text-green-500" />}
+              </TabsTrigger>
+              <TabsTrigger value="gmail" className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                Gmail Direct
+                {googleUser && <CheckCircle className="h-3 w-3 text-green-500" />}
+              </TabsTrigger>
+              <TabsTrigger value="simulation" className="flex items-center gap-2">
+                <Database className="h-4 w-4" />
+                Simulation Mode
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="aws" className="space-y-6">
+              <Alert className={awsApiStatus?.connected ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
+                <Cloud className={`h-4 w-4 ${awsApiStatus?.connected ? 'text-green-600' : 'text-red-600'}`} />
+                <AlertDescription className={awsApiStatus?.connected ? "text-green-800" : "text-red-800"}>
+                  <strong>AWS Email API:</strong> {awsApiStatus?.message || 'Checking connection...'}
+                </AlertDescription>
+              </Alert>
+              
+              <AWSEmailComposer
+                contacts={contacts.map(c => ({
+                  id: c.id,
+                  name: c.name,
+                  email: c.email,
+                  company: c.company,
+                  position: c.title
+                }))}
+                selectedContacts={selectedContacts}
+                onContactSelect={handleContactSelect}
+                onSelectAll={handleSelectAll}
+                onClearSelection={handleClearSelection}
+              />
+            </TabsContent>
+
+            <TabsContent value="gmail" className="space-y-6">
+              {!googleUser ? (
+                <Alert className="border-amber-200 bg-amber-50">
+                  <AlertTriangle className="h-4 w-4 text-amber-600" />
+                  <AlertDescription className="text-amber-800">
+                    <strong>Gmail Authentication Required:</strong> Please authenticate with Gmail to use direct Gmail sending.
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                <Alert className="border-green-200 bg-green-50">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-green-800">
+                    <strong>Gmail Authenticated:</strong> Ready to send emails through {googleUser.email}
+                  </AlertDescription>
+                </Alert>
+              )}
+              
+              <ContactList
+                contacts={contacts}
+                selectedContacts={selectedContacts}
+                onContactSelect={handleContactSelect}
+                onSelectAll={handleSelectAll}
+                onClearSelection={handleClearSelection}
+                onSendEmail={handleSendEmail}
+                loading={isLoadingContacts}
+              />
+            </TabsContent>
+
+            <TabsContent value="simulation" className="space-y-6">
+              <Alert className="border-blue-200 bg-blue-50">
+                <Info className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-800">
+                  <strong>Simulation Mode:</strong> No real emails will be sent. This mode is for testing purposes only.
+                </AlertDescription>
+              </Alert>
+              
+              <ContactList
+                contacts={contacts}
+                selectedContacts={selectedContacts}
+                onContactSelect={handleContactSelect}
+                onSelectAll={handleSelectAll}
+                onClearSelection={handleClearSelection}
+                onSendEmail={handleSendEmail}
+                loading={isLoadingContacts}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
