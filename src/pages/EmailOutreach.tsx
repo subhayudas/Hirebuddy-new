@@ -472,225 +472,35 @@ const EmailOutreach = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="space-y-8">
-          {/* Top Alert for Gmail Authentication */}
-          {!googleUser && (
-            <Alert className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
-              <Shield className="h-4 w-4 text-amber-600" />
-              <AlertDescription className="text-amber-800">
-                <strong>Gmail Authentication Required:</strong> To use email outreach features, you must authenticate with Gmail. 
-                This is a separate process from your website login and grants permission to send emails through your Gmail account.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {/* Gmail Authentication Required Section */}
-          <Card className={`bg-gradient-to-r ${!googleUser ? 'from-orange-50 to-red-50 border-orange-200' : 'from-green-50 to-emerald-50 border-green-200'}`}>
-            <CardHeader className="pb-4">
-              <CardTitle className={`flex items-center gap-2 ${!googleUser ? 'text-orange-900' : 'text-green-900'}`}>
-                <Mail className="h-5 w-5" />
-                Gmail Authentication Required
-              </CardTitle>
-              <CardDescription className={!googleUser ? 'text-orange-700' : 'text-green-700'}>
-                {!googleUser 
-                  ? 'Gmail authentication is required for email outreach functionality. This is separate from your website login.'
-                  : 'Gmail authentication successful! You can now send real emails or use database mode for testing.'
-                }
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {!googleUser ? (
+          {/* Re-authenticate Button */}
+          <div className="flex justify-center">
+            <Button
+              onClick={handleGmailAuth}
+              variant="outline"
+              size="sm"
+              className="border-orange-300 text-orange-700 hover:bg-orange-50"
+              disabled={isGoogleAuthenticating}
+            >
+              {isGoogleAuthenticating ? (
                 <>
-                  <Alert className="bg-blue-50 border-blue-200">
-                    <Info className="h-4 w-4 text-blue-600" />
-                    <AlertDescription className="text-blue-800">
-                      <strong>Important:</strong> Being signed into this website does not grant Gmail permissions. 
-                      You must separately authenticate with Google to access Gmail features.
-                    </AlertDescription>
-                  </Alert>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-full bg-orange-100">
-                        <Shield className="h-5 w-5 text-orange-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">Gmail Authentication Required</p>
-                        <p className="text-sm text-gray-600">Authenticate with Gmail to send real emails or continue with database simulation mode</p>
-                      </div>
-                    </div>
-                    <Button
-                      onClick={handleGmailAuth}
-                      disabled={isGoogleAuthenticating}
-                      className="bg-[#4285f4] hover:bg-[#3367d6] text-white"
-                    >
-                      {isGoogleAuthenticating ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Authenticating...
-                        </>
-                      ) : (
-                        <>
-                          <LinkIcon className="h-4 w-4 mr-2" />
-                          Authenticate Gmail
-                        </>
-                      )}
-                    </Button>
-                  </div>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Authenticating...
                 </>
               ) : (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-full bg-green-100">
-                        <ShieldCheck className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">Gmail Authenticated</p>
-                        <p className="text-sm text-gray-600">{googleUser.email}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">
-                            Access Token: ✓
-                          </Badge>
-                          {googleUser.refresh_token && (
-                            <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
-                              Refresh Token: ✓
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <Badge variant="secondary" className="bg-green-100 text-green-800">
-                        Authenticated
-                      </Badge>
-                      <p className="text-xs text-gray-500">
-                        Last updated: {new Date(googleUser.updated_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <Button
-                      onClick={switchToGmailMode}
-                      disabled={useGmailMode}
-                      variant={useGmailMode ? "default" : "outline"}
-                      size="sm"
-                      className={useGmailMode ? "bg-green-600 hover:bg-green-700" : "border-green-300 text-green-700 hover:bg-green-50"}
-                    >
-                      Use Gmail Mode
-                    </Button>
-                    <Button
-                      onClick={switchToDatabaseMode}
-                      disabled={!useGmailMode}
-                      variant={!useGmailMode ? "default" : "outline"}
-                      size="sm"
-                      className={!useGmailMode ? "bg-blue-600 hover:bg-blue-700" : "border-blue-300 text-blue-700 hover:bg-blue-50"}
-                    >
-                      Use Database Mode
-                    </Button>
-                    <Button
-                      onClick={checkAuthStatus}
-                      variant="outline"
-                      size="sm"
-                      disabled={isGoogleAuthenticating}
-                      className="border-green-300 text-green-700 hover:bg-green-50"
-                    >
-                      <CheckCircle className={`h-4 w-4 mr-2 ${isGoogleAuthenticating ? 'animate-spin' : ''}`} />
-                      Verify Auth
-                    </Button>
-                    <Button
-                      onClick={handleGmailAuth}
-                      variant="outline"
-                      size="sm"
-                      className="border-orange-300 text-orange-700 hover:bg-orange-50"
-                    >
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Re-authenticate
-                    </Button>
-                  </div>
-                </div>
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Re-authenticate Gmail
+                </>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Mode Selection and Status */}
-          <Card className={`bg-gradient-to-r ${useGmailMode ? 'from-green-50 to-emerald-50 border-green-200' : 'from-blue-50 to-indigo-50 border-blue-200'}`}>
-            <CardHeader className="pb-4">
-              <CardTitle className={`text-lg ${useGmailMode ? 'text-green-900' : 'text-blue-900'}`}>
-                Email Mode: {useGmailMode ? 'Gmail (Real Emails)' : 'Database (Simulation)'}
-              </CardTitle>
-              <CardDescription className={useGmailMode ? 'text-green-700' : 'text-blue-700'}>
-                {useGmailMode 
-                  ? 'Sending real emails through your authenticated Gmail account'
-                  : 'Simulating email sending for testing purposes - no real emails are sent'
-                }
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-full ${useGmailMode ? 'bg-green-100' : 'bg-blue-100'}`}>
-                  {useGmailMode ? (
-                    <Mail className="h-6 w-6 text-green-600" />
-                  ) : databaseConnected ? (
-                    <Database className="h-6 w-6 text-blue-600" />
-                  ) : (
-                    <AlertCircle className="h-6 w-6 text-red-600" />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <h3 className={`font-semibold ${useGmailMode ? 'text-green-900' : 'text-blue-900'}`}>
-                    {useGmailMode 
-                      ? 'Gmail Mode Active' 
-                      : databaseConnected 
-                        ? 'Database Mode Active' 
-                        : 'Database Connection Issue'
-                    }
-                  </h3>
-                  <p className={`text-sm ${useGmailMode ? 'text-green-700' : 'text-blue-700'}`}>
-                    {useGmailMode 
-                      ? 'Contacts from Google - real emails via Gmail API'
-                      : databaseConnected 
-                        ? 'Contacts from database - simulated email sending'
-                        : 'Unable to connect to database'
-                    }
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Button
-                    onClick={switchToGmailMode}
-                    disabled={useGmailMode || !googleUser}
-                    variant={useGmailMode ? "default" : "outline"}
-                    size="sm"
-                    className={useGmailMode ? "bg-green-600 hover:bg-green-700" : "border-green-300 text-green-700 hover:bg-green-50"}
-                  >
-                    Gmail Mode
-                  </Button>
-                  <Button
-                    onClick={switchToDatabaseMode}
-                    disabled={!useGmailMode}
-                    variant={!useGmailMode ? "default" : "outline"}
-                    size="sm"
-                    className={!useGmailMode ? "bg-blue-600 hover:bg-blue-700" : "border-blue-300 text-blue-700 hover:bg-blue-50"}
-                  >
-                    Database Mode
-                  </Button>
-                </div>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRefreshDatabase}
-                  disabled={isLoadingContacts}
-                  className={`${useGmailMode ? 'border-green-300 text-green-700 hover:bg-green-100' : 'border-blue-300 text-blue-700 hover:bg-blue-100'}`}
-                >
-                  <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingContacts ? 'animate-spin' : ''}`} />
-                  Refresh Contacts
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+            </Button>
+          </div>
+          
+          <Alert className="bg-blue-50 border-blue-200">
+            <Info className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-blue-800">
+              <strong>Having trouble sending emails?</strong> If you're experiencing issues with email delivery, try re-authenticating your Gmail account using the button above.
+            </AlertDescription>
+          </Alert>
 
           {/* Connection Alert */}
           {!useGmailMode && !databaseConnected && (
@@ -803,95 +613,29 @@ const EmailOutreach = () => {
             </Card>
           )}
 
-          {/* Email Mode Tabs */}
-          <Tabs value={activeEmailMode} onValueChange={(value) => setActiveEmailMode(value as 'aws' | 'gmail' | 'simulation')}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="aws" className="flex items-center gap-2">
-                <Zap className="h-4 w-4" />
-                AWS Email API
-                {awsApiStatus?.connected && <CheckCircle className="h-3 w-3 text-green-500" />}
-              </TabsTrigger>
-              <TabsTrigger value="gmail" className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                Gmail Direct
-                {googleUser && <CheckCircle className="h-3 w-3 text-green-500" />}
-              </TabsTrigger>
-              <TabsTrigger value="simulation" className="flex items-center gap-2">
-                <Database className="h-4 w-4" />
-                Simulation Mode
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="aws" className="space-y-6">
-              <Alert className={awsApiStatus?.connected ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
-                <Cloud className={`h-4 w-4 ${awsApiStatus?.connected ? 'text-green-600' : 'text-red-600'}`} />
-                <AlertDescription className={awsApiStatus?.connected ? "text-green-800" : "text-red-800"}>
-                  <strong>AWS Email API:</strong> {awsApiStatus?.message || 'Checking connection...'}
-                </AlertDescription>
-              </Alert>
-              
-              <AWSEmailComposer
-                contacts={contacts.map(c => ({
-                  id: c.id,
-                  name: c.name,
-                  email: c.email,
-                  company: c.company,
-                  position: c.title
-                }))}
-                selectedContacts={selectedContacts}
-                onContactSelect={handleContactSelect}
-                onSelectAll={handleSelectAll}
-                onClearSelection={handleClearSelection}
-              />
-            </TabsContent>
-
-            <TabsContent value="gmail" className="space-y-6">
-              {!googleUser ? (
-                <Alert className="border-amber-200 bg-amber-50">
-                  <AlertTriangle className="h-4 w-4 text-amber-600" />
-                  <AlertDescription className="text-amber-800">
-                    <strong>Gmail Authentication Required:</strong> Please authenticate with Gmail to use direct Gmail sending.
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                <Alert className="border-green-200 bg-green-50">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <AlertDescription className="text-green-800">
-                    <strong>Gmail Authenticated:</strong> Ready to send emails through {googleUser.email}
-                  </AlertDescription>
-                </Alert>
-              )}
-              
-              <ContactList
-                contacts={contacts}
-                selectedContacts={selectedContacts}
-                onContactSelect={handleContactSelect}
-                onSelectAll={handleSelectAll}
-                onClearSelection={handleClearSelection}
-                onSendEmail={handleSendEmail}
-                loading={isLoadingContacts}
-              />
-            </TabsContent>
-
-            <TabsContent value="simulation" className="space-y-6">
-              <Alert className="border-blue-200 bg-blue-50">
-                <Info className="h-4 w-4 text-blue-600" />
-                <AlertDescription className="text-blue-800">
-                  <strong>Simulation Mode:</strong> No real emails will be sent. This mode is for testing purposes only.
-                </AlertDescription>
-              </Alert>
-              
-              <ContactList
-                contacts={contacts}
-                selectedContacts={selectedContacts}
-                onContactSelect={handleContactSelect}
-                onSelectAll={handleSelectAll}
-                onClearSelection={handleClearSelection}
-                onSendEmail={handleSendEmail}
-                loading={isLoadingContacts}
-              />
-            </TabsContent>
-          </Tabs>
+          {/* AWS Email API Section */}
+          <div className="space-y-6">
+            <Alert className={awsApiStatus?.connected ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
+              <Cloud className={`h-4 w-4 ${awsApiStatus?.connected ? 'text-green-600' : 'text-red-600'}`} />
+              <AlertDescription className={awsApiStatus?.connected ? "text-green-800" : "text-red-800"}>
+                <strong>AWS Email API:</strong> {awsApiStatus?.message || 'Checking connection...'}
+              </AlertDescription>
+            </Alert>
+            
+            <AWSEmailComposer
+              contacts={contacts.map(c => ({
+                id: c.id,
+                name: c.name,
+                email: c.email,
+                company: c.company,
+                position: c.title
+              }))}
+              selectedContacts={selectedContacts}
+              onContactSelect={handleContactSelect}
+              onSelectAll={handleSelectAll}
+              onClearSelection={handleClearSelection}
+            />
+          </div>
         </div>
       </div>
 
