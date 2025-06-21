@@ -315,7 +315,7 @@ const EmailOutreach = () => {
 
     try {
       if (useGmailMode && googleUser) {
-        // Real Gmail sending - Double check authentication
+        // Use FastAPI backend for real Gmail sending
         if (!googleUser.access_token) {
           toast.error('Gmail authentication expired. Please re-authenticate.');
           setGoogleUser(null);
@@ -323,28 +323,36 @@ const EmailOutreach = () => {
           return;
         }
         
-        toast.info('Sending emails through Gmail...');
+        toast.info('Sending emails through FastAPI backend...');
         
         for (const contact of selectedContactsData) {
           try {
-            const success = await googleAuthService.sendEmail(
-              googleUser.access_token,
-              contact.email,
-              subject,
-              body,
-              isHtml
-            );
+            // Use your FastAPI backend instead of direct Gmail API
+            const request = {
+              sender: googleUser.email,
+              to: contact.email,
+              subject: subject,
+              body: isHtml ? body : emailService.formatAsHtml(body)
+            };
+
+            const response = await emailService.sendEmail(request);
             
-            if (success) {
-              successCount++;
-              console.log(`Email sent to ${contact.name} (${contact.email})`);
-            } else {
-              failCount++;
-              console.log(`Failed to send email to ${contact.email}`);
-            }
+            successCount++;
+            console.log(`Email sent to ${contact.name} (${contact.email}) via FastAPI`);
+            console.log(`Response:`, response);
+            
+            toast.success(`Email sent to ${contact.name}`, {
+              description: `Message ID: ${response.messageId}`
+            });
+            
           } catch (error) {
             failCount++;
             console.error(`Error sending email to ${contact.email}:`, error);
+            
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            toast.error(`Failed to send to ${contact.name}`, {
+              description: errorMessage
+            });
           }
         }
       } else {
