@@ -594,7 +594,7 @@ const EmailOutreach = () => {
                   </div>
                   <div>
                     <p className="font-medium text-gray-600">Access Token:</p>
-                    <p className="text-gray-800">{googleUser.access_token ? `${googleUser.access_token.substring(0, 20)}...` : 'None'}</p>
+                    <p className="text-gray-800">{googleUser.access_token ? 'Present' : 'None'}</p>
                   </div>
                   <div>
                     <p className="font-medium text-gray-600">Refresh Token:</p>
